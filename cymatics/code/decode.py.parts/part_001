@@ -1,0 +1,184 @@
+"ratchet teeth are chiral: report as traveling-wave "
+                           "candidate cos(sθ − ωt); chirality is metadata, "
+                           "never a frequency discriminator")
+            emit(n_k, 1, "membrane", 1.0, "MEDIUM", ev)
+            emit(n_k, 2, "membrane", 0.6, "MEDIUM", ev)
+            for d in _divisors(n_k):
+                if d > 1:
+                    emit(d, 1, "membrane", 0.3, "LOW",
+                         dict(rule="R1-alias", divisor_of=n_k))
+        elif n_k:
+            # R1 (+R2 if radial ring count given).
+            m_lo = (rad + 1) if rad else 1
+            ev = dict(rule="R1", azimuthal_order=n_k,
+                      note="n = k fundamental; divisor aliases at reduced "
+                           "score")
+            if rad:
+                ev["rule"] = "R1+R2"
+                ev["radial_nodes"] = rad
+                emit(n_k, m_lo, "membrane", 1.0, "MEDIUM", ev)
+                emit(n_k, max(m_lo - 1, 1), "membrane", 0.65, "MEDIUM",
+                     dict(ev, interpretation="ring-count ambiguity m~m±1"))
+            else:
+                emit(n_k, 1, "membrane", 1.0, "HIGH", ev)
+            for d in _divisors(n_k):
+                if d > 1:
+                    emit(d, m_lo, "membrane", 0.35, "LOW",
+                         dict(rule="R1-alias", divisor_of=n_k,
+                              note="n-fold ⊃ d-fold symmetry subsumption"))
+        else:
+            raise ValueError("radial descriptor requires azimuthal_order")
+
+    elif kind == "spiral":
+        # R4 (+R11 bead counts, +R8 if fractal-flavoured).
+        k = arms or n_k or 1
+        ev = dict(rule="R4", arms=k, chirality=chirality,
+                  note="k-arm log spiral: n = k; chirality recorded as "
+                       "metadata (unobservable in f for isotropic "
+                       "resonators)")
+        total = comps if isinstance(comps, int) else None
+        if total and k:
+            beads = max(int(round(total / k)), 1)
+            # R11: construction count — physically meaningful only under the
+            # standing-wave-with-beaded-arms hypothesis (math spec §1.4.3).
+            emit(k, beads, "membrane", 1.0, "LOW",
+                 dict(ev, rule="R4+R11", total_circles=total,
+                      beads_per_arm=beads,
+                      note="construction count, not a mode (§4.4): "
+                           "sub-resolution for modal purposes"))
+            emit(k, 2, "membrane", 0.75, "MEDIUM",
+                 dict(ev, note="modal candidate (m ≤ 6 credible)"))
+            emit(k, 1, "membrane", 0.7, "MEDIUM", dict(ev))
+            for a, b in _factor_pairs(total):
+                if a != k:
+                    emit(a, b, "membrane", 0.3, "LOW",
+                         dict(rule="R11-alias", factor_pair=(a, b)))
+        else:
+            emit(k, 1, "membrane", 1.0, "MEDIUM", ev)
+            emit(k, 2, "membrane", 0.6, "MEDIUM",
+                 dict(ev, note="m ∈ {1..3} medium-low when beads unknown"))
+        if fractal:
+            base = 2 if "julia" in notes_low else (n_k or 3)
+            emit(base, 1, "membrane", 0.72, "LOW",
+                 dict(rule="R8", note="fractal spiral: broadband, non-modal"))
+
+    elif kind == "grid":
+        # R5: p×q grid → square/rectangular plate container mode.
+        if isinstance(comps, (tuple, list)) and len(comps) == 2:
+            p, q = int(comps[0]), int(comps[1])
+        elif n_k and rad is not None:
+            p, q = int(n_k), int(rad)
+        else:
+            raise ValueError("grid descriptor requires components=(p, q)")
+        prime = _is_prime(p) and _is_prime(q)
+        ev = dict(rule="R5", grid=(p, q),
+                  note="geometric count HIGH confidence; physical (modal) "
+                       "interpretation LOW — content may be non-modal "
+                       "information (Arecibo-style)")
+        if prime:
+            ev["subharmonic"] = ("p, q both prime: no subharmonic aliasing "
+                                 "(math spec §0.2)")
+        emit(p, q, "square", 1.0, "HIGH", ev)
+        if p == q:
+            emit(q, p, "square", 1.0, "HIGH",
+                 dict(ev, note="(p,q)↔(q,p) exact degeneracy (a = b)"))
+        else:
+            # swapped rectangle is NOT degenerate (a ≠ b), but list as alias
+            emit(q, p, "square", 0.35, "LOW",
+                 dict(rule="R5-alias", note="axis-swap alias"))
+
+    elif kind == "composite":
+        if dumbbell:
+            # R7: dumbbell → dipole vs quadrant disambiguated by nodal-line
+            # count between lobes (1 line → n=1, 2 lines → n=2).
+            ev = dict(rule="R7",
+                      note="two lobes on an axis: n=1 dipole (one nodal "
+                           "diameter) vs n=2 quadrant pair; disambiguate by "
+                           "counting nodal lines between lobes")
+            emit(1, 1, "membrane", 1.0, "MEDIUM", ev)
+            emit(2, 1, "membrane", 0.8, "MEDIUM", ev)
+        # R9: figure + disc — decode components separately, disc anchors
+        # the boundary condition (n=0 baseline, fixes R).
+        if isinstance(comps, list):
+            sub_cands = []
+            for sub in comps:
+                if isinstance(sub, dict):
+                    sub_cands.extend(decode_structural(sub))
+            for c in sub_cands[:3]:
+                ev = dict(c.evidence)
+                ev["rule"] = "R9+" + str(ev.get("rule", "?"))
+                ev["boundary_anchor"] = ("outer disc = n=0 boundary-condition "
+                                         "anchor (math spec §4.2)")
+                raw.append([c.n, c.m, c.model, 0.9 * max(c.score, 0.5),
+                            c.confidence, ev])
+        if not raw:
+            raise ValueError("composite descriptor needs 'dumbbell' notes or "
+                             "a list of sub-descriptors in components")
+
+    elif kind == "cluster":
+        # R11: N discrete dots on k arms or rings.  "k satellites around 1
+        # center" → n = k ring + central n=0 anchor.
+        total = comps if isinstance(comps, int) else None
+        k = arms or n_k
+        if k is None and total:
+            k = total - 1 if rad else total
+        k = int(k)
+        ev = dict(rule="R11", satellites=k,
+                  note="N discrete circles arranged on a ring: n = k; "
+                       "central circle acts as (0,1) boundary anchor")
+        m_ring = (rad or 1)
+        emit(k, m_ring, "membrane", 1.0, "MEDIUM", ev)
+        emit(0, m_ring + 1, "membrane", 0.55, "MEDIUM",
+             dict(rule="R9", note="central disc / ring anchor component"))
+        for d in _divisors(k):
+            if d > 1:
+                emit(d, m_ring, "membrane", 0.35, "LOW",
+                     dict(rule="R1-alias", divisor_of=k))
+        if total:
+            if rad is not None and total == k + 1:
+                # "k satellites + 1 centre" also admits an N-fold reading
+                emit(total, m_ring, "membrane", 0.3, "LOW",
+                     dict(rule="R11-alias",
+                          note="alternative N-fold reading of the full "
+                               "quintuplet (5 dots → (5,·))"))
+            for a, b in _factor_pairs(total):
+                if a != k:
+                    emit(a, b, "membrane", 0.3, "LOW",
+                         dict(rule="R11-alias", factor_pair=(a, b)))
+    else:
+        raise ValueError(f"unknown descriptor kind: {kind!r}")
+
+    # ---- rank, normalize, classify (§3) ----------------------------------
+    raw.sort(key=lambda r: -r[3])
+    # dedupe identical (n, m, model), keeping the strongest
+    seen = {}
+    for r in raw:
+        key = (r[0], r[1], r[2])
+        if key not in seen:
+            seen[key] = r
+    raw = sorted(seen.values(), key=lambda r: -r[3])
+    scores = _normalize_scores([r[3] for r in raw])
+    raw = raw[:3]
+    out = []
+    for i, (n, m, model, _s, conf, ev) in enumerate(raw):
+        gap = (scores[i] - scores[i + 1]) if i + 1 < len(raw) else scores[i]
+        # Structural paths are single-estimate paths → MEDIUM ceiling (§3.3),
+        # except where a rule explicitly claims high/low (R1, R5, R8...).
+        confidence = conf
+        if conf == "MEDIUM":
+            confidence = _classify(scores[i], gap, structural=True)
+        ev = dict(ev)
+        ev.setdefault("route", "STRUCTURAL")
+        ev["boundary"] = boundary
+        if model == "membrane" and m:
+            ev["freq_ratio"] = bessel_zero(n, m) / bessel_zero(0, 1)
+            ev["bessel_coincidences"] = _bessel_coincidences(n, m)
+        elif model == "square" and m:
+            ev["freq_ratio"] = math.hypot(n, m) / math.sqrt(2.0)
+        aliases = [(r2[0], r2[1]) for r2 in seen.values()
+                   if (r2[0], r2[1]) != (n, m)]
+        ev["aliases"] = aliases[:6]
+        out.append(ModeCandidate(n=n, m=m, model=model,
+                                 score=float(scores[i]),
+                                 confidence=confidence, evidence=ev))
+    retu
