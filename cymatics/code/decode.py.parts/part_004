@@ -1,0 +1,201 @@
+20th percentile).
+    Returns None for continuous (non-sparse) glyphs.
+    """
+    from scipy import ndimage as ndi
+    mask = _segment(img)
+    if mask.mean() > 0.35:
+        return None                      # not a sparse dot glyph
+    lab, n_blobs = ndi.label(mask)
+    if n_blobs < 4:
+        return None
+    areas = ndi.sum(mask, lab, np.arange(1, n_blobs + 1))
+    single = np.percentile(areas, 20)
+    if single <= 0:
+        return None
+    total = int(round(areas.sum() / single))
+    beads = int(round(total / max(n_arm, 1)))
+    return beads if beads >= 4 else None
+
+
+def _ring_decode(P, r, R, A, tau):
+    """RING path (math spec §1.6): radial profile peaks → (0, m)."""
+    Rbar = P.mean(axis=1)
+    signed = (P < 0).mean() > 0.2
+    if signed:
+        # zero crossings of the (lightly smoothed) mean radial profile are
+        # nodal circles; heavy detrending would split one step into several
+        # spurious crossings
+        x = uniform_filter1d(Rbar.astype(float), size=3)
+        x = x - np.median(x)
+        interior = (r / R > 0.05) & (r / R < 0.97)
+        xi, ri = x[interior], r[interior]
+        sgn = np.sign(xi)
+        ring_r = []
+        for i in np.nonzero(np.diff(sgn) != 0)[0]:
+            frac = abs(xi[i]) / max(abs(xi[i]) + abs(xi[i + 1]), 1e-12)
+            ring_r.append((ri[i] + frac * (ri[i + 1] - ri[i])) / R)
+        ring_r = np.array(ring_r)
+    else:
+        peaks, _ = find_peaks(Rbar, distance=2,
+                              prominence=0.05 * max(np.ptp(Rbar), 1e-12))
+        ring_r = r[peaks] / R
+        ring_r = ring_r[(ring_r > 0.05) & (ring_r < 0.97)]
+    n_rings = len(ring_r)
+    m_hat = n_rings + 1                      # disk convention (§1.3a)
+    # isotropy strength as angular score
+    s_iso = float(A[0] ** 2 / max((A[:A.size // 2] ** 2).sum(), 1e-300))
+    raw = []
+    for m in sorted({max(m_hat - 1, 1), m_hat, m_hat + 1}):
+        eps = _match_nodes(ring_r, 0, m)
+        bessel_ok = eps < 0.05
+        S = (W_ANG * s_iso + W_NODE * (-eps)
+             + W_PRIOR * math.log(CLASS_PRIORS["disk"]))
+        note = ("ring radii match Bessel-zero ratios" if bessel_ok else
+                "spacing non-Bessel: likely symbolic (§1.6.3)")
+        raw.append([0, m, "membrane", S,
+                    dict(route="RING", rings_detected=n_rings,
+                         ring_radii=[round(float(v), 3) for v in ring_r],
+                         eps_node=round(eps, 4), note=note)])
+    # moiré check: weak but significant high-n power demotes pure rings
+    hi = A[8:A.size // 2]
+    if hi.size and hi.max() > tau:
+        for rr in raw:
+            rr[4]["moire_warning"] = ("significant A(n) at n ≥ 8: possible "
+                                      "beat/moiré of a high-n mode (§1.6.3)")
+    raw.sort(key=lambda rr: -rr[3])
+    scores = _normalize_scores([rr[3] for rr in raw])
+    out = []
+    for i, (n, m, model, _s, evd) in enumerate(raw[:3]):
+        gap = scores[i] - (scores[i + 1] if i + 1 < len(scores) else 0.0)
+        conf = _classify(scores[i], gap, fisher_p=None,
+                         eps_node=evd["eps_node"])
+        evd = dict(evd)
+        evd["freq_ratio"] = bessel_zero(0, m) / bessel_zero(0, 1)
+        evd["bessel_coincidences"] = _bessel_coincidences(0, m)
+        out.append(ModeCandidate(n=0, m=m, model="membrane",
+                                 score=float(scores[i]), confidence=conf,
+                                 evidence=evd))
+    return out
+
+
+def decode_image(img, res=512, n_cap=32, m_max=6, return_diagnostics=False):
+    """Decode a raster glyph into candidate modes (math spec §1.8).
+
+    Pipeline: segment → robust center/radius → polar unwrap → power-summed
+    angular FFT (→ n) → route DISK/SPIRAL/GRID/RING → nodal-circle/Bessel
+    matching (→ m) or log-polar spiral test or edge-map grid FFT → scoring
+    (§3.1) → top-3 ModeCandidates with confidence classes (§3.3).
+
+    img: 2-D array.  Sign maps (ψ>0 vs ψ≤0), nodal-line masks, dot glyphs
+    and continuous amplitude renders are all accepted.
+    """
+    img = np.asarray(img, dtype=float)
+    if img.ndim != 2:
+        raise ValueError("decode_image expects a 2-D array")
+    if min(img.shape) < 10:
+        raise ValueError("insufficient resolution: pattern < 10 px across "
+                         "(physics spec §3.10 guard rail)")
+    if not np.isfinite(img).all():
+        raise ValueError("decode_image: image contains NaN/inf values")
+    scale = float(np.abs(img).max())
+    if scale > 0.0 and float(np.var(img)) < 1e-12 * scale * scale:
+        # A constant (e.g. all-ones) raster carries no modal information;
+        # refusing avoids fabricating a spurious decode from canvas
+        # pixelation (math spec §1.8 input validation).
+        raise ValueError("degenerate image: zero intensity variance — no "
+                         "identifiable features (math spec §1.8 guard rail)")
+    mask = _segment(img)
+    cx, cy, R = _center_radius(mask)
+
+    diag = dict(center=(float(cx), float(cy)), R_px=float(R))
+
+    # ---- early GRID check: comb spectrum of the edge map (§1.5, §7 n.4) --
+    gx = np.abs(np.gradient(img, axis=1))
+    gy = np.abs(np.gradient(img, axis=0))
+    E = gx + gy
+    _, sx, _ = _comb_pitch(E.sum(axis=0))
+    _, sy, _ = _comb_pitch(E.sum(axis=1))
+    diag["comb_strength"] = (round(sx, 2), round(sy, 2))
+    if sx > 4.0 and sy > 4.0:
+        cands = _grid_decode(img, mask)
+        diag["route"] = "GRID"
+        _attach_diag(cands, diag)
+        return (cands, diag) if return_diagnostics else cands
+
+    # ---- polar unwrap + angular spectrum (§1.2) ---------------------------
+    # N_r ≥ 4·m_max and N_θ ≥ 4·n_max (Nyquist ×2 safety, §1.2); both scale
+    # with the res parameter (res=512 → 180 × 1024).
+    N_r = max(120, int(round(0.35 * res)))
+    N_theta = max(512, 2 * int(res))
+    P, r = _polar_resample(img, cx, cy, R, N_r, N_theta)
+    A = _angular_spectrum(P, r)
+    tau = _noise_floor(A)
+    # pixelation of a circular rim imprints weak 4/8-fold power; the
+    # isotropy floor must be relative to A(0), not to the noise floor alone
+    tau_iso = max(tau, 5e-3 * A[0])
+    iso = bool(np.all(A[1:n_cap] < tau_iso))
+
+    if iso:
+        cands = _ring_decode(P, r, R, A, tau)
+        diag["route"] = "RING"
+        diag["noise_floor_tau"] = float(tau)
+        _attach_diag(cands, diag)
+        return (cands, diag) if return_diagnostics else cands
+
+    n_hat = int(np.argmax(A[1:n_cap + 1])) + 1
+    fisher_p, g = _fisher_p(A, n_hat)
+
+    # ---- harmonic check (§1.2): a non-sinusoidal n̂-fold pattern puts power
+    # at harmonics k·n̂; keep the *fundamental* as n.  If a divisor of the
+    # argmax already carries significant power, the excited set is a comb
+    # and its base is the fundamental (e.g. the 6-arm galaxy's bead
+    # harmonic at n=24 while the arms fix the true comb base n=6).
+    n_peak = n_hat
+    for d in range(1, n_peak):
+        if n_peak % d == 0 and A[d] > 0.1 * A[n_peak]:
+            n_hat = d
+            break
+    if n_hat != n_peak:
+        diag["harmonic_note"] = (f"comb spectrum: argmax n={n_peak}, "
+                                 f"fundamental n={n_hat} kept (§1.2); "
+                                 f"{n_peak} listed as harmonic alias")
+
+    # ---- center refinement by symmetry maximization (§4.1) ----------------
+    def contrast(Px):
+        Ax = _angular_spectrum(Px, r)
+        num = Ax[n_hat]
+        den = Ax[1:n_cap + 1].sum() - num + 1e-12
+        return num / den
+
+    best_c, best_con = (cx, cy), contrast(P)
+    for dcx in np.linspace(-0.06 * R, 0.06 * R, 5):
+        for dcy in np.linspace(-0.06 * R, 0.06 * R, 5):
+            Px, _ = _polar_resample(img, cx + dcx, cy + dcy, R, N_r, N_theta)
+            cval = contrast(Px)
+            if cval > best_con * 1.02:
+                best_c, best_con = (cx + dcx, cy + dcy), cval
+    if best_c != (cx, cy):
+        cx, cy = best_c
+        P, r = _polar_resample(img, cx, cy, R, N_r, N_theta)
+        A = _angular_spectrum(P, r)
+        tau = _noise_floor(A)
+        n_hat = int(np.argmax(A[1:n_cap + 1])) + 1
+        n_peak = n_hat
+        for d in range(1, n_peak):
+            if n_peak % d == 0 and A[d] > 0.1 * A[n_peak]:
+                n_hat = d
+                break
+        fisher_p, g = _fisher_p(A, n_hat)
+        diag["recentered"] = (float(cx), float(cy))
+
+    C, slope, slope_r2, D = _phase_coherence(P, r, n_hat)
+    diag.update(route=None, n_hat=n_hat, fisher_p=fisher_p, fisher_g=g,
+                coherence_C=round(C, 3), slope=round(slope, 3),
+                slope_R2=round(slope_r2, 3), noise_floor_tau=float(tau))
+    if n_hat != 1 and A[1] > A[n_hat] / 2:
+        diag["decentering_warning"] = ("A(1) dominance: possible decentering "
+                                       "(§4.1)")
+
+    # ---- routing (§1.7) ----------------------------------------------------
+    # Spiral discriminator: C ≪ 1 with linear φ(ln r) (§1.4.4).  Beaded arms
+    # make φ(r) stepwise (jitter around t
