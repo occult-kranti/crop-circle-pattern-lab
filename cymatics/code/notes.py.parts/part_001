@@ -1,0 +1,160 @@
+        f"{ji['cents_error']:+.1f} ¢)",
+                reduced_ratio=round(rr, 4), octaves=k, ji=ji)
+
+
+def _pair_row(name_a, fa, name_b, fb):
+    """One pairwise difference row (presentation spec §2, §5).
+
+    Invalid frequencies (NaN/inf or negative) produce an explicit INVALID
+    row with an 'invalid frequency' flag instead of nonsense categories.
+    """
+    if not (math.isfinite(fa) and math.isfinite(fb)):
+        return dict(a=name_a, b=name_b,
+                    f_lo=None, f_hi=None, delta_f=None, category="INVALID",
+                    ratio=None, ji=None, octave_reduced=None,
+                    delta_f_note=None,
+                    flags=["invalid frequency: NaN/inf input — pair skipped"],
+                    gloss="invalid frequency (NaN/inf): no beat analysis")
+    if fa < 0.0 or fb < 0.0:
+        return dict(a=name_a, b=name_b,
+                    f_lo=round(min(fa, fb), 4), f_hi=round(max(fa, fb), 4),
+                    delta_f=None, category="INVALID",
+                    ratio=None, ji=None, octave_reduced=None,
+                    delta_f_note=None,
+                    flags=["invalid frequency: negative input — pair skipped"],
+                    gloss="invalid frequency (negative): no beat analysis")
+    f_lo, f_hi = (fa, fb) if fa <= fb else (fb, fa)
+    lo_name = name_a if fa <= fb else name_b
+    hi_name = name_b if fa <= fb else name_a
+    df = abs(fa - fb)
+    cat = beat_category(df)
+    row = dict(a=lo_name, b=hi_name, f_lo=round(f_lo, 4),
+               f_hi=round(f_hi, 4), delta_f=round(df, 4), category=cat)
+    if df == 0.0:
+        # §5: never compute a beat period (would be ∞).
+        row.update(ratio=1.0, ji=dict(interval="unison", ratio_str="1:1",
+                                      cents_error=0.0, tier="exact (JI)"),
+                   octave_reduced=None, delta_f_note=None,
+                   gloss="infinite-sustain unison — no amplitude modulation")
+        return row
+    if f_lo <= 0.0:
+        row.update(ratio=None, ji=None, octave_reduced=None,
+                   delta_f_note=None,
+                   gloss="f_lo = 0: ratio undefined")
+        return row
+    r = f_hi / f_lo
+    row["ratio"] = round(r, 4)
+    row["ji"] = nearest_ji(r)
+    row["octave_reduced"] = octave_reduced_match(r)
+    if cat == "DIFFERENCE TONE":
+        # §5: run §1 mapping on Δf itself — do not call it a beat.
+        row["delta_f_note"] = freq_to_note(df)
+        row["gloss"] = ("perceived as a separate (combination/difference) "
+                        "tone, not a beat")
+    else:
+        row["delta_f_note"] = None
+    if band_label(f_lo).startswith("ULTRASONIC") and \
+            band_label(f_hi).startswith("ULTRASONIC"):
+        row["gloss"] = ((row.get("gloss") or "")
+                        + " carriers inaudible; difference frequency "
+                          "hypothetical unless nonlinear demodulation exists")
+    return row
+
+
+def beat_table(freqs, resonator_name=None):
+    """Pairwise difference table + chord view (presentation spec §2, §3).
+
+    freqs: dict {label: f_Hz}.  Returns dict with 'pairs' (lower triangle),
+    'chord' (§3.3), the tuning reference and the mandatory honesty framing.
+    """
+    items = [(str(k), float(v)) for k, v in freqs.items()]
+    pairs = []
+    for i in range(len(items)):
+        for j in range(i + 1, len(items)):
+            pairs.append(_pair_row(items[i][0], items[i][1],
+                                   items[j][0], items[j][1]))
+    return dict(tuning=TUNING_REF,
+                resonator=resonator_name,
+                footnote=("roughness depends on absolute frequency and "
+                          "critical bandwidth (max roughness ≈ ¼ of the "
+                          "critical bandwidth); the absolute-Δf bands are a "
+                          "simplified presentation convention (§2.2)"),
+                honesty=HONESTY_NOTE,
+                pairs=pairs,
+                chord=chord_view(freqs, resonator_name))
+
+
+# --------------------------------------------------------------------------
+# §3.3 chord view
+# --------------------------------------------------------------------------
+
+def chord_view(freqs, resonator_name=None):
+    """'Chord' view: sorted frequencies, ratio-to-root + consecutive ratios.
+
+    (presentation spec §3.3; footnote: descriptive only — decoded modes of
+    one resonator are inharmonic overtones, not a tonal chord.)
+    """
+    items = sorted(((str(k), float(v)) for k, v in freqs.items()),
+                   key=lambda kv: kv[1])
+    rows = []
+    f_root = items[0][1] if items else None
+    f_prev = None
+    for i, (name, f) in enumerate(items):
+        row = dict(rank=i + 1, label=name, f_hz=round(f, 4))
+        if f_root and f_root > 0:
+            r_root = f / f_root
+            row["ratio_to_root"] = round(r_root, 4)
+            ji = nearest_ji(r_root) if r_root < 2.0 else None
+            red = octave_reduced_match(r_root)
+            if ji is None and red is not None:
+                ji = red["ji"]
+                row["root_match"] = red["text"]
+            else:
+                row["root_match"] = None
+            row["ji_vs_root"] = ji
+        else:
+            row.update(ratio_to_root=None, ji_vs_root=None, root_match=None)
+        if f_prev and f_prev > 0:
+            rc = f / f_prev
+            row["consecutive_ratio"] = round(rc, 4)
+            row["ji_consecutive"] = nearest_ji(rc)
+        else:
+            row["consecutive_ratio"] = None
+            row["ji_consecutive"] = None
+        row["note"] = freq_to_note(f)
+        rows.append(row)
+        f_prev = f
+    return dict(tuning=TUNING_REF, resonator=resonator_name,
+                footnote=("'Chord' is descriptive only; decoded modes of one "
+                          "resonator are inharmonic overtones, not a musical "
+                          "chord in the tonal sense (§3.3)"),
+                honesty=HONESTY_NOTE,
+                rows=rows)
+
+
+# --------------------------------------------------------------------------
+# §4 reference resonators (honesty framing)
+# --------------------------------------------------------------------------
+
+#: Reference resonators from the master spec / presentation spec §4.
+RESONATORS = {
+    "R1 drumhead 30cm, c=100 m/s": dict(R=0.15, c=100.0),
+    "R2 plate 30cm, c_eff≈1000 m/s (crude)": dict(R=0.15, c=1000.0),
+    "R3 plate 1m, c_eff≈1000 m/s (crude)": dict(R=0.5, c=1000.0),
+}
+
+
+def reference_resonator_table():
+    """f₀₁ for each reference resonator (presentation spec §4 table)."""
+    from cymatics import frequency_membrane
+    rows = []
+    for name, rp in RESONATORS.items():
+        f01 = frequency_membrane(0, 1, rp["R"], rp["c"])
+        rows.append(dict(resonator=name, a_m=rp["R"], c=rp["c"],
+                         f01_hz=round(f01, 1), note=freq_to_note(f01),
+                         comment=("Chladni-plate regime; c_eff lumped and "
+                                  "mode-dependent — crude estimate"
+                                  if "plate" in name else
+                                  "physical membrane speeds 50–300 m/s "
+                                  "typical")))
+    return rows
