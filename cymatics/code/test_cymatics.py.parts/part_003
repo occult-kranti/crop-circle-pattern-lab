@@ -1,0 +1,6 @@
+r(exc)))
+            print(f"FAIL  {t.__name__}  [raised {exc!r}]")
+            traceback.print_exc(limit=2)
+    n_fail = sum(1 for _, ok, _ in RESULTS if not ok)
+    print(f"\n{len(RESULTS) - n_fail}/{len(RESULTS)} passed, {n_fail} failed")
+    sys.exit(1 if n_fail else 0)
