@@ -1,0 +1,349 @@
+"B",
+         "octave": 12,
+         "label": "B12",
+         "cents": 15.4,
+         "cents_exact": 15.383685091978805,
+         "alt_spelling": null,
+         "band": "ULTRASONIC",
+         "wavelength_air_m": 0.0027,
+         "flags": [
+          "not (reliably) audible; note name is mathematical only"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "square plate 30cm plate-model, K''=17.4 Hz h=1mm (dispersive!)": {
+        "f_hz": 101929.2,
+        "note": {
+         "f": 101929.2,
+         "midi": 163.27,
+         "midi_nearest": 163,
+         "note": "G",
+         "octave": 12,
+         "label": "G12",
+         "cents": 27.0,
+         "cents_exact": 27.017798379287683,
+         "alt_spelling": null,
+         "band": "ULTRASONIC",
+         "wavelength_air_m": 0.0034,
+         "flags": [
+          "not (reliably) audible; note name is mathematical only"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       }
+      },
+      "dispersion_models": [
+       "membrane (i)",
+       "biharmonic plate (ii)"
+      ]
+     }
+    }
+   ],
+   "beat_analysis_R1": {
+    "tuning": "12-TET, A4 = 440.00 Hz",
+    "resonator": "R1 drumhead 30cm",
+    "footnote": "roughness depends on absolute frequency and critical bandwidth (max roughness \u2248 \u00bc of the critical bandwidth); the absolute-\u0394f bands are a simplified presentation convention (\u00a72.2)",
+    "honesty": "absolute Hz depends on assumed resonator; ratios are resonator-independent.",
+    "pairs": [
+     {
+      "a": "(23,73)",
+      "b": "(73,23)",
+      "f_lo": 127562.6208,
+      "f_hi": 127562.6208,
+      "delta_f": 0.0,
+      "category": "UNISON (exact)",
+      "ratio": 1.0,
+      "ji": {
+       "interval": "unison",
+       "ratio_str": "1:1",
+       "cents_error": 0.0,
+       "tier": "exact (JI)"
+      },
+      "octave_reduced": null,
+      "delta_f_note": null,
+      "gloss": "infinite-sustain unison \u2014 no amplitude modulation"
+     }
+    ],
+    "chord": {
+     "tuning": "12-TET, A4 = 440.00 Hz",
+    "resonator": "R1 drumhead 30cm",
+     "footnote": "'Chord' is descriptive only; decoded modes of one resonator are inharmonic overtones, not a musical chord in the tonal sense (\u00a73.3)",
+     "honesty": "absolute Hz depends on assumed resonator; ratios are resonator-independent.",
+     "rows": [
+      {
+       "rank": 1,
+       "label": "(23,73)",
+       "f_hz": 127562.6208,
+       "ratio_to_root": 1.0,
+       "root_match": null,
+       "ji_vs_root": {
+        "interval": "unison",
+        "ratio_str": "1:1",
+        "cents_error": 0.0,
+        "tier": "exact (JI)"
+       },
+       "consecutive_ratio": null,
+       "ji_consecutive": null,
+       "note": {
+        "f": 127562.62078768302,
+        "midi": 167.154,
+        "midi_nearest": 167,
+        "note": "B",
+        "octave": 12,
+        "label": "B12",
+        "cents": 15.4,
+        "cents_exact": 15.383685091978805,
+        "alt_spelling": null,
+        "band": "ULTRASONIC",
+        "wavelength_air_m": 0.0027,
+        "flags": [
+         "not (reliably) audible; note name is mathematical only"
+        ],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      },
+      {
+       "rank": 2,
+       "label": "(73,23)",
+       "f_hz": 127562.6208,
+       "ratio_to_root": 1.0,
+       "root_match": null,
+       "ji_vs_root": {
+        "interval": "unison",
+        "ratio_str": "1:1",
+        "cents_error": 0.0,
+        "tier": "exact (JI)"
+       },
+       "consecutive_ratio": 1.0,
+       "ji_consecutive": {
+        "interval": "unison",
+        "ratio_str": "1:1",
+        "cents_error": 0.0,
+        "tier": "exact (JI)"
+       },
+       "note": {
+        "f": 127562.62078768302,
+        "midi": 167.154,
+        "midi_nearest": 167,
+        "note": "B",
+        "octave": 12,
+        "label": "B12",
+        "cents": 15.4,
+        "cents_exact": 15.383685091978805,
+        "alt_spelling": null,
+        "band": "ULTRASONIC",
+        "wavelength_air_m": 0.0027,
+        "flags": [
+         "not (reliably) audible; note name is mathematical only"
+        ],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      }
+     ]
+    }
+   },
+   "top_candidate_png": "pattern_07_top_candidate.png",
+   "image_decode_demo": {
+    "synthetic_image": "grid",
+    "route": "GRID",
+    "diagnostics": {
+     "center": [
+      70.77537922987165,
+      218.5140023337223
+     ],
+     "R_px": 210.50247424440033,
+     "comb_strength": [
+      6.1,
+      18.84
+     ]
+    },
+    "candidates": [
+     {
+      "n": 23,
+      "m": 73,
+      "model": "square",
+      "score": 0.8558,
+      "confidence": "HIGH",
+      "evidence": {
+       "route": "GRID",
+       "cell_pitch_px": [
+        6.0,
+        6.0
+       ],
+       "comb_strength": [
+        6.1,
+        18.84
+       ],
+       "G": 1162.4,
+       "cells": [
+        23,
+        73
+       ],
+       "note": "cell pitch from the comb spectrum of the edge map (\u00a77 note 4); if the bits encode arbitrary data the (p,q) mode is the *container* and the content is non-modal information",
+       "freq_ratio": 54.12023651093922,
+       "confidence_note": "geometric count HIGH; physical (modal) interpretation LOW",
+       "diagnostics": {
+        "center": [
+         70.77537922987165,
+         218.5140023337223
+        ],
+        "R_px": 210.50247424440033,
+        "comb_strength": [
+         6.1,
+         18.84
+        ]
+       }
+      }
+     },
+     {
+      "n": 22,
+      "m": 73,
+      "model": "square",
+      "score": 0.1034,
+      "confidence": "LOW",
+      "evidence": {
+       "route": "GRID",
+       "cell_pitch_px": [
+        6.0,
+        6.0
+       ],
+       "comb_strength": [
+        6.1,
+        18.84
+       ],
+       "G": 1162.4,
+       "cells": [
+        23,
+        73
+       ],
+       "note": "\u00b11 cell-count alias",
+       "freq_ratio": 53.91196527673611,
+       "confidence_note": "geometric count HIGH; physical (modal) interpretation LOW",
+       "diagnostics": {
+        "center": [
+         70.77537922987165,
+         218.5140023337223
+        ],
+        "R_px": 210.50247424440033,
+        "comb_strength": [
+         6.1,
+         18.84
+        ]
+       }
+      }
+     },
+     {
+      "n": 23,
+      "m": 72,
+      "model": "square",
+      "score": 0.0408,
+      "confidence": "LOW",
+      "evidence": {
+       "route": "GRID",
+       "cell_pitch_px": [
+        6.0,
+        6.0
+       ],
+       "comb_strength": [
+        6.1,
+        18.84
+       ],
+       "G": 1162.4,
+       "cells": [
+        23,
+        73
+       ],
+       "note": "\u00b11 cell-count alias",
+       "freq_ratio": 53.44623466625127,
+       "confidence_note": "geometric count HIGH; physical (modal) interpretation LOW",
+       "diagnostics": {
+        "center": [
+         70.77537922987165,
+         218.5140023337223
+        ],
+        "R_px": 210.50247424440033,
+        "comb_strength": [
+         6.1,
+         18.84
+        ]
+       }
+      }
+     }
+    ]
+   },
+   "image_comparison_png": "comparison_07_image_decode.png"
+  },
+  {
+   "id": 8,
+   "name": "Crabwood disc 2002",
+   "descriptor": {
+    "kind": "composite",
+    "boundary": "circle",
+    "components": [
+     {
+      "kind": "rings",
+      "radial_nodes": 15,
+      "boundary": "circle",
+      "notes": "archimedean spiral groove, high radial order"
+     }
+    ],
+    "notes": "figure + disc; disc = Archimedean spiral groove (high radial order)"
+   },
+   "structural_decode": [
+    {
+     "n": 0,
+     "m": 16,
+     "model": "membrane",
+     "score": 0.9545,
+     "confidence": "MEDIUM",
+     "evidence": {
+      "rule": "R9+R2",
+      "rings": 15,
+      "note": "rings are nodal-circle analogues; spacing check decides modal vs symbolic (R2/R9)",
+      "interpretation": "m = q+1 (rim counts as node)",
+      "route": "STRUCTURAL",
+      "boundary": "circle",
+      "freq_ratio": 20.576382240718733,
+      "bessel_coincidences": [],
+      "aliases": [
+       [
+        0,
+        15
+       ]
+      ],
+      "boundary_anchor": "outer disc = n=0 boundary-condition anchor (math spec \u00a74.2)"
+     },
+     "acoustics": {
+      "freq_ratio": 20.576382240718733,
+      "hz_at_reference_resonators": {
+       "R1 drumhead 30cm, c=100 m/s": {
+        "f_hz": 5250.27,
+        "note": {
+         "f": 5250.267974839205,
+         "midi": 111.922,
+         "midi_nearest": 112,
+         "note": "E",
+         "octave": 8,
+         "label": "E8",
+         "cents": -7.8,
+         "cents_exact": -7.821242476526891,
+         "alt_spelling": null,
+         "band": "HIGH (pitch weakens)",
+         "wavelength_air_m": 0.0653,
+         "flags": [
+          "pitch discrimination degrades >4\u20135 kHz"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R2 plate 30cm, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 52502.68,
+        "note": {
+         "f": 52502.679748392045,
+         "midi": 151.785,
+         "midi_nearest": 152,
+         "note": "G#",
+         "octave": 11,
+         "label": "G#11",
+         "cents": -
