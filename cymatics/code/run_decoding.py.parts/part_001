@@ -1,0 +1,116 @@
+         freqs[f"({c.n},{c.m})"] = cym.frequency_membrane(
+                c.n, c.m, rp["R"], rp["c"])
+        elif c.model == "square" and c.m:
+            freqs[f"({c.n},{c.m})"] = cym.frequency_square(
+                c.n, c.m, 0.30, 1000.0)
+    if len(freqs) < 2:
+        return None
+    return notes.beat_table(freqs, resonator_name="R1 drumhead 30cm")
+
+
+# --------------------------------------------------------------------------
+# Main
+# --------------------------------------------------------------------------
+
+def to_jsonable(o):
+    if isinstance(o, dict):
+        return {k: to_jsonable(v) for k, v in o.items()}
+    if isinstance(o, (list, tuple)):
+        return [to_jsonable(v) for v in o]
+    if isinstance(o, (np.integer,)):
+        return int(o)
+    if isinstance(o, (np.floating,)):
+        return float(o)
+    if isinstance(o, float) and not np.isfinite(o):
+        return None
+    return o
+
+
+def main():
+    os.makedirs(RESULTS, exist_ok=True)
+    report = dict(
+        title="Reverse Cymatic Decoder — 10 crop-circle-pattern decodes",
+        tuning=notes.TUNING_REF,
+        honesty_note=notes.HONESTY_NOTE,
+        absolute_frequency_caveat=notes.ABSOLUTE_FREQUENCY_CAVEAT,
+        reference_resonators=notes.reference_resonator_table(),
+        decoder_contract=("ranked candidate set + scores + alias list + "
+                          "confidence class + falsifiable frequency ratios; "
+                          "never a unique mode (math spec §3.4)"),
+        patterns=[],
+    )
+
+    for pat in PATTERNS:
+        pid, name, descriptor = pat["id"], pat["name"], pat["descriptor"]
+        cands = dec.decode_structural(descriptor)
+        entry = dict(id=pid, name=name, descriptor={
+                         k: v for k, v in descriptor.items()},
+                     structural_decode=[dict(**c.to_dict(),
+                                             acoustics=candidate_acoustics(c))
+                                        for c in cands],
+                     beat_analysis_R1=beat_analysis(cands))
+
+        # top-candidate forward render PNG
+        top = cands[0]
+        img, kind = render_candidate_image(top, descriptor)
+        ratio = top.evidence.get("freq_ratio")
+        sub = (f"{kind};  f/f_01 = {ratio:.4f}" if ratio else kind)
+        png = f"pattern_{pid:02d}_top_candidate.png"
+        save_png(img, f"{pid}. {name} — structural top candidate", 
+                 os.path.join(RESULTS, png), subtitle=sub)
+        entry["top_candidate_png"] = png
+
+        # decode_image self-consistency demo for patterns 3, 6, 7
+        if pid in IMAGE_DEMO:
+            synth = make_synthetic_image(pid)
+            icands, diag = dec.decode_image(synth, return_diagnostics=True)
+            entry["image_decode_demo"] = dict(
+                synthetic_image=IMAGE_DEMO[pid],
+                route=diag.get("route"),
+                diagnostics={k: v for k, v in diag.items()
+                             if k not in ("route",)},
+                candidates=[c.to_dict() for c in icands])
+            # comparison grid: synthetic glyph + top-3 candidate renders
+            n_pan = 1 + len(icands)
+            fig, axes = plt.subplots(1, n_pan, figsize=(4 * n_pan, 4.2))
+            axes[0].imshow(synth, cmap=CMAP, origin="lower")
+            axes[0].set_title(f"{pid}. {name}\nsynthetic input "
+                              f"({IMAGE_DEMO[pid]})", fontsize=9)
+            for ax, c in zip(axes[1:], icands):
+                cimg, ckind = render_candidate_image(c, descriptor)
+                ax.imshow(cimg, cmap=CMAP, origin="lower")
+                ax.set_title(f"({c.n},{c.m}) {c.model}\nscore={c.score:.2f} "
+                             f"{c.confidence}", fontsize=9)
+            for ax in axes:
+                ax.set_xticks([])
+                ax.set_yticks([])
+            fig.suptitle(f"decode_image self-consistency: route="
+                         f"{diag.get('route')}", fontsize=11)
+            fig.tight_layout()
+            png = f"comparison_{pid:02d}_image_decode.png"
+            fig.savefig(os.path.join(RESULTS, png), dpi=DPI)
+            plt.close(fig)
+            entry["image_comparison_png"] = png
+
+        report["patterns"].append(entry)
+        top_ac = entry["structural_decode"][0]
+        print(f"[{pid:2d}] {name}: top=({top.n},{top.m}) {top.model} "
+              f"score={top.score:.2f} {top.confidence} "
+              f"ratio={top_ac['acoustics'].get('freq_ratio')}")
+
+    out_json = os.path.join(RESULTS, "decoding_results.json")
+    with open(out_json, "w") as fh:
+        json.dump(to_jsonable(report), fh, indent=1)
+    print(f"\nWrote {out_json}")
+    pngs = sorted(f for f in os.listdir(RESULTS) if f.endswith(".png"))
+    print(f"PNGs in results/: {len(pngs)}")
+    for f in pngs:
+        print("  ", f)
+    # master spec: print results JSON to stdout as well
+    print("\n--- decoding_results.json ---")
+    print(json.dumps(to_jsonable(report), indent=1)[:6000])
+    print("... (truncated; full JSON in results/decoding_results.json)")
+
+
+if __name__ == "__main__":
+    main()
