@@ -1,0 +1,334 @@
+ "R7",
+      "note": "two lobes on an axis: n=1 dipole (one nodal diameter) vs n=2 quadrant pair; disambiguate by counting nodal lines between lobes",
+      "route": "STRUCTURAL",
+      "boundary": "circle",
+      "freq_ratio": 2.135548786649404,
+      "bessel_coincidences": [],
+      "aliases": [
+       [
+        1,
+        1
+       ]
+      ]
+     },
+     "acoustics": {
+      "freq_ratio": 2.135548786649404,
+      "hz_at_reference_resonators": {
+       "R1 drumhead 30cm, c=100 m/s": {
+        "f_hz": 544.91,
+        "note": {
+         "f": 544.9064501272817,
+         "midi": 72.702,
+         "midi_nearest": 73,
+         "note": "C#",
+         "octave": 5,
+         "label": "C#5",
+         "cents": -29.8,
+         "cents_exact": -29.793946442637775,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.6295,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R2 plate 30cm, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 5449.06,
+        "note": {
+         "f": 5449.064501272816,
+         "midi": 112.565,
+         "midi_nearest": 113,
+         "note": "F",
+         "octave": 8,
+         "label": "F8",
+         "cents": -43.5,
+         "cents_exact": -43.48023257780369,
+         "alt_spelling": null,
+         "band": "HIGH (pitch weakens)",
+         "wavelength_air_m": 0.0629,
+         "flags": [
+          "pitch discrimination degrades >4\u20135 kHz"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R3 plate 1m, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 1634.72,
+        "note": {
+         "f": 1634.7193503818448,
+         "midi": 91.722,
+         "midi_nearest": 92,
+         "note": "G#",
+         "octave": 6,
+         "label": "G#6",
+         "cents": -27.8,
+         "cents_exact": -27.838945577249774,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.2098,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       }
+      }
+     }
+    }
+   ],
+   "beat_analysis_R1": {
+    "tuning": "12-TET, A4 = 440.00 Hz",
+    "resonator": "R1 drumhead 30cm",
+    "footnote": "roughness depends on absolute frequency and critical bandwidth (max roughness \u2248 \u00bc of the critical bandwidth); the absolute-\u0394f bands are a simplified presentation convention (\u00a72.2)",
+    "honesty": "absolute Hz depends on assumed resonator; ratios are resonator-independent.",
+    "pairs": [
+     {
+      "a": "(1,1)",
+      "b": "(2,1)",
+      "f_lo": 406.5566,
+      "f_hi": 544.9065,
+      "delta_f": 138.3498,
+      "category": "DIFFERENCE TONE",
+      "ratio": 1.3403,
+      "ji": {
+       "interval": "perfect 4th",
+       "ratio_str": "4:3",
+       "cents_error": 9.0,
+       "tier": "near"
+      },
+      "octave_reduced": null,
+      "delta_f_note": {
+       "f": 138.34981970511353,
+       "midi": 48.97,
+       "midi_nearest": 49,
+       "note": "C#",
+       "octave": 3,
+       "label": "C#3",
+       "cents": -3.0,
+       "cents_exact": -3.019311872706254,
+       "alt_spelling": null,
+       "band": "PITCH",
+       "wavelength_air_m": 2.4792,
+       "flags": [],
+       "tuning": "12-TET, A4 = 440.00 Hz"
+      },
+      "gloss": "perceived as a separate (combination/difference) tone, not a beat"
+     }
+    ],
+    "chord": {
+     "tuning": "12-TET, A4 = 440.00 Hz",
+     "resonator": "R1 drumhead 30cm",
+     "footnote": "'Chord' is descriptive only; decoded modes of one resonator are inharmonic overtones, not a musical chord in the tonal sense (\u00a73.3)",
+     "honesty": "absolute Hz depends on assumed resonator; ratios are resonator-independent.",
+     "rows": [
+      {
+       "rank": 1,
+       "label": "(1,1)",
+       "f_hz": 406.5566,
+       "ratio_to_root": 1.0,
+       "root_match": null,
+       "ji_vs_root": {
+        "interval": "unison",
+        "ratio_str": "1:1",
+        "cents_error": 0.0,
+        "tier": "exact (JI)"
+       },
+       "consecutive_ratio": null,
+       "ji_consecutive": null,
+       "note": {
+        "f": 406.55663042216815,
+        "midi": 67.631,
+        "midi_nearest": 68,
+        "note": "G#",
+        "octave": 4,
+        "label": "G#4",
+        "cents": -36.9,
+        "cents_exact": -36.856640458910306,
+        "alt_spelling": null,
+        "band": "PITCH",
+        "wavelength_air_m": 0.8437,
+        "flags": [],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      },
+      {
+       "rank": 2,
+       "label": "(2,1)",
+       "f_hz": 544.9065,
+       "ratio_to_root": 1.3403,
+       "root_match": null,
+       "ji_vs_root": {
+        "interval": "perfect 4th",
+        "ratio_str": "4:3",
+        "cents_error": 9.0,
+        "tier": "near"
+       },
+       "consecutive_ratio": 1.3403,
+       "ji_consecutive": {
+        "interval": "perfect 4th",
+        "ratio_str": "4:3",
+        "cents_error": 9.0,
+        "tier": "near"
+       },
+       "note": {
+        "f": 544.9064501272817,
+        "midi": 72.702,
+        "midi_nearest": 73,
+        "note": "C#",
+        "octave": 5,
+        "label": "C#5",
+        "cents": -29.8,
+        "cents_exact": -29.793946442637775,
+        "alt_spelling": null,
+        "band": "PITCH",
+        "wavelength_air_m": 0.6295,
+        "flags": [],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      }
+     ]
+    }
+   },
+   "top_candidate_png": "pattern_02_top_candidate.png"
+  },
+  {
+   "id": 3,
+   "name": "Barbury Castle tetrahedron 1991",
+   "descriptor": {
+    "kind": "radial",
+    "azimuthal_order": 3,
+    "radial_nodes": 2,
+    "boundary": "circle",
+    "notes": "tetrahedral 3-fold pictogram, 1-2 radial rings"
+   },
+   "structural_decode": [
+    {
+     "n": 3,
+     "m": 1,
+     "model": "membrane",
+     "score": 0.9545,
+     "confidence": "MEDIUM",
+     "evidence": {
+      "rule": "R10",
+      "note": "2-D projection of tetrahedral T_d symmetry aliases multiple 3-D orientations",
+      "route": "STRUCTURAL",
+      "boundary": "circle",
+      "freq_ratio": 2.653066404549215,
+      "bessel_coincidences": [],
+      "aliases": [
+       [
+        3,
+        2
+       ]
+      ]
+     },
+     "acoustics": {
+      "freq_ratio": 2.653066404549215,
+      "hz_at_reference_resonators": {
+       "R1 drumhead 30cm, c=100 m/s": {
+        "f_hz": 676.96,
+        "note": {
+         "f": 676.9562023085739,
+         "midi": 76.459,
+         "midi_nearest": 76,
+         "note": "E",
+         "octave": 5,
+         "label": "E5",
+         "cents": 45.9,
+         "cents_exact": 45.870768356644476,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.5067,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R2 plate 30cm, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 6769.56,
+        "note": {
+         "f": 6769.5620230857385,
+         "midi": 116.322,
+         "midi_nearest": 116,
+         "note": "G#",
+         "octave": 8,
+         "label": "G#8",
+         "cents": 32.2,
+         "cents_exact": 32.18448222147856,
+         "alt_spelling": null,
+         "band": "HIGH (pitch weakens)",
+         "wavelength_air_m": 0.0507,
+         "flags": [
+          "pitch discrimination degrades >4\u20135 kHz"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R3 plate 1m, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 2030.87,
+        "note": {
+         "f": 2030.8686069257215,
+         "midi": 95.478,
+         "midi_nearest": 95,
+         "note": "B",
+         "octave": 6,
+         "label": "B6",
+         "cents": 47.8,
+         "cents_exact": 47.82576922203248,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.1689,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       }
+      }
+     }
+    },
+    {
+     "n": 3,
+     "m": 2,
+     "model": "membrane",
+     "score": 0.0455,
+     "confidence": "MEDIUM",
+     "evidence": {
+      "rule": "R10",
+      "note": "2-D projection of tetrahedral T_d symmetry aliases multiple 3-D orientations",
+      "route": "STRUCTURAL",
+      "boundary": "circle",
+      "freq_ratio": 4.058931883331435,
+      "bessel_coincidences": [
+       [
+        6,
+        1
+       ]
+      ],
+      "aliases": [
+       [
+        3,
+        1
+       ]
+      ]
+     },
+     "acoustics": {
+      "freq_ratio": 4.058931883331435,
+      "hz_at_reference_resonators": {
+       "R1 drumhead 30cm, c=100 m/s": {
+        "f_hz": 1035.68,
+        "note": {
+         "f": 1035.6767205139379,
+         "midi": 83.82,
+         "midi_nearest": 84,
+         "note": "C",
+         "octave": 6,
+         "label": "C6",
+         "cents": -18.0,
+         "cents_exact": -18.002019686744575,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.3312,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R2 plate 30cm, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 10356.77,
+        "note": {
+         "f": 10356.7672051
