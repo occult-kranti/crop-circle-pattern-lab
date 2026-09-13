@@ -1,0 +1,348 @@
+abel": "G7",
+         "cents": 14.7,
+         "cents_exact": 14.73142150188096,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.1084,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       }
+      }
+     }
+    },
+    {
+     "n": 3,
+     "m": 1,
+     "model": "membrane",
+     "score": 0.0455,
+     "confidence": "LOW",
+     "evidence": {
+      "rule": "R8",
+      "note": "alternative base order (Koch: n=3 or 6)",
+      "route": "STRUCTURAL",
+      "boundary": "circle",
+      "freq_ratio": 2.653066404549215,
+      "bessel_coincidences": [],
+      "aliases": [
+       [
+        6,
+        1
+       ]
+      ]
+     },
+     "acoustics": {
+      "freq_ratio": 2.653066404549215,
+      "hz_at_reference_resonators": {
+       "R1 drumhead 30cm, c=100 m/s": {
+        "f_hz": 676.96,
+        "note": {
+         "f": 676.9562023085739,
+         "midi": 76.459,
+         "midi_nearest": 76,
+         "note": "E",
+         "octave": 5,
+         "label": "E5",
+         "cents": 45.9,
+         "cents_exact": 45.870768356644476,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.5067,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R2 plate 30cm, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 6769.56,
+        "note": {
+         "f": 6769.5620230857385,
+         "midi": 116.322,
+         "midi_nearest": 116,
+         "note": "G#",
+         "octave": 8,
+         "label": "G#8",
+         "cents": 32.2,
+         "cents_exact": 32.18448222147856,
+         "alt_spelling": null,
+         "band": "HIGH (pitch weakens)",
+         "wavelength_air_m": 0.0507,
+         "flags": [
+          "pitch discrimination degrades >4\u20135 kHz"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R3 plate 1m, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 2030.87,
+        "note": {
+         "f": 2030.8686069257215,
+         "midi": 95.478,
+         "midi_nearest": 95,
+         "note": "B",
+         "octave": 6,
+         "label": "B6",
+         "cents": 47.8,
+         "cents_exact": 47.82576922203248,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.1689,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       }
+      }
+     }
+    }
+   ],
+   "beat_analysis_R1": {
+    "tuning": "12-TET, A4 = 440.00 Hz",
+    "resonator": "R1 drumhead 30cm",
+    "footnote": "roughness depends on absolute frequency and critical bandwidth (max roughness \u2248 \u00bc of the critical bandwidth); the absolute-\u0394f bands are a simplified presentation convention (\u00a72.2)",
+    "honesty": "absolute Hz depends on assumed resonator; ratios are resonator-independent.",
+    "pairs": [
+     {
+      "a": "(3,1)",
+      "b": "(6,1)",
+      "f_lo": 676.9562,
+      "f_hi": 1054.254,
+      "delta_f": 377.2978,
+      "category": "DIFFERENCE TONE",
+      "ratio": 1.5573,
+      "ji": {
+       "interval": "minor 6th",
+       "ratio_str": "8:5",
+       "cents_error": -46.8,
+       "tier": "approximate"
+      },
+      "octave_reduced": null,
+      "delta_f_note": {
+       "f": 377.2977616125629,
+       "midi": 66.338,
+       "midi_nearest": 66,
+       "note": "F#",
+       "octave": 4,
+       "label": "F#4",
+       "cents": 33.8,
+       "cents_exact": 33.84002084801807,
+       "alt_spelling": null,
+       "band": "PITCH",
+       "wavelength_air_m": 0.9091,
+       "flags": [],
+       "tuning": "12-TET, A4 = 440.00 Hz"
+      },
+      "gloss": "perceived as a separate (combination/difference) tone, not a beat"
+     }
+    ],
+    "chord": {
+     "tuning": "12-TET, A4 = 440.00 Hz",
+     "resonator": "R1 drumhead 30cm",
+     "footnote": "'Chord' is descriptive only; decoded modes of one resonator are inharmonic overtones, not a musical chord in the tonal sense (\u00a73.3)",
+     "honesty": "absolute Hz depends on assumed resonator; ratios are resonator-independent.",
+     "rows": [
+      {
+       "rank": 1,
+       "label": "(3,1)",
+       "f_hz": 676.9562,
+       "ratio_to_root": 1.0,
+       "root_match": null,
+       "ji_vs_root": {
+        "interval": "unison",
+        "ratio_str": "1:1",
+        "cents_error": 0.0,
+        "tier": "exact (JI)"
+       },
+       "consecutive_ratio": null,
+       "ji_consecutive": null,
+       "note": {
+        "f": 676.9562023085739,
+        "midi": 76.459,
+        "midi_nearest": 76,
+        "note": "E",
+        "octave": 5,
+        "label": "E5",
+        "cents": 45.9,
+        "cents_exact": 45.870768356644476,
+        "alt_spelling": null,
+        "band": "PITCH",
+        "wavelength_air_m": 0.5067,
+        "flags": [],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      },
+      {
+       "rank": 2,
+       "label": "(6,1)",
+       "f_hz": 1054.254,
+       "ratio_to_root": 1.5573,
+       "root_match": null,
+       "ji_vs_root": {
+        "interval": "minor 6th",
+        "ratio_str": "8:5",
+        "cents_error": -46.8,
+        "tier": "approximate"
+       },
+       "consecutive_ratio": 1.5573,
+       "ji_consecutive": {
+        "interval": "minor 6th",
+        "ratio_str": "8:5",
+        "cents_error": -46.8,
+        "tier": "approximate"
+       },
+       "note": {
+        "f": 1054.2539639211368,
+        "midi": 84.128,
+        "midi_nearest": 84,
+        "note": "C",
+        "octave": 6,
+        "label": "C6",
+        "cents": 12.8,
+        "cents_exact": 12.776420636492958,
+        "alt_spelling": null,
+        "band": "PITCH",
+        "wavelength_air_m": 0.3253,
+        "flags": [],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      }
+     ]
+    }
+   },
+   "top_candidate_png": "pattern_05_top_candidate.png"
+  },
+  {
+   "id": 6,
+   "name": "Milk Hill Galaxy 2001",
+   "descriptor": {
+    "kind": "spiral",
+    "arms": 6,
+    "components": 409,
+    "boundary": "circle",
+    "chirality": null,
+    "notes": "6 arms, ~68 circles per arm (409 total)"
+   },
+   "structural_decode": [
+    {
+     "n": 6,
+     "m": 68,
+     "model": "membrane",
+     "score": 0.4441,
+     "confidence": "LOW",
+     "evidence": {
+      "rule": "R4+R11",
+      "arms": 6,
+      "chirality": null,
+      "note": "construction count, not a mode (\u00a74.4): sub-resolution for modal purposes",
+      "total_circles": 409,
+      "beads_per_arm": 68,
+      "route": "STRUCTURAL",
+      "boundary": "circle",
+      "freq_ratio": 92.3922424841702,
+      "bessel_coincidences": [],
+      "aliases": [
+       [
+        6,
+        2
+       ],
+       [
+        6,
+        1
+       ],
+       [
+        1,
+        409
+       ]
+      ]
+     },
+     "acoustics": {
+      "freq_ratio": 92.3922424841702,
+      "hz_at_reference_resonators": {
+       "R1 drumhead 30cm, c=100 m/s": {
+        "f_hz": 23574.8,
+        "note": {
+         "f": 23574.796879418438,
+         "midi": 137.923,
+         "midi_nearest": 138,
+         "note": "F#",
+         "octave": 10,
+         "label": "F#10",
+         "cents": -7.7,
+         "cents_exact": -7.682391947781753,
+         "alt_spelling": null,
+         "band": "ULTRASONIC",
+         "wavelength_air_m": 0.0145,
+         "flags": [
+          "not (reliably) audible; note name is mathematical only"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R2 plate 30cm, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 235747.97,
+        "note": {
+         "f": 235747.9687941844,
+         "midi": 177.786,
+         "midi_nearest": 178,
+         "note": "A#",
+         "octave": 13,
+         "label": "A#13",
+         "cents": -21.4,
+         "cents_exact": -21.368678082944825,
+         "alt_spelling": null,
+         "band": "ULTRASONIC",
+         "wavelength_air_m": 0.0015,
+         "flags": [
+          "not (reliably) audible; note name is mathematical only"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R3 plate 1m, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 70724.39,
+        "note": {
+         "f": 70724.39063825531,
+         "midi": 156.943,
+         "midi_nearest": 157,
+         "note": "C#",
+         "octave": 12,
+         "label": "C#12",
+         "cents": -5.7,
+         "cents_exact": -5.727391082393751,
+         "alt_spelling": null,
+         "band": "ULTRASONIC",
+         "wavelength_air_m": 0.0048,
+         "flags": [
+          "not (reliably) audible; note name is mathematical only"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       }
+      }
+     }
+    },
+    {
+     "n": 6,
+     "m": 2,
+     "model": "membrane",
+     "score": 0.2931,
+     "confidence": "MEDIUM",
+     "evidence": {
+      "rule": "R4",
+      "arms": 6,
+      "chirality": null,
+      "note": "modal candidate (m \u2264 6 credible)",
+      "route": "STRUCTURAL",
+      "boundary": "circle",
+      "freq_ratio": 5.650842376925686,
+      "bessel_coincidences": [
+       [
+        1,
+        4
+       ]
+      ],
+      "aliases": [
+       [
+        6,
+        68
+       ],
+       [
+        6,
