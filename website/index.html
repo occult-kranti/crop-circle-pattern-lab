@@ -1,0 +1,71 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crop Circles — Data & Patterns</title>
+<link rel="stylesheet" href="assets/style.css?v=3"></head><body>
+<header class="top"><div class="wrap">
+<div class="brand">Crop<span>Circles</span> · Data & Patterns</div>
+<nav>
+<a href="index.html" class="active">Overview</a>
+<a href="timeline.html">Timeline</a>
+<a href="dataset.html">Dataset</a>
+<a href="analysis.html">Analysis</a>
+<a href="experiments.html">Hypotheses & Experiments</a>
+<a href="papers.html">Research Papers</a>
+<a href="cymatics.html">Cymatics Lab</a><a href="compare.html">DMT × Sacred Geometry</a>
+</nav></div></header>
+
+<div class="hero"><div class="wrap">
+<div class="kicker">A data project · 1678–2025</div>
+<h1>The crop-circle phenomenon, measured.</h1>
+<p>A curated dataset of 60 major formations, 19 research papers and a century of aggregate counts —
+analyzed with open-source tools (Python, pandas, SciPy, scikit-learn, SQLite) and presented as a fully local,
+dependency-free website. Every number is flagged as hard data, researcher estimate, or media claim.</p>
+<p>
+<a class="btn primary" href="data/crop_circles.csv">Download formations CSV</a>
+<a class="btn" href="data/papers.csv">Papers CSV</a>
+<a class="btn" href="data/annual_counts.csv">Annual counts CSV</a>
+<a class="btn" href="data/cropcircles.sqlite">SQLite database</a>
+</p></div></div>
+
+<section><div class="wrap">
+<h2 class="sec">The phenomenon in numbers</h2>
+<p class="sub">Headline figures from the dataset and the literature (see Analysis for methods and caveats).</p>
+<div class="cards">
+<div class="card"><div class="num">~10,000</div><div class="lbl">formations reported worldwide by 2001</div></div>
+<div class="card"><div class="num">~44%</div><div class="lbl">of England's 2002 circles within 15 km of Avebury (GIS study)</div></div>
+<div class="card"><div class="num">409</div><div class="lbl">circles in the largest formation — Milk Hill 2001</div></div>
+<div class="card"><div class="num">98%</div><div class="lbl">of dated English formations appear April–September</div></div>
+<div class="card"><div class="num">£140</div><div class="lbl">fine in the only UK crop-circle conviction (Williams, 2000)</div></div>
+<div class="card"><div class="num">5 hrs</div><div class="lbl">for 11 of 12 teams to build convincing circles (1992 contest)</div></div>
+</div></div></section>
+
+<section><div class="wrap grid2">
+<div class="panel"><p class="chart-title">Reported formations per year (world scope, mixed-method estimates)</p>
+<div id="ch_trend"></div>
+<p class="note">Peak ~1,000 in 1990 → 34–68/yr in 2016–2021. Sources: SPR Psi Encyclopedia, Andy Thomas, truthagenda annual reviews. Spearman ρ = −0.95, p ≈ 0.0003.</p></div>
+<div class="panel"><p class="chart-title">Where the 60 curated major formations occurred</p>
+<div id="ch_map"></div>
+<p class="note">Red dots: landmark formations. 85% of the curated set is in England; the unbiased 2002 census (Northcote, n=96) found 46% in Wiltshire, 10% in Hampshire.</p></div>
+</div></section>
+
+<section><div class="wrap">
+<h2 class="sec">Seven eras</h2>
+<p class="sub">How the phenomenon evolved — from folklore pamphlet to corporate commissions.</p>
+<div class="grid3">
+<div class="card"><h3>Precursors</h3><p class="note">1678 Mowing-Devil pamphlet · 1880 Nature letter · 1966 Tully 'saucer nest' (Australia) — the event that inspired Doug Bower.</p></div>
+<div class="card"><h3>Early circles 1978–89</h3><p class="note">Bower & Chorley's plank-and-rope circles in Hampshire; press coverage from 1980; epicentre shifts to Wiltshire/Avebury by 1988.</p></div>
+<div class="card"><h3>Pictogram era 1990–95</h3><p class="note">Complex non-circular designs; East Field 'Led Zeppelin' pictogram; Operation Blackbird humiliation; Doug & Dave confess Sept 1991.</p></div>
+<div class="card"><h3>Fractal golden age 1996–2000</h3><p class="note">Stonehenge Julia Set (151 circles), Triple Julia, Koch snowflakes — mathematical sophistication peaks.</p></div>
+<div class="card"><h3>Peak & message era 2001–02</h3><p class="note">Milk Hill Galaxy (409 circles), Chilbolton Face + 'Arecibo reply', Crabwood ASCII alien — and the movie Signs.</p></div>
+<div class="card"><h3>Math & mega era 2004–10</h3><p class="note">Barbury Castle pi wheel, Euler's identity, 3-D illusions, 600-ft jellyfish; decline begins ~2009.</p></div>
+<div class="card"><h3>Commercial/decline 2011–25</h3><p class="note">Nvidia's Chualar stunt, Supreme, Korn; UK counts fall to dozens/yr; farmers cut circles from 2012; tourism economy persists.</p></div>
+</div></div></section>
+
+<footer><div class="wrap">Built entirely with open-source tools. Self-contained: no CDNs, no trackers. Run with <span class="mono">python -m http.server</span> in this folder and open <span class="mono">localhost:8000</span>. Data flags: [H] hard/archival · [E] researcher estimate · [M] media claim.</div></footer>
+<script src="assets/data.js"></script><script src="assets/charts.js"></script>
+<script>
+lineChart('ch_trend',[{name:'reported formations / yr (world)',color:PAL.wheat,
+ pts:ANALYSIS.trend.series.map(p=>[p[0],p[1]])}],{xlabel:'year',ylabel:'formations',fill:true});
+worldDots('ch_map',MAP_PTS);
+</script>
+</body></html>

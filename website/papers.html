@@ -1,0 +1,42 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Research Papers — Crop Circles</title>
+<link rel="stylesheet" href="assets/style.css?v=3"></head><body>
+<header class="top"><div class="wrap">
+<div class="brand">Crop<span>Circles</span> · Data & Patterns</div>
+<nav>
+<a href="index.html">Overview</a><a href="timeline.html">Timeline</a>
+<a href="dataset.html">Dataset</a><a href="analysis.html">Analysis</a>
+<a href="experiments.html">Hypotheses & Experiments</a><a href="papers.html" class="active">Research Papers</a>
+<a href="cymatics.html">Cymatics Lab</a><a href="compare.html">DMT × Sacred Geometry</a>
+</nav></div></header>
+
+<section><div class="wrap">
+<h2 class="sec">Research papers & formal studies</h2>
+<p class="sub">19 works spanning 1880–2014: peer-reviewed items (including the contested <i>Physiologia Plantarum</i> papers), journal commentaries, skeptical investigative reports, commissioned essays and theses. Filter by publication type. Peer-review status is stated explicitly — two of the most-cited pro-anomaly papers appeared in a mainstream journal but were later judged pseudoscientific by that journal's own board (per Grassi et al. 2005), and one famous anomaly (JSE 1995 'meteoric iron') was claimed by a circlemaker as his own planted iron filings.</p>
+<div class="controls">
+<input id="pq" placeholder="Search title / author / claim…" size="28">
+<select id="pt"><option value="">All types</option></select>
+</div>
+<div style="overflow:auto">
+<table class="data"><thead><tr><th>year</th><th>authors</th><th>title</th><th>venue</th><th>type</th><th>claim</th><th>reception / critique</th></tr></thead>
+<tbody id="pb"></tbody></table></div>
+<p class="note" id="pc"></p>
+</div></section>
+
+<footer><div class="wrap">Full citations in data/papers.csv. Corrections applied vs common web claims: the 'meteoric iron' paper is 1995 (not 2003); the 'shoelace test' is Nickell 1995 (not 1992).</div></footer>
+<script src="assets/data.js"></script>
+<script>
+[...new Set(PAPERS.map(p=>p.type))].sort().forEach(t=>{const o=document.createElement('option');o.textContent=t;document.getElementById('pt').appendChild(o);});
+function render(){
+ const q=document.getElementById('pq').value.toLowerCase(),t=document.getElementById('pt').value;
+ const rows=PAPERS.filter(p=>(!t||p.type===t)&&(!q||(p.title+p.authors+p.claim).toLowerCase().includes(q)));
+ document.getElementById('pb').innerHTML=rows.map(p=>`<tr><td>${p.year}</td><td>${p.authors}</td>
+  <td><b>${p.title}</b></td><td>${p.venue}</td><td><span class="tag ${p.type.includes('peer-reviewed')?'art':(p.type.includes('skeptical')?'hoax':'commercial')}">${p.type}</span></td>
+  <td>${p.claim}</td><td>${p.reception}</td></tr>`).join('');
+ document.getElementById('pc').textContent=rows.length+' of '+PAPERS.length+' works shown';
+}
+['pq','pt'].forEach(id=>document.getElementById(id).addEventListener('input',render));
+render();
+</script>
+</body></html>

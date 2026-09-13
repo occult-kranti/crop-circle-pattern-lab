@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Analysis — Crop Circles</title>
+<link rel="stylesheet" href="assets/style.css?v=3"></head><body>
+<header class="top"><div class="wrap">
+<div class="brand">Crop<span>Circles</span> · Data & Patterns</div>
+<nav>
+<a href="index.html">Overview</a><a href="timeline.html">Timeline</a>
+<a href="dataset.html">Dataset</a><a href="analysis.html" class="active">Analysis</a>
+<a href="experiments.html">Hypotheses & Experiments</a><a href="papers.html">Research Papers</a>
+<a href="cymatics.html">Cymatics Lab</a><a href="compare.html">DMT × Sacred Geometry</a>
+</nav></div></header>
+
+<section><div class="wrap">
+<h2 class="sec">Analysis</h2>
+<p class="sub">All statistics computed with pandas/SciPy/scikit-learn on the bundled dataset. Two data layers: the <b>curated set</b> (60 famous formations — biased toward England, used for design/season analysis) and <b>sourced aggregate counts</b> (used for trend analysis). Full reasoning per hypothesis on the <a href="experiments.html">Experiments</a> page.</p>
+
+<div class="grid2">
+<div class="panel"><p class="chart-title">A1 · Reported formations per year — the rise and fall</p>
+<div id="a1"></div><p class="note" id="a1n"></p></div>
+<div class="panel"><p class="chart-title">A2 · Seasonality — month of appearance (England, curated set)</p>
+<div id="a2"></div><p class="note" id="a2n"></p></div>
+<div class="panel"><p class="chart-title">A3 · Geography — English formations by county (curated set)</p>
+<div id="a3"></div><p class="note" id="a3n"></p></div>
+<div class="panel"><p class="chart-title">A4 · Complexity inflation — size of famous formations vs year</p>
+<div id="a4"></div><p class="note" id="a4n"></p></div>
+<div class="panel"><p class="chart-title">A5 · Machine grouping — KMeans (k=4) on year & log(size)</p>
+<div id="a5"></div><p class="note" id="a5n"></p></div>
+<div class="panel"><p class="chart-title">A7 · Design-family drift across eras</p>
+<div id="a7"></div><p class="note" id="a7n"></p></div>
+</div>
+
+<div class="panel"><p class="chart-title">A6 · Media feedback loop — sourced world counts around media events</p>
+<table class="data"><thead><tr><th>period</th><th>reports/yr</th><th>media context</th></tr></thead><tbody>
+<tr><td>1988–1990</td><td>112 → 305 → ~1,000</td><td>Press explosion; Operation White Crow (1989); Blackbird (Jul 1990)</td></tr>
+<tr><td>1991</td><td>~250</td><td>Blackbird hoax (Jul 1990) + Doug & Dave confession (Sep 1991)</td></tr>
+<tr><td>1997–1999</td><td>~150–200</td><td>Julia Set fame (1996) → fractal golden age; cropwatcher tourism boom</td></tr>
+<tr><td>2005–2007</td><td>~50–70 (UK)</td><td>Signs (2002) afterglow fades; corporate commissions begin</td></tr>
+<tr><td>2016–2021</td><td>68 → 34</td><td>Decline; farmers cutting circles; "quietest year" 2021</td></tr>
+</tbody></table>
+<p class="note">Interpretation: counts respond to attention — collapses follow debunking events, surges follow spectacular formations or films. Sources: SPR, Andy Thomas, truthagenda annual reviews (flagged [E]).</p></div>
+</div></section>
+
+<footer><div class="wrap">Methods: Spearman rank correlations, chi-square tests, KMeans (StandardScaler, k=4, n_init=10, seed=42). Caveats on every chart.</div></footer>
+<script src="assets/data.js"></script><script src="assets/charts.js"></script>
+<script>
+// A1
+lineChart('a1',[{name:'world reports/yr',color:PAL.terra,pts:ANALYSIS.trend.series.map(p=>[p[0],p[1]])}],{xlabel:'year',fill:true});
+document.getElementById('a1n').textContent='Spearman ρ='+ANALYSIS.trend.spearman_rho+', p='+ANALYSIS.trend.spearman_p+'. '+ANALYSIS.trend.note;
+// A2
+const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+barChart('a2',MN,ANALYSIS.season.months,{color:PAL.wheat});
+document.getElementById('a2n').textContent='χ²='+ANALYSIS.season.chi2+', p≈'+Number(ANALYSIS.season.p).toExponential(1)+' · '+ANALYSIS.season.pct_apr_sep+'% April–September. '+ANALYSIS.season.note;
+// A3
+const c=ANALYSIS.geo.counties;
+barChart('a3',Object.keys(c),Object.values(c),{horizontal:true,color:PAL.sage,h:300});
+document.getElementById('a3n').textContent=ANALYSIS.geo.pct_within_15km_avebury+'% of curated English formations are within 15 km of Avebury. '+ANALYSIS.geo.northcote+' '+ANALYSIS.geo.note;
+// A4
+const pts=FORMATIONS.filter(f=>f.size_m).map(f=>({x:f.year,y:f.size_m,name:f.name}));
+scatterChart('a4',pts,{xlabel:'year',ylabel:'max dimension (m)',colorFn:p=>p.x<1990?PAL.sage:(p.x<2003?PAL.wheat:PAL.terra),labelTop:4,labelFn:p=>p.name.length>24?p.name.slice(0,24)+'…':p.name});
+document.getElementById('a4n').textContent='Spearman ρ='+ANALYSIS.complexity.spearman_rho+', p='+ANALYSIS.complexity.p+' (n='+ANALYSIS.complexity.n+'). Median size by era: '+JSON.stringify(ANALYSIS.complexity.median_by_era)+'. '+ANALYSIS.complexity.note;
+// A5
+const cl=ANALYSIS.clusters;
+barChart('a5',cl.map(c=>c.label),cl.map(c=>c.n),{color:[PAL.sage,PAL.wheat,PAL.slate,PAL.terra],h:260});
+document.getElementById('a5n').textContent='KMeans on standardized (year, log size). Groups recovered: '+cl.map(c=>`${c.label} — n=${c.n}, median ${c.size_med} m`).join(' · ');
+// A7
+const fams=Object.keys(ANALYSIS.geometry_drift.table);
+const eras=[...new Set(fams.flatMap(f=>Object.keys(ANALYSIS.geometry_drift.table[f])))];
+const tbl=document.createElement('div');tbl.style.overflow='auto';
+tbl.innerHTML='<table class="data"><thead><tr><th>design family</th>'+eras.map(e=>'<th>'+e.split(' (')[0]+'</th>').join('')+'</tr></thead><tbody>'+
+ fams.map(f=>'<tr><td>'+f+'</td>'+eras.map(e=>'<td>'+(ANALYSIS.geometry_drift.table[f][e]||0)+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
+document.getElementById('a7').appendChild(tbl);
+document.getElementById('a7n').textContent='χ²='+ANALYSIS.geometry_drift.chi2+', p≈'+Number(ANALYSIS.geometry_drift.p).toExponential(1)+' (dof '+ANALYSIS.geometry_drift.dof+'). '+ANALYSIS.geometry_drift.note;
+</script>
+</body></html>

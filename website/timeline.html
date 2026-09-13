@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Timeline — Crop Circles</title>
+<link rel="stylesheet" href="assets/style.css?v=3"></head><body>
+<header class="top"><div class="wrap">
+<div class="brand">Crop<span>Circles</span> · Data & Patterns</div>
+<nav>
+<a href="index.html">Overview</a><a href="timeline.html" class="active">Timeline</a>
+<a href="dataset.html">Dataset</a><a href="analysis.html">Analysis</a>
+<a href="experiments.html">Hypotheses & Experiments</a><a href="papers.html">Research Papers</a>
+<a href="cymatics.html">Cymatics Lab</a><a href="compare.html">DMT × Sacred Geometry</a>
+</nav></div></header>
+
+<section><div class="wrap">
+<h2 class="sec">Timeline of major formations & milestones, 1678–2025</h2>
+<p class="sub">Filter by origin status or era. Dates are report/discovery dates; <span class="flag">≈</span> marks approximate dates. Formation nights are usually the night before the report.</p>
+<div class="controls">
+<select id="fOrigin"><option value="">All origins</option><option value="reported-unexplained">Reported unexplained</option><option value="confessed-hoax">Confessed hoax / maker known</option><option value="commercial-commission">Commercial commission</option><option value="circlemakers-art">Circlemakers art</option><option value="officially-unexplained">Officially unexplained</option><option value="folklore">Folklore</option></select>
+<select id="fEra"><option value="">All eras</option></select>
+<select id="fType"><option value="">Formations + milestone events</option><option value="f">Formations only</option><option value="e">Milestone events only</option></select>
+<input id="fSearch" placeholder="Search name / place…" size="24">
+</div>
+<div class="tl" id="tl"></div>
+</div></section>
+
+<footer><div class="wrap">Sources per entry are listed in the dataset table. Approximate dates flagged ≈.</div></footer>
+<script src="assets/data.js"></script>
+<script>
+const eraSel=document.getElementById('fEra');
+[...new Set(FORMATIONS.map(f=>f.era))].forEach(e=>{const o=document.createElement('option');o.value=e;o.textContent=e;eraSel.appendChild(o);});
+const tagClass=o=>({'reported-unexplained':'unexplained','confessed-hoax':'hoax','commercial-commission':'commercial','circlemakers-art':'art','officially-unexplained':'unexplained','folklore':'unexplained'}[o]||'');
+function render(){
+  const fo=document.getElementById('fOrigin').value, fe=eraSel.value, ft=document.getElementById('fType').value,
+        q=document.getElementById('fSearch').value.toLowerCase();
+  let items=[];
+  if(ft!=='e') FORMATIONS.forEach(f=>items.push({t:'f',d:f.date,y:f.year,title:(f.date_approx?('≈ '):'')+f.name,
+     body:`${f.location}, ${f.county}, ${f.country} · crop: ${f.crop||'—'} · design: ${f.geometry}${f.size_m?(' · ~'+f.size_m+' m'):''}${f.circles?(' · '+f.circles+(f.circles>1?' circles':' circle')):''}`,
+     extra:f.significance, origin:f.origin, era:f.era, maker:f.maker}));
+  if(ft!=='f') EVENTS.forEach(e=>items.push({t:'e',d:e.date,y:+e.date.slice(0,4),title:'★ '+e.title,body:e.detail,extra:'',origin:'event',era:'',maker:''}));
+  items=items.filter(i=>(!fo||i.origin===fo)&&(!fe||i.era===fe)&&(!q||(i.title+i.body).toLowerCase().includes(q)));
+  items.sort((a,b)=>a.d<b.d?-1:1);
+  const el=document.getElementById('tl');
+  el.innerHTML=items.map(i=>`<div class="tl-item"><div class="when">${i.d}${i.t==='e'?' · milestone':''}</div>
+    <h3>${i.title}</h3><p>${i.body}</p>
+    ${i.extra?`<p><em>${i.extra}</em></p>`:''}
+    ${i.origin!=='event'?`<span class="tag ${tagClass(i.origin)}">${i.origin}</span> <span class="tag">${i.era}</span> ${i.maker&&i.maker!=='—'?`<span class="tag">maker: ${i.maker}</span>`:''}`:'<span class="tag art">milestone</span>'}
+  </div>`).join('')||'<p class="note">No entries match the filters.</p>';
+}
+['fOrigin','fEra','fType','fSearch'].forEach(id=>document.getElementById(id).addEventListener('input',render));
+render();
+</script>
+</body></html>

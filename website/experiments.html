@@ -1,0 +1,57 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hypotheses & Experiments — Crop Circles</title>
+<link rel="stylesheet" href="assets/style.css?v=3"></head><body>
+<header class="top"><div class="wrap">
+<div class="brand">Crop<span>Circles</span> · Data & Patterns</div>
+<nav>
+<a href="index.html">Overview</a><a href="timeline.html">Timeline</a>
+<a href="dataset.html">Dataset</a><a href="analysis.html">Analysis</a>
+<a href="experiments.html" class="active">Hypotheses & Experiments</a><a href="papers.html">Research Papers</a>
+<a href="cymatics.html">Cymatics Lab</a><a href="compare.html">DMT × Sacred Geometry</a>
+</nav></div></header>
+
+<section><div class="wrap">
+<h2 class="sec">Hypotheses & experiments</h2>
+<p class="sub">Six testable hypotheses about crop-circle patterns, each with an explicit experiment on the bundled data (or the cited census studies) and a verdict. This is pattern-hunting on a curated dataset — verdicts describe the data, not ultimate causes.</p>
+<div id="hyps"></div>
+
+<div class="panel">
+<p class="chart-title">How to reproduce</p>
+<p class="mono">sqlite3 data/cropcircles.sqlite &nbsp;·&nbsp; SELECT era, COUNT(*), AVG(size_m) FROM formations GROUP BY era;<br>
+python: pandas.read_csv('data/crop_circles.csv') → scipy.stats.spearmanr / chisquare → sklearn.cluster.KMeans</p>
+<p class="note">All verdicts above were computed from the shipped CSV/SQLite data in one pass; nothing is hard-coded except sourced constants (e.g., Northcote's census figures).</p>
+</div>
+</div></section>
+
+<footer><div class="wrap">Skeptics' null hypothesis throughout: formations are human-made art/hoax/ads. Several supported hypotheses (seasonality, Avebury/roads, media feedback) are exactly what that null predicts.</div></footer>
+<script src="assets/data.js"></script>
+<script>
+const H=[
+ {t:"H1 · Growing-season lock", h:"Formations appear only while crops are standing (Apr–Sep in England).",
+  e:"Chi-square of English formation months vs uniform; compare Tully (Australia, January = southern-hemisphere summer).",
+  r:`SUPPORTED — 98% of dated English formations fall April–September; zero Nov–Mar; χ²=123.8, p≈3×10⁻²¹. Tully 1966 occurred in January — the Australian growing season. A phenomenon that strictly respects harvest calendars is indistinguishable from one needing standing crops and/or makers who work in them.`, v:"supported"},
+ {t:"H2 · The Avebury magnet", h:"Formations cluster around the Avebury/Stonehenge sacred-landscape tourist zone far beyond chance.",
+  e:"Haversine distance of every English formation to Avebury; compare curated-set share within 15 km to Northcote's unbiased 2002 census (n=96).",
+  r:`SUPPORTED — 43% of curated English formations sit within 15 km of Avebury (Northcote census: ~44%, plus 32% within 3 km of trunk roads). Clustering around a tourist-visited heritage site with road access is the signature of human makers responding to an audience — as Northcote concluded.`, v:"supported"},
+ {t:"H3 · Complexity inflation", h:"Formations get bigger and more complex over time (an 'arms race' of design).",
+  e:"Spearman correlation of formation max-dimension vs year (n with known size); median size per era; KMeans grouping.",
+  r:`MIXED — ρ=0.37, p=0.06: weak positive trend. Era medians tell the real story: 18 m (1978–89) → 100 m (1990–95) → 190 m (fractal age) → 58–122 m after 2001 → 91 m (commercial era). Ambition exploded 1990–2001, then the famous-formation ceiling settled — complexity shifted from size to encoding (pi, ASCII, Braille, 3-D perspective).`, v:"mixed"},
+ {t:"H4 · Media feedback loop", h:"Report counts rise after spectacular formations/films and fall after debunkings.",
+  e:"Event study on sourced world counts around 1990 Blackbird, 1991 confession, 1996 Julia Set, 2002 'Signs'.",
+  r:`MIXED/SUPPORTED directionally — ~1,000 (1990) collapsed to ~250 (1991) after Blackbird + the Doug & Dave confession; rebounded to 150–200/yr during the post-Julia fractal golden age; message formations (Chilbolton, Crabwood) cluster 2001–02 around the Arecibo anniversary coverage and Signs. Counts track attention, consistent with social contagion dynamics documented by Nickell & Fischer (1992).`, v:"mixed"},
+ {t:"H5 · Design-family drift", h:"The dominant design vocabulary changes by era (circles → pictograms → fractals → math/3-D → logos).",
+  e:"Chi-square test of independence: geometry_family × era on the curated set.",
+  r:`SUPPORTED — χ²=108.8, p≈2×10⁻⁹ (Cramér's V≈0.74). Simple/multiple circles vanish after 1989; fractals concentrate 1996–2001; math/code and 3-D illusions peak 2004–12; logo/brand designs exist only in the commercial era. Designs evolve like fashion — a cultural, not meteorological, signal.`, v:"supported"},
+ {t:"H6 · The anomaly residue", h:"After removing confessed hoaxes and commissions, a residue of formations shows documented plant anomalies beyond flattening.",
+  e:"Literature experiment: audit every peer-reviewed anomaly claim (Levengood 1994/1999, Burke 1995, Haselhoff 2001/2014) against published critiques (Nickell; Grassi et al. 2005/2007; van Erp 2017; Taylor 2011).",
+  r:`REJECTED as published — the anomaly literature fails on method: no blinding, unstated sample sizes, no independent replication; the celebrated 'meteoric iron glaze' (JSE 1995) was claimed by circlemaker Rob Irving as his own dumped iron filings; Taylor (Physics World 2011) reproduced node explosions with a microwave magnetron. Physiologia Plantarum's board judged the originals pseudoscientific (per Grassi et al.). No verified anomaly residue survives scrutiny.`, v:"rejected"},
+];
+document.getElementById('hyps').innerHTML=H.map(x=>`<div class="panel hyp">
+ <p class="chart-title">${x.t}</p>
+ <p><b>Hypothesis.</b> ${x.h}</p>
+ <p><b>Experiment.</b> ${x.e}</p>
+ <p><b>Result.</b> ${x.r}</p>
+ <p class="verdict ${x.v}">Verdict: ${x.v.toUpperCase()}</p></div>`).join('');
+</script>
+</body></html>

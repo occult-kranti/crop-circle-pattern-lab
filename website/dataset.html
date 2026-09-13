@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dataset — Crop Circles</title>
+<link rel="stylesheet" href="assets/style.css?v=3"></head><body>
+<header class="top"><div class="wrap">
+<div class="brand">Crop<span>Circles</span> · Data & Patterns</div>
+<nav>
+<a href="index.html">Overview</a><a href="timeline.html">Timeline</a>
+<a href="dataset.html" class="active">Dataset</a><a href="analysis.html">Analysis</a>
+<a href="experiments.html">Hypotheses & Experiments</a><a href="papers.html">Research Papers</a>
+<a href="cymatics.html">Cymatics Lab</a><a href="compare.html">DMT × Sacred Geometry</a>
+</nav></div></header>
+
+<section><div class="wrap">
+<h2 class="sec">The dataset</h2>
+<p class="sub">Four tables: <b>formations</b> (60 curated major formations), <b>papers</b> (19 research works), <b>annual_counts</b> (16 sourced report counts), <b>timeline_events</b> (6 milestones). Download as CSV or query the SQLite file directly.</p>
+<p>
+<a class="btn primary" href="data/crop_circles.csv">crop_circles.csv</a>
+<a class="btn" href="data/papers.csv">papers.csv</a>
+<a class="btn" href="data/annual_counts.csv">annual_counts.csv</a>
+<a class="btn" href="data/cropcircles.sqlite">cropcircles.sqlite</a>
+</p>
+
+<div class="panel">
+<p class="chart-title">Schema — formations</p>
+<p class="mono">id, name, date (YYYY-MM-DD), date_approx (1=approximate), location, county, country, lat, lon,
+crop, geometry (raw), geometry_family (normalized), size_m (max dimension, metres), circles (component count),
+origin (reported-unexplained / confessed-hoax / circlemakers-art / commercial-commission / officially-unexplained / folklore),
+maker, era, significance, sources, year, month</p>
+<p class="note">Method & honesty notes: this is a <b>curated set of notable formations</b>, not a census — no authoritative global registry exists (Crop Circle Connector, CCRA and cropdecoder.com use different inclusion criteria). Sizes are approximate; Milk Hill 2001's diameter is genuinely disputed (160–300 m). Dates marked approximate where sources conflict (e.g., East Field 'DNA' 1996: 17 June vs 17 July).</p>
+</div>
+
+<div class="controls">
+<input id="q" placeholder="Search everything…" size="26">
+<select id="originF"><option value="">All origins</option><option>reported-unexplained</option><option>confessed-hoax</option><option>commercial-commission</option><option>circlemakers-art</option><option>officially-unexplained</option><option>folklore</option></select>
+<select id="geomF"><option value="">All design families</option></select>
+<select id="countryF"><option value="">All countries</option></select>
+</div>
+<div style="overflow:auto;max-height:640px">
+<table class="data" id="tbl"><thead><tr>
+<th data-k="year">year</th><th data-k="date">date</th><th data-k="name">formation</th><th data-k="location">place</th><th data-k="county">county/state</th><th data-k="country">country</th><th data-k="crop">crop</th><th data-k="geometry_family">design family</th><th data-k="size_m">size (m)</th><th data-k="circles">circles</th><th data-k="origin">origin</th><th data-k="maker">maker</th><th>significance</th>
+</tr></thead><tbody id="tb"></tbody></table></div>
+<p class="note" id="rowcount"></p>
+</div></section>
+
+<footer><div class="wrap">Click column headers to sort. All fields also available in the SQLite file (table: formations).</div></footer>
+<script src="assets/data.js"></script>
+<script>
+const tagClass=o=>({'reported-unexplained':'unexplained','confessed-hoax':'hoax','commercial-commission':'commercial','circlemakers-art':'art','officially-unexplained':'unexplained','folklore':'unexplained'}[o]||'');
+[...new Set(FORMATIONS.map(f=>f.geometry_family))].sort().forEach(g=>{const o=document.createElement('option');o.textContent=g;document.getElementById('geomF').appendChild(o);});
+[...new Set(FORMATIONS.map(f=>f.country))].sort().forEach(g=>{const o=document.createElement('option');o.textContent=g;document.getElementById('countryF').appendChild(o);});
+let sortK='year',sortD=1;
+function render(){
+ const q=document.getElementById('q').value.toLowerCase(),og=document.getElementById('originF').value,
+       gf=document.getElementById('geomF').value,cf=document.getElementById('countryF').value;
+ let rows=FORMATIONS.filter(f=>(!og||f.origin===og)&&(!gf||f.geometry_family===gf)&&(!cf||f.country===cf)
+   &&(!q||JSON.stringify(f).toLowerCase().includes(q)));
+ rows.sort((a,b)=>{let x=a[sortK],y=b[sortK];if(typeof x==='string'){x=x.toLowerCase();y=(''+y).toLowerCase();}
+   return (x<y?-1:x>y?1:0)*sortD;});
+ document.getElementById('tb').innerHTML=rows.map(f=>`<tr>
+  <td>${f.year}</td><td>${f.date_approx?'≈ ':''}${f.date}</td><td><b>${f.name}</b></td><td>${f.location}</td>
+  <td>${f.county}</td><td>${f.country}</td><td>${f.crop||''}</td><td>${f.geometry_family}</td>
+  <td>${f.size_m||''}</td><td>${f.circles||''}</td>
+  <td><span class="tag ${tagClass(f.origin)}">${f.origin}</span></td><td>${f.maker}</td>
+  <td>${f.significance}</td></tr>`).join('');
+ document.getElementById('rowcount').textContent=rows.length+' of '+FORMATIONS.length+' formations shown';
+}
+document.querySelectorAll('#tbl th[data-k]').forEach(th=>th.addEventListener('click',()=>{
+ const k=th.dataset.k; if(sortK===k)sortD*=-1; else{sortK=k;sortD=1;} render();}));
+['q','originF','geomF','countryF'].forEach(id=>document.getElementById(id).addEventListener('input',render));
+render();
+</script>
+</body></html>

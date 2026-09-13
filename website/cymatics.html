@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cymatics Lab — Crop Circles</title>
+<link rel="stylesheet" href="assets/style.css?v=3">
+<style>
+.cym-img{width:100%;border:1px solid var(--line);border-radius:10px;display:block}
+.imgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.imgrid figure{margin:0}.imgrid figcaption{font-size:12px;color:var(--ink-soft);margin-top:4px}
+.disc{background:#f7efdd;border:1px solid var(--gold-soft);border-radius:10px;padding:14px 18px;font-size:14px}
+</style></head><body>
+<header class="top"><div class="wrap">
+<div class="brand">Crop<span>Circles</span> · Data & Patterns</div>
+<nav>
+<a href="index.html">Overview</a><a href="timeline.html">Timeline</a>
+<a href="dataset.html">Dataset</a><a href="analysis.html">Analysis</a>
+<a href="experiments.html">Hypotheses & Experiments</a><a href="papers.html">Research Papers</a>
+<a href="cymatics.html" class="active">Cymatics Lab</a>
+<a href="compare.html">DMT × Sacred Geometry</a>
+</nav></div></header>
+
+<section><div class="wrap">
+<h2 class="sec">Reverse cymatic decoding lab</h2>
+<p class="sub">Cymatics renders vibration modes as visible nodal-line patterns (Chladni figures). This lab runs the chain <i>backwards</i>: each major formation's geometry → candidate vibration modes (n = azimuthal order, m = radial order) → frequency ratios → absolute Hz on assumed reference resonators → nearest musical notes and pairwise "difference vibrations" (beats / combination tones).</p>
+<div class="disc"><b>Honesty framing.</b> This is a modeling exercise, not evidence that crop circles encode sound. The geometry→mode inversion is fundamentally ambiguous (many mode sets share a symmetry), and absolute Hz depends entirely on the assumed resonator. What is resonator-independent and reported as primary: the dimensionless ratio f/f₀₁. Built with a verified open-source simulator (numpy/scipy, 31/31 tests passing); planned with physics, mathematics and sound-engineering consultants.</div>
+
+<h2 class="sec" style="margin-top:30px">Decoded frequencies — the 10 major patterns</h2>
+<p class="sub">Reference resonator R1: 30 cm drumhead, wave speed 100 m/s (fundamental f₀₁ = 255.2 Hz). Confidence reflects inversion ambiguity, not pattern reality.</p>
+<div style="overflow:auto"><table class="data" id="dect"><thead><tr>
+<th>pattern</th><th>model</th><th>mode (n,m)</th><th>f/f₀₁</th><th>Hz @ R1</th><th>nearest note</th><th>cents</th><th>band</th><th>confidence</th></tr></thead><tbody id="decb"></tbody></table></div>
+
+<h2 class="sec" style="margin-top:30px">Difference vibrations (pairwise beats)</h2>
+<p class="sub">Δf = |f₁−f₂| between every pair of decoded frequencies (R1 resonator), each Δf mapped to its own perceived pitch; ratios matched against just-intonation intervals. Notable near-musical coincidences highlighted.</p>
+<div class="controls">
+<select id="df"><option value="">All pairs</option><option value="exact">exact/near JI intervals only</option><option value="approx">approximate JI</option><option value="none">no close interval</option></select>
+<input id="dq" placeholder="Filter by pattern name…" size="24">
+</div>
+<div style="overflow:auto;max-height:560px"><table class="data"><thead><tr>
+<th>pattern A</th><th>pattern B</th><th>Δf (Hz)</th><th>Δf as pitch</th><th>perception</th><th>ratio</th><th>nearest JI interval</th><th>cents error</th></tr></thead><tbody id="difb"></tbody></table></div>
+
+<h2 class="sec" style="margin-top:30px">Forward-simulated cymatic figures</h2>
+<p class="sub">Each pattern's top-candidate mode rendered on the reference membrane (sand collects on the dark nodal lines). Three panels also show the decoder's self-consistency check (image → decode → re-render).</p>
+<div class="imgrid" id="ims"></div>
+
+<div class="panel" style="margin-top:26px">
+<p class="chart-title">Reproduce</p>
+<p class="mono">code/test_cymatics.py → 31/31 checks · code/run_decoding.py → results/decoding_results.json<br>
+f(n,m) = z<sub>n,m</sub>·c/(2πR) — circular membrane · f(p,q) = (c/2L)√(p²+q²) — square plate</p>
+<p class="note">Key findings: (1) the early Hampshire glyphs decode to low modes — the dumbbell (1990) sits at G♯4 and the tetrahedron (1991) at E5, an exact-just major 6th apart (−1.6¢); (2) the 2008 pi wheel vs the 2012 3-D cubes land on a tritone within −3¢; (3) spiral "construction counts" (149 circles, 409 circles) are not physical modes and are flagged LOW confidence; (4) the 23×73 Chilbolton grid is the only HIGH-confidence decode — because its mode numbers are printed in the design itself.</p>
+</div>
+</div></section>
+
+<footer><div class="wrap">Simulator + data: see the downloads on the Overview page and the code/ + results/ folders in the project bundle. 12-TET, A4 = 440 Hz.</div></footer>
+<script src="assets/cymatics_data.js"></script>
+<script>
+document.getElementById('decb').innerHTML = CYM_DECODE.map(r=>`<tr>
+ <td><b>${r.name}</b></td><td>${r.model}</td><td class="mono">(${r.n}, ${r.m})</td>
+ <td>${r.freq_ratio}</td><td>${r.ref_hz}</td><td>${r.ref_note}</td><td>${r.cents}</td>
+ <td>${r.band}</td><td><span class="tag ${r.confidence==='HIGH'?'art':(r.confidence==='LOW'?'hoax':'unexplained')}">${r.confidence}</span></td></tr>`).join('');
+function renderDif(){
+ const f=document.getElementById('df').value, q=document.getElementById('dq').value.toLowerCase();
+ const rows=CYM_DIFF.filter(d=>{
+   const tier=d.ji_tier||'';
+   if(f==='exact' && !(tier.includes('exact')||tier.includes('near'))) return false;
+   if(f==='approx' && tier!=='approximate') return false;
+   if(f==='none' && tier!=='no close JI interval') return false;
+   return !q || (d.a+d.b).toLowerCase().includes(q);});
+ document.getElementById('difb').innerHTML=rows.map(d=>`<tr>
+  <td>${d.a}</td><td>${d.b}</td><td>${d.delta_f_hz}</td><td>${d.delta_f_note||'—'}</td>
+  <td>${d.beat_category}</td><td>${d.ratio}</td><td>${d.ji_interval||'—'}${d.ji_ratio?(' ('+d.ji_ratio+')'):''}</td>
+  <td>${d.ji_cents_error??'—'}</td></tr>`).join('');
+}
+['df','dq'].forEach(id=>document.getElementById(id).addEventListener('input',renderDif));
+renderDif();
+const NAMES={1:'quintuplet 1983',2:'dumbbell 1990',3:'tetrahedron 1991',4:'Julia Set 1996',5:'Koch snowflake 1997',6:'Milk Hill Galaxy 2001',7:'Chilbolton grid 2001',8:'Crabwood disc 2002',9:'pi wheel 2008',10:'3-D cubes 2012'};
+let imgs='';
+for(let i=1;i<=10;i++){const n=String(i).padStart(2,'0');
+ imgs+=`<figure><img class="cym-img" src="assets/cymatics/pattern_${n}_top_candidate.jpg"><figcaption>${i}. ${NAMES[i]}</figcaption></figure>`;}
+imgs+=['comparison_03_image_decode.jpg','comparison_06_image_decode.jpg','comparison_07_image_decode.jpg'].map(c=>
+ `<figure><img class="cym-img" src="assets/cymatics/${c}"><figcaption>self-check: ${c.replace('comparison_0','pattern ').replace('_image_decode.jpg','')}</figcaption></figure>`).join('');
+document.getElementById('ims').innerHTML=imgs;
+</script>
+</body></html>
