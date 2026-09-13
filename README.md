@@ -24,7 +24,11 @@ A data-driven investigation of the crop-circle phenomenon — dataset, statistic
 
 The formations dataset is **curated** (notable formations, not a census); every aggregate count is flagged hard data / estimate / media claim. The cymatic decoding is a modeling exercise — the geometry→mode inversion is fundamentally ambiguous, and absolute Hz depends on the assumed resonator (ratios are reported as primary). Shared geometry with DMT/sacred motifs reflects shared human neuroarchitecture, not shared cosmic sources.
 
-## Binary artifacts (.b64 sidecars)
+## Binary artifacts (.b64 sidecars) and split files (.parts)
+
+Files larger than ~9 KB were split into `<path>.parts/part_NNN` chunks for transport (a text-only API limit). Reassemble them with `bash assemble_parts.sh`, which concatenates each parts directory back into its target file. Do this **before** `decode_b64.sh` (several `.b64` sidecars are themselves split).
+
+
 
 Raw binaries (images, SQLite DB) are **not committed directly** — they ship as base64 sidecar files (`*.b64`). After cloning, restore them with:
 
@@ -37,7 +41,8 @@ This decodes every `*.b64` next to its target (e.g. `data/cropcircles.sqlite.b64
 ## Reproduce
 
 ```bash
-bash decode_b64.sh   # restore binaries from .b64 sidecars first
+bash assemble_parts.sh  # first: reassemble files split into <path>.parts/ for transport
+bash decode_b64.sh      # then: restore binaries from .b64 sidecars
 cd cymatics/code && python test_cymatics.py && python run_decoding.py
 sqlite3 data/cropcircles.sqlite "SELECT era, COUNT(*) FROM formations GROUP BY era;"
 cd website && python -m http.server 8000
