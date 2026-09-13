@@ -67,7 +67,7 @@
     ],
     "chord": {
      "tuning": "12-TET, A4 = 440.00 Hz",
-    "resonator": "R1 drumhead 30cm",
+     "resonator": "R1 drumhead 30cm",
      "footnote": "'Chord' is descriptive only; decoded modes of one resonator are inharmonic overtones, not a musical chord in the tonal sense (\u00a73.3)",
      "honesty": "absolute Hz depends on assumed resonator; ratios are resonator-independent.",
      "rows": [
