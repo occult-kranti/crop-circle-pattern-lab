@@ -1,0 +1,395 @@
+67.96,
+       "freq_ratio": 6.74621329950584,
+       "measured_nodal_radii": [
+        0.671
+       ],
+       "expected_nodal_radii": [
+        0.393,
+        0.602,
+        0.802
+       ],
+       "bessel_coincidences": [
+        [
+         1,
+         5
+        ],
+        [
+         8,
+         2
+        ]
+       ],
+       "aliases": {
+        "divisor_aliases": [
+         [
+          1,
+          4
+         ]
+        ],
+        "harmonic_aliases": [
+         [
+          6,
+          4
+         ],
+         [
+          9,
+          4
+         ]
+        ],
+        "radial_aliases": [
+         [
+          3,
+          3
+         ],
+         [
+          3,
+          5
+         ]
+        ]
+       },
+       "fisher_p": 0.0,
+       "coherence_C": 0.101,
+       "rotation_note": "phase \u03c6 unidentifiable from a static glyph (degenerate cos/sin pair, \u00a73.2.4)",
+       "diagnostics": {
+        "center": [
+         191.5,
+         191.5
+        ],
+        "R_px": 186.61859500060544,
+        "comb_strength": [
+         1.49,
+         1.67
+        ],
+        "n_hat": 3,
+        "fisher_p": 0.0,
+        "fisher_g": 0.8174242826899534,
+        "coherence_C": 0.101,
+        "slope": 0.965,
+        "slope_R2": 0.36,
+        "noise_floor_tau": 3276.2688916007573,
+        "A_spectrum_top": [
+         [
+          3,
+          10850575.45
+         ],
+         [
+          9,
+          3610098.514
+         ],
+         [
+          15,
+          2164718.924
+         ],
+         [
+          21,
+          1539661.326
+         ],
+         [
+          27,
+          1194922.24
+         ],
+         [
+          5,
+          37730.689
+         ]
+        ]
+       }
+      }
+     }
+    ]
+   },
+   "image_comparison_png": "comparison_03_image_decode.png"
+  },
+  {
+   "id": 4,
+   "name": "Stonehenge Julia Set 1996",
+   "descriptor": {
+    "kind": "spiral",
+    "arms": 1,
+    "components": 149,
+    "boundary": "circle",
+    "chirality": null,
+    "notes": "julia set fractal spiral, ~149 circles on a single winding spiral; chirality unknown - test both"
+   },
+   "structural_decode": [
+    {
+     "n": 1,
+     "m": 149,
+     "model": "membrane",
+     "score": 0.759,
+     "confidence": "LOW",
+     "evidence": {
+      "rule": "R4+R11",
+      "arms": 1,
+      "chirality": null,
+      "note": "construction count, not a mode (\u00a74.4): sub-resolution for modal purposes",
+      "total_circles": 149,
+      "beads_per_arm": 149,
+      "route": "STRUCTURAL",
+      "boundary": "circle",
+      "freq_ratio": 194.975432739574,
+      "bessel_coincidences": [],
+      "aliases": [
+       [
+        1,
+        2
+       ],
+       [
+        2,
+        1
+       ],
+       [
+        1,
+        1
+       ]
+      ]
+     },
+     "acoustics": {
+      "freq_ratio": 194.975432739574,
+      "hz_at_reference_resonators": {
+       "R1 drumhead 30cm, c=100 m/s": {
+        "f_hz": 49749.92,
+        "note": {
+         "f": 49749.91514141135,
+         "midi": 150.853,
+         "midi_nearest": 151,
+         "note": "G",
+         "octave": 11,
+         "label": "G11",
+         "cents": -14.7,
+         "cents_exact": -14.74392295161806,
+         "alt_spelling": null,
+         "band": "ULTRASONIC",
+         "wavelength_air_m": 0.0069,
+         "flags": [
+          "not (reliably) audible; note name is mathematical only"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R2 plate 30cm, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 497499.15,
+        "note": {
+         "f": 497499.1514141136,
+         "midi": 190.716,
+         "midi_nearest": 191,
+         "note": "B",
+         "octave": 14,
+         "label": "B14",
+         "cents": -28.4,
+         "cents_exact": -28.430209086783975,
+         "alt_spelling": null,
+         "band": "ULTRASONIC",
+         "wavelength_air_m": 0.0007,
+         "flags": [
+          "not (reliably) audible; note name is mathematical only"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R3 plate 1m, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 149249.75,
+        "note": {
+         "f": 149249.74542423408,
+         "midi": 169.872,
+         "midi_nearest": 170,
+         "note": "D",
+         "octave": 13,
+         "label": "D13",
+         "cents": -12.8,
+         "cents_exact": -12.788922086232901,
+         "alt_spelling": null,
+         "band": "ULTRASONIC",
+         "wavelength_air_m": 0.0023,
+         "flags": [
+          "not (reliably) audible; note name is mathematical only"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       }
+      }
+     }
+    },
+    {
+     "n": 1,
+     "m": 2,
+     "model": "membrane",
+     "score": 0.1566,
+     "confidence": "MEDIUM",
+     "evidence": {
+      "rule": "R4",
+      "arms": 1,
+      "chirality": null,
+      "note": "modal candidate (m \u2264 6 credible)",
+      "route": "STRUCTURAL",
+      "boundary": "circle",
+      "freq_ratio": 2.917295455117223,
+      "bessel_coincidences": [],
+      "aliases": [
+       [
+        1,
+        149
+       ],
+       [
+        2,
+        1
+       ],
+       [
+        1,
+        1
+       ]
+      ]
+     },
+     "acoustics": {
+      "freq_ratio": 2.917295455117223,
+      "hz_at_reference_resonators": {
+       "R1 drumhead 30cm, c=100 m/s": {
+        "f_hz": 744.38,
+        "note": {
+         "f": 744.3768647938429,
+         "midi": 78.102,
+         "midi_nearest": 78,
+         "note": "F#",
+         "octave": 5,
+         "label": "F#5",
+         "cents": 10.2,
+         "cents_exact": 10.235632120779314,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.4608,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R2 plate 30cm, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 7443.77,
+        "note": {
+         "f": 7443.768647938429,
+         "midi": 117.965,
+         "midi_nearest": 118,
+         "note": "A#",
+         "octave": 8,
+         "label": "A#8",
+         "cents": -3.5,
+         "cents_exact": -3.4506540143851794,
+         "alt_spelling": null,
+         "band": "HIGH (pitch weakens)",
+         "wavelength_air_m": 0.0461,
+         "flags": [
+          "pitch discrimination degrades >4\u20135 kHz"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R3 plate 1m, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 2233.13,
+        "note": {
+         "f": 2233.1305943815287,
+         "midi": 97.122,
+         "midi_nearest": 97,
+         "note": "C#",
+         "octave": 7,
+         "label": "C#7",
+         "cents": 12.2,
+         "cents_exact": 12.190632986167316,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.1536,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       }
+      }
+     }
+    },
+    {
+     "n": 2,
+     "m": 1,
+     "model": "membrane",
+     "score": 0.0843,
+     "confidence": "LOW",
+     "evidence": {
+      "rule": "R8",
+      "note": "fractal spiral: broadband, non-modal",
+      "route": "STRUCTURAL",
+      "boundary": "circle",
+      "freq_ratio": 2.135548786649404,
+      "bessel_coincidences": [],
+      "aliases": [
+       [
+        1,
+        149
+       ],
+       [
+        1,
+        2
+       ],
+       [
+        1,
+        1
+       ]
+      ]
+     },
+     "acoustics": {
+      "freq_ratio": 2.135548786649404,
+      "hz_at_reference_resonators": {
+       "R1 drumhead 30cm, c=100 m/s": {
+        "f_hz": 544.91,
+        "note": {
+         "f": 544.9064501272817,
+         "midi": 72.702,
+         "midi_nearest": 73,
+         "note": "C#",
+         "octave": 5,
+         "label": "C#5",
+         "cents": -29.8,
+         "cents_exact": -29.793946442637775,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.6295,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R2 plate 30cm, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 5449.06,
+        "note": {
+         "f": 5449.064501272816,
+         "midi": 112.565,
+         "midi_nearest": 113,
+         "note": "F",
+         "octave": 8,
+         "label": "F8",
+         "cents": -43.5,
+         "cents_exact": -43.48023257780369,
+         "alt_spelling": null,
+         "band": "HIGH (pitch weakens)",
+         "wavelength_air_m": 0.0629,
+         "flags": [
+          "pitch discrimination degrades >4\u20135 kHz"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R3 plate 1m, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 1634.72,
+        "note": {
+         "f": 1634.7193503818448,
+         "midi": 91.722,
+         "midi_nearest": 92,
+         "note": "G#",
+         "octave": 6,
+         "label": "G#6",
+         "cents": -27.8,
+         "cents_exact": -27.838945577249774,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.2098,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       }
+      }
+     }
+    }
+   ],
+   "bea
