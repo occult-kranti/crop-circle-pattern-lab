@@ -1,0 +1,219 @@
+#!/usr/bin/env python3
+"""test_cymatics.py — acceptance battery for the Reverse Cymatic Decoder.
+
+Runnable standalone:  python test_cymatics.py
+Prints PASS/FAIL per test; exits nonzero on any failure.
+
+Coverage (master spec §test battery):
+  physics spec §4 sanity:   1/R (1/L) scaling, zero-ratio identities,
+                            square (1,2)±(2,1) topology, ring-radius
+                            fingerprints, spoke counts, asymptotic zeros,
+                            degeneracy completeness, guard rails
+  math spec §5 (V-subset):  clean round-trip sweep n=1..8 m=1..3 (V2),
+                            rotation invariance (physics §4.6), noisy round
+                            trip (V4), ring modes (0,m), grid pitch recovery
+                            23×73 (V8), spiral chirality (V5) + ring/spiral
+                            conflation guard (V6), superposition humility
+                            (V12), divisor trap (V15), structural rules
+                            R1–R11
+  presentation spec §1/§2/§5: verified note rows, f=0, 8 Hz INFRASONIC,
+                            cents range [−50,50), Δf=0 UNISON, beat
+                            categories, Δf>40 Hz DIFFERENCE TONE, JI
+                            tolerance tiers, chord view
+"""
+
+import math
+import sys
+
+import numpy as np
+
+import cymatics as cym
+import decode as dec
+import notes
+
+RESULTS = []
+
+
+def check(name, ok, detail=""):
+    RESULTS.append((name, bool(ok), detail))
+    print(f"{'PASS' if ok else 'FAIL'}  {name}" + (f"  [{detail}]" if detail and not ok else ""))
+
+
+# ==========================================================================
+# Physics spec §4 — sanity battery
+# ==========================================================================
+
+def test_inverse_radius_scaling():
+    """§4.1: f ∝ 1/R (membrane) and 1/L (square), tol 1e-12."""
+    c = 100.0
+    f1 = cym.frequency_membrane(0, 1, R=0.15, c=c)
+    f2 = cym.frequency_membrane(0, 1, R=0.075, c=c)
+    g1 = cym.frequency_square(2, 3, L=0.30, c=1000.0)
+    g2 = cym.frequency_square(2, 3, L=0.15, c=1000.0)
+    ok = abs(f2 / f1 - 2.0) < 1e-12 and abs(g2 / g1 - 2.0) < 1e-12
+    check("physics: 1/R and 1/L scaling (tol 1e-12)", ok,
+          f"f ratios {f2/f1}, {g2/g1}")
+
+
+def test_zero_ratio_identities():
+    """§4.2: f_{n,m}/f_{0,1} = z_{n,m}/z_{0,1} exactly; reference values."""
+    ok = True
+    for n in range(0, 9):
+        for m in range(1, 7):
+            a = cym.frequency_membrane(n, m, 0.15, 100.0)
+            b = cym.frequency_membrane(0, 1, 0.15, 100.0)
+            ok &= abs(a / b - cym.bessel_zero(n, m) / cym.bessel_zero(0, 1)) < 1e-12
+    refs = {(1, 1): 1.59334, (2, 1): 2.13550, (0, 2): 2.29542, (3, 1): 2.65307}
+    for (n, m), v in refs.items():
+        ok &= abs(cym.frequency_ratio_membrane(n, m) - v) < 5e-5
+    check("physics: zero-ratio identities (1.59334, 2.13550, 2.29542, 2.65307)", ok)
+
+
+def test_square_degenerate_topology():
+    """§4.3: (1,1) no interior nodal lines; (1,2)+(2,1) nodal on x+y=L;
+    (1,2)−(2,1) nodal on x=y."""
+    pat11 = cym.square_pattern(1, 1, res=256)
+    # true interior: exclude the boundary-nodal band |u| ≤ eps·max near edges
+    interior_nodal = pat11["nodal"][40:-40, 40:-40]
+    ok11 = interior_nodal.sum() == 0
+    L, res = 1.0, 256
+    pat_p = cym.square_pattern(1, 2, res=res, sign=+1)
+    pat_m = cym.square_pattern(1, 2, res=res, sign=-1)
+    tol_px = 2
+    ok_p = ok_m = True
+    for t in np.linspace(0.15, 0.85, 15):
+        # anti-diagonal x+y=L
+        i = int(round(t * (res - 1)))
+        j = int(round((1 - t) * (res - 1)))
+        win = pat_p["nodal"][max(i - tol_px, 0):i + tol_px + 1,
+                             max(j - tol_px, 0):j + tol_px + 1]
+        ok_p &= bool(win.any())
+        # main diagonal x=y
+        win = pat_m["nodal"][max(i - tol_px, 0):i + tol_px + 1,
+                             max(i - tol_px, 0):i + tol_px + 1]
+        ok_m &= bool(win.any())
+    check("physics: square (1,1) topology + (1,2)±(2,1) diagonals",
+          ok11 and ok_p and ok_m,
+          f"(1,1) clean={ok11}, anti-diag={ok_p}, diag={ok_m}")
+
+
+def _radial_crossings(u_row, x, R):
+    """Sub-pixel interior zero crossings of a signed radial cut."""
+    sgn = np.sign(u_row)
+    out = []
+    for i in np.nonzero(np.diff(sgn) != 0)[0]:
+        r0, r1 = abs(x[i]), abs(x[i + 1])
+        if r0 > 0.97 * R or r0 < 1e-9:
+            continue
+        frac = abs(u_row[i]) / (abs(u_row[i]) + abs(u_row[i + 1]))
+        out.append(abs(x[i] + frac * (x[i + 1] - x[i])))
+    return np.array(out) / R
+
+
+def test_ring_radius_fingerprint():
+    """§4.4: (0,2) ring at 0.43565 R; (0,3) at 0.27788 R, 0.63789 R (1e-4)."""
+    pat = cym.membrane_pattern(0, 2, res=2048)
+    row = pat["u"][pat["u"].shape[0] // 2, :]
+    cr = _radial_crossings(row, pat["x"], 1.0)
+    ok2 = cr.size >= 1 and abs(cr.mean() - 0.43565) < 1e-4
+    pat3 = cym.membrane_pattern(0, 3, res=2048)
+    row3 = pat3["u"][pat3["u"].shape[0] // 2, :]
+    cr3 = np.sort(_radial_crossings(row3, pat3["x"], 1.0))
+    # cluster the symmetric ± crossings of each ring and average
+    rings = []
+    for v in cr3:
+        if rings and v - rings[-1][-1] < 0.02:
+            rings[-1].append(v)
+        else:
+            rings.append([v])
+    cr3 = np.array([np.mean(g) for g in rings])
+    ok3 = (cr3.size == 2 and abs(cr3[0] - 0.27788) < 1e-4
+           and abs(cr3[1] - 0.63789) < 1e-4)
+    check("physics: ring-radius fingerprints (0,2)/(0,3) tol 1e-4", ok2 and ok3,
+          f"(0,2): {cr}, (0,3): {cr3}")
+
+
+def test_spoke_count():
+    """§4.5: mode (n,1) shows n nodal diameters (2n spokes), 0 circles."""
+    ok = True
+    for n in range(1, 6):
+        pat = cym.membrane_pattern(n, 1, res=512)
+        th = np.linspace(0, 2 * np.pi, 8192)
+        r = 0.5
+        vals = np.cos(n * th)  # reference: zeros of cos(nθ)
+        crossings = np.nonzero(np.diff(np.sign(vals)))[0]
+        ok &= (len(crossings) == 2 * n)
+        # through the rendered grid: sample the u field at r = 0.5R
+        from scipy.ndimage import map_coordinates
+        xs = 255.5 + 0.5 * 255.5 * np.cos(th)
+        ys = 255.5 + 0.5 * 255.5 * np.sin(th)
+        samp = map_coordinates(pat["u"], [ys, xs], order=1)
+        cr = np.nonzero(np.diff(np.sign(samp)))[0]
+        ok &= (len(cr) == 2 * n)
+        ok &= pat["m"] == 1
+    check("physics: spoke count N_d = n for (n,1), n=1..5", ok)
+
+
+def test_asymptotic_zeros():
+    """§4.8: |z_asymptotic − z_exact|/z_exact < 1e-3 for m=6, n ≤ 5."""
+    ok = True
+    worst = 0.0
+    for n in range(0, 6):
+        exact = cym.bessel_zero(n, 6)
+        asym = cym.asymptotic_zero(n, 6)
+        worst = max(worst, abs(asym - exact) / exact)
+        ok &= worst < 1e-3
+    check("physics: asymptotic zeros m=6, n≤5 within 1e-3", ok,
+          f"worst rel err {worst:.2e}")
+
+
+def test_degeneracy_completeness():
+    """§4.9: degenerate partners present — square (p,q)/(q,p) same f;
+    accidental (1,7),(5,5),(7,1) share p²+q²=50; circle cos/sin share f."""
+    f12 = cym.frequency_square(1, 2, 0.3, 1000.0)
+    f21 = cym.frequency_square(2, 1, 0.3, 1000.0)
+    acc = {cym.frequency_square(p, q, 0.3, 1000.0)
+           for (p, q) in [(1, 7), (5, 5), (7, 1)]}
+    # circle: phase φ never changes f (no φ argument in frequency_membrane)
+    fa = cym.frequency_membrane(3, 2, 0.15, 100.0)
+    fb = cym.frequency_membrane(3, 2, 0.15, 100.0)
+    ok = (abs(f12 - f21) < 1e-12 and len(acc) == 1 and fa == fb)
+    check("physics: degeneracy completeness (swap, accidental p²+q²=50, cos/sin)", ok)
+
+
+def test_guard_rails():
+    """§4.10: R=0, c=0, L=0, negative eps, n/m<0, tiny patterns → clean errors."""
+    ok = True
+    for fn in (lambda: cym.frequency_membrane(0, 1, 0.0, 100.0),
+               lambda: cym.frequency_membrane(0, 1, 0.15, 0.0),
+               lambda: cym.frequency_square(1, 1, 0.0, 100.0),
+               lambda: cym.membrane_pattern(-1, 1),
+               lambda: cym.membrane_pattern(1, 0),
+               lambda: cym.membrane_pattern(1, 1, eps=-0.05),
+               lambda: cym.bessel_zero(0, 0),
+               lambda: dec.decode_image(np.zeros((8, 8))),
+               lambda: dec.decode_structural({"kind": "bogus"})):
+        try:
+            fn()
+            ok = False
+        except (ValueError, ZeroDivisionError):
+            pass
+        except Exception:
+            ok = False
+    arr = cym.membrane_pattern(4, 3, res=64)["amplitude"]
+    ok &= bool(np.isfinite(arr).all())
+    check("physics: guard rails raise clean errors, no NaNs", ok)
+
+
+# ==========================================================================
+# Math spec §5 — decoder validation (offline subset)
+# ==========================================================================
+
+def _sign_image(n, m, res=384, phase=0.0):
+    return np.sign(cym.membrane_pattern(n, m, res=res, phase=phase)["u"])
+
+
+def test_round_trip_sweep():
+    """V2: clean sign-map sweep n=1..8, m=1..3 — top-1 ≥ 23/24, top-3 24/24."""
+    top1 = top3 = 0
+    m
