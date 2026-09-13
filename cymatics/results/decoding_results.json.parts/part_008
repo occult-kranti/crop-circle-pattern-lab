@@ -1,0 +1,347 @@
+,
+       "f_hz": 1441.8685,
+       "ratio_to_root": 1.3677,
+       "root_match": null,
+       "ji_vs_root": {
+        "interval": "perfect 4th",
+        "ratio_str": "4:3",
+        "cents_error": 44.0,
+        "tier": "approximate"
+       },
+       "consecutive_ratio": 1.3677,
+       "ji_consecutive": {
+        "interval": "perfect 4th",
+        "ratio_str": "4:3",
+        "cents_error": 44.0,
+        "tier": "approximate"
+       },
+       "note": {
+        "f": 1441.8684691678268,
+        "midi": 89.548,
+        "midi_nearest": 90,
+        "note": "F#",
+        "octave": 6,
+        "label": "F#6",
+        "cents": -45.2,
+        "cents_exact": -45.16303741869763,
+        "alt_spelling": null,
+        "band": "PITCH",
+        "wavelength_air_m": 0.2379,
+        "flags": [],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      },
+      {
+       "rank": 3,
+       "label": "(6,68)",
+       "f_hz": 23574.7969,
+       "ratio_to_root": 22.3616,
+       "root_match": "22.362 \u2248 2^4\u00d745:32 (tritone, -10.7 \u00a2)",
+       "ji_vs_root": {
+        "interval": "tritone",
+        "ratio_str": "45:32",
+        "cents_error": -10.7,
+        "tier": "near"
+       },
+       "consecutive_ratio": 16.3502,
+       "ji_consecutive": {
+        "interval": null,
+        "ratio_str": null,
+        "cents_error": 3637.5,
+        "tier": "no close JI interval"
+       },
+       "note": {
+        "f": 23574.796879418438,
+        "midi": 137.923,
+        "midi_nearest": 138,
+        "note": "F#",
+        "octave": 10,
+        "label": "F#10",
+        "cents": -7.7,
+        "cents_exact": -7.682391947781753,
+        "alt_spelling": null,
+        "band": "ULTRASONIC",
+        "wavelength_air_m": 0.0145,
+        "flags": [
+         "not (reliably) audible; note name is mathematical only"
+        ],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      }
+     ]
+    }
+   },
+   "top_candidate_png": "pattern_06_top_candidate.png",
+   "image_decode_demo": {
+    "synthetic_image": "spiral",
+    "route": "SPIRAL",
+    "diagnostics": {
+     "center": [
+      191.5,
+      191.5
+     ],
+     "R_px": 171.88659049982306,
+     "comb_strength": [
+      1.32,
+      1.25
+     ],
+     "harmonic_note": "comb spectrum: argmax n=24, fundamental n=6 kept (\u00a71.2); 24 listed as harmonic alias",
+     "n_hat": 6,
+     "fisher_p": 8.824511175272792e-113,
+     "fisher_g": 0.4037701168889823,
+     "coherence_C": 0.05,
+     "slope": -20.656,
+     "slope_R2": 0.762,
+     "noise_floor_tau": 1093.57567019707
+    },
+    "candidates": [
+     {
+      "n": 6,
+      "m": 43,
+      "model": "membrane",
+      "score": 0.7666,
+      "confidence": "LOW",
+      "evidence": {
+       "route": "SPIRAL",
+       "arms": 6,
+       "coherence_C": 0.05,
+       "slope_dphi_dlnr": -20.656,
+       "slope_R2": 0.762,
+       "fft_peak": [
+        -19,
+        6
+       ],
+       "pitch_b": 0.29,
+       "pitch_b_fft": 0.151,
+       "pitch_angle_deg": 73.8,
+       "chirality": 1,
+       "note": "construction count, not a mode (\u00a74.4) \u2014 LOW confidence for any physical frequency",
+       "beads_per_arm": 43,
+       "freq_ratio": 59.71467407487928,
+       "diagnostics": {
+        "center": [
+         191.5,
+         191.5
+        ],
+        "R_px": 171.88659049982306,
+        "comb_strength": [
+         1.32,
+         1.25
+        ],
+        "harmonic_note": "comb spectrum: argmax n=24, fundamental n=6 kept (\u00a71.2); 24 listed as harmonic alias",
+        "n_hat": 6,
+        "fisher_p": 8.824511175272792e-113,
+        "fisher_g": 0.4037701168889823,
+        "coherence_C": 0.05,
+        "slope": -20.656,
+        "slope_R2": 0.762,
+        "noise_floor_tau": 1093.57567019707
+       }
+      }
+     },
+     {
+      "n": 6,
+      "m": 2,
+      "model": "membrane",
+      "score": 0.1969,
+      "confidence": "LOW",
+      "evidence": {
+       "route": "SPIRAL",
+       "arms": 6,
+       "coherence_C": 0.05,
+       "slope_dphi_dlnr": -20.656,
+       "slope_R2": 0.762,
+       "fft_peak": [
+        -19,
+        6
+       ],
+       "pitch_b": 0.29,
+       "pitch_b_fft": 0.151,
+       "pitch_angle_deg": 73.8,
+       "chirality": 1,
+       "note": "C \u226a 1 with linear \u03c6(ln r) \u2192 traveling wave / geometric spiral (\u00a71.4.4); chirality is metadata, never affects f",
+       "freq_ratio": 5.650842376925686,
+       "diagnostics": {
+        "center": [
+         191.5,
+         191.5
+        ],
+        "R_px": 171.88659049982306,
+        "comb_strength": [
+         1.32,
+         1.25
+        ],
+        "harmonic_note": "comb spectrum: argmax n=24, fundamental n=6 kept (\u00a71.2); 24 listed as harmonic alias",
+        "n_hat": 6,
+        "fisher_p": 8.824511175272792e-113,
+        "fisher_g": 0.4037701168889823,
+        "coherence_C": 0.05,
+        "slope": -20.656,
+        "slope_R2": 0.762,
+        "noise_floor_tau": 1093.57567019707
+       }
+      }
+     },
+     {
+      "n": 6,
+      "m": 1,
+      "model": "membrane",
+      "score": 0.0365,
+      "confidence": "LOW",
+      "evidence": {
+       "route": "SPIRAL",
+       "arms": 6,
+       "coherence_C": 0.05,
+       "slope_dphi_dlnr": -20.656,
+       "slope_R2": 0.762,
+       "fft_peak": [
+        -19,
+        6
+       ],
+       "pitch_b": 0.29,
+       "pitch_b_fft": 0.151,
+       "pitch_angle_deg": 73.8,
+       "chirality": 1,
+       "note": "modal candidate: azimuthal order robust (\u00a74.4)",
+       "freq_ratio": 4.131738159726709,
+       "diagnostics": {
+        "center": [
+         191.5,
+         191.5
+        ],
+        "R_px": 171.88659049982306,
+        "comb_strength": [
+         1.32,
+         1.25
+        ],
+        "harmonic_note": "comb spectrum: argmax n=24, fundamental n=6 kept (\u00a71.2); 24 listed as harmonic alias",
+        "n_hat": 6,
+        "fisher_p": 8.824511175272792e-113,
+        "fisher_g": 0.4037701168889823,
+        "coherence_C": 0.05,
+        "slope": -20.656,
+        "slope_R2": 0.762,
+        "noise_floor_tau": 1093.57567019707
+       }
+      }
+     }
+    ]
+   },
+   "image_comparison_png": "comparison_06_image_decode.png"
+  },
+  {
+   "id": 7,
+   "name": "Chilbolton Arecibo grid 2001",
+   "descriptor": {
+    "kind": "grid",
+    "components": [
+     23,
+     73
+    ],
+    "boundary": "square",
+    "notes": "23x73 cells, rectangular binary array"
+   },
+   "structural_decode": [
+    {
+     "n": 23,
+     "m": 73,
+     "model": "square",
+     "score": 0.9545,
+     "confidence": "HIGH",
+     "evidence": {
+      "rule": "R5",
+      "grid": [
+       23,
+       73
+      ],
+      "note": "geometric count HIGH confidence; physical (modal) interpretation LOW \u2014 content may be non-modal information (Arecibo-style)",
+      "subharmonic": "p, q both prime: no subharmonic aliasing (math spec \u00a70.2)",
+      "route": "STRUCTURAL",
+      "boundary": "square",
+      "freq_ratio": 54.12023651093922,
+      "aliases": [
+       [
+        73,
+        23
+       ]
+      ]
+     },
+     "acoustics": {
+      "freq_ratio": 54.12023651093922,
+      "hz_at_reference_resonators": {
+       "square plate 30cm membrane-model, c=1000 m/s (illustrative)": {
+        "f_hz": 127562.62,
+        "note": {
+         "f": 127562.62078768302,
+         "midi": 167.154,
+         "midi_nearest": 167,
+         "note": "B",
+         "octave": 12,
+         "label": "B12",
+         "cents": 15.4,
+         "cents_exact": 15.383685091978805,
+         "alt_spelling": null,
+         "band": "ULTRASONIC",
+         "wavelength_air_m": 0.0027,
+         "flags": [
+          "not (reliably) audible; note name is mathematical only"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "square plate 30cm plate-model, K''=17.4 Hz h=1mm (dispersive!)": {
+        "f_hz": 101929.2,
+        "note": {
+         "f": 101929.2,
+         "midi": 163.27,
+         "midi_nearest": 163,
+         "note": "G",
+         "octave": 12,
+         "label": "G12",
+         "cents": 27.0,
+         "cents_exact": 27.017798379287683,
+         "alt_spelling": null,
+         "band": "ULTRASONIC",
+         "wavelength_air_m": 0.0034,
+         "flags": [
+          "not (reliably) audible; note name is mathematical only"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       }
+      },
+      "dispersion_models": [
+       "membrane (i)",
+       "biharmonic plate (ii)"
+      ]
+     }
+    },
+    {
+     "n": 73,
+     "m": 23,
+     "model": "square",
+     "score": 0.0455,
+     "confidence": "LOW",
+     "evidence": {
+      "rule": "R5-alias",
+      "note": "axis-swap alias",
+      "route": "STRUCTURAL",
+      "boundary": "square",
+      "freq_ratio": 54.12023651093922,
+      "aliases": [
+       [
+        23,
+        73
+       ]
+      ]
+     },
+     "acoustics": {
+      "freq_ratio": 54.12023651093922,
+      "hz_at_reference_resonators": {
+       "square plate 30cm membrane-model, c=1000 m/s (illustrative)": {
+        "f_hz": 127562.62,
+        "note": {
+         "f": 127562.62078768302,
+         "midi": 167.154,
+         "midi_nearest": 167,
+         "note": 
