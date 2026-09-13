@@ -1,0 +1,216 @@
+"""decode.py — reverse model: pattern → candidate vibration modes.
+
+Implements the Math/Algorithm spec:
+
+  * §1  image path (decode_image): segment → center/scale normalize → route
+        (DISK | SPIRAL | GRID | RING) → order estimation → candidate fitting
+        → scoring.  Azimuthal order from the power-summed angular FFT (§1.2),
+        radial order from nodal-circle minima of the normalized demodulation
+        matched to Bessel-zero ratios with bipartite assignment (§1.3, §7
+        note 2), spirals via the log-polar FFT + radial phase-coherence test
+        (§1.4, §7 note 3), grids via the comb spectrum of the edge map
+        (§1.5, §7 note 4).
+  * §2  structural path (decode_structural): rules R1–R11.
+  * §3  ambiguity quantification: match score §3.1, alias sets §3.2,
+        confidence classes §3.3.  The decoder never returns a single answer
+        without caveats: always top-3 ModeCandidates (physics spec §3.4).
+
+Physics equations are imported from cymatics.py (physics spec §1).
+"""
+
+from __future__ import annotations
+
+import math
+from dataclasses import dataclass, field
+
+import numpy as np
+from scipy.ndimage import map_coordinates, uniform_filter1d
+from scipy.optimize import linear_sum_assignment
+from scipy.signal import find_peaks
+from scipy.special import jn
+
+from cymatics import bessel_zero, nodal_circle_radii
+
+# --------------------------------------------------------------------------
+# Candidate container (master spec: n, m, model, score, confidence, evidence)
+# --------------------------------------------------------------------------
+
+
+@dataclass
+class ModeCandidate:
+    n: int
+    m: int | None
+    model: str                    # 'membrane' | 'square'
+    score: float                  # normalized over the returned top-k (§3.1)
+    confidence: str               # 'HIGH' | 'MEDIUM' | 'LOW'  (§3.3)
+    evidence: dict = field(default_factory=dict)
+
+    def to_dict(self):
+        return dict(n=self.n, m=self.m, model=self.model,
+                    score=round(float(self.score), 4),
+                    confidence=self.confidence, evidence=self.evidence)
+
+
+#: Resonator-class priors π(class) (math spec §3.1).
+CLASS_PRIORS = {"disk": 0.5, "square": 0.2, "annulus": 0.15,
+                "spiral": 0.1, "construction": 0.1, "fractal": 0.05}
+
+#: Scoring weights (math spec §3.1).
+W_ANG, W_RAD, W_NODE, W_PRIOR = 1.0, 1.0, 2.0, 0.25
+
+#: Radial phase coherence below which a pattern is flagged spiral (§7 V5).
+C_LO = 0.5
+
+#: Nodal-radius assignment tolerance in units of R (§7 note 2).
+NODE_TOL = 0.07
+
+
+# ==========================================================================
+# Scoring / confidence helpers (math spec §3)
+# ==========================================================================
+
+def _normalize_scores(raw, k=3):
+    """Normalize raw S values over the returned top-k (math spec §3.1).
+
+    Raw scores contain a negative log-prior and node penalties, so they are
+    shifted positive (relative to the weakest hypothesis considered) before
+    normalization: score(μ) = S'(μ)/Σ_top-k S'.  `raw` must be sorted in
+    descending order; the first k normalized scores are returned.
+    """
+    raw = np.asarray(raw, dtype=float)
+    if raw.size == 0:
+        return raw
+    span = raw.max() - raw.min()
+    shift = raw.min() - max(0.05 * span, 1e-6)
+    sp = np.maximum(raw - shift, 1e-9)
+    top = sp[:k]
+    return top / top.sum()
+
+
+def _classify(score, gap, fisher_p=None, eps_node=None, forced_low=False,
+              structural=False):
+    """Confidence classes (math spec §3.3).
+
+    HIGH:   top ≥ 0.6 AND gap ≥ 0.15 AND p_Fisher < 1e-3 AND ε_node < 5%
+    MEDIUM: top ≥ 0.4 AND gap ≥ 0.05, or single-estimate (structural) paths
+    LOW:    everything else; forced for fractal/broadband and >200 features
+    """
+    if forced_low:
+        return "LOW"
+    if structural:
+        return "MEDIUM"
+    if (score >= 0.6 and gap >= 0.15
+            and (fisher_p is None or fisher_p < 1e-3)
+            and (eps_node is None or eps_node < 0.05)):
+        return "HIGH"
+    if score >= 0.4 and gap >= 0.05:
+        return "MEDIUM"
+    return "LOW"
+
+
+def _divisors(k):
+    return [d for d in range(1, k) if k % d == 0]
+
+
+def _bessel_coincidences(n, m, width=0.02):
+    """Bessel near-coincidences α_{n,m} ≈ α_{n',m'} (math spec §3.2.6)."""
+    z = bessel_zero(n, m)
+    out = []
+    for nn in range(0, 9):
+        for mm in range(1, 7):
+            if (nn, mm) == (n, m):
+                continue
+            if abs(bessel_zero(nn, mm) - z) / z < width:
+                out.append((nn, mm))
+    return out
+
+
+# ==========================================================================
+# Structural path (math spec §2, rules R1–R11)
+# ==========================================================================
+
+def decode_structural(descriptor):
+    """Map a structural descriptor to candidate modes (math spec §2).
+
+    Descriptor keys (master spec):
+        kind            'rings'|'radial'|'spiral'|'grid'|'composite'|'cluster'
+        azimuthal_order int or None
+        radial_nodes    int or None
+        arms            int or None
+        components      int, (p, q) tuple, or list of sub-descriptors
+        boundary        'circle' | 'square'
+        notes           free text (drives R3, R6, R8, R10 keyword rules)
+        chirality       +1 | -1 | None (recorded as metadata, never affects f)
+
+    Returns a ranked list of ModeCandidates (top-3), each with score,
+    confidence and an evidence dict listing the fired rules and aliases.
+    Composition: independent descriptors combine multiplicatively (§2);
+    conflicting descriptors emit multiple candidates.
+    """
+    kind = str(descriptor.get("kind", "")).lower()
+    notes = str(descriptor.get("notes", "")).lower()
+    n_k = descriptor.get("azimuthal_order")
+    rad = descriptor.get("radial_nodes")
+    arms = descriptor.get("arms")
+    comps = descriptor.get("components")
+    boundary = descriptor.get("boundary", "circle")
+    chirality = descriptor.get("chirality")
+    raw = []   # (n, m, model, raw_score, conf_hint, evidence)
+
+    def emit(n, m, model, s, conf, ev):
+        raw.append([int(n), None if m is None else int(m), model,
+                    float(s), conf, ev])
+
+    notes_low = notes
+
+    # ---- R8: fractal descriptors (Koch / Julia / Sierpinski) -------------
+    fractal = any(w in notes_low for w in
+                  ("fractal", "koch", "julia", "sierpinski"))
+    # ---- R10: tetrahedral / 3-D pictogram --------------------------------
+    tetra = any(w in notes_low for w in ("tetrahedr", "3-d", "3d pictogram"))
+    # ---- R6: ratchet / gear ----------------------------------------------
+    ratchet = any(w in notes_low for w in ("ratchet", "gear", "chiral"))
+    # ---- R7: dumbbell / two lobes ----------------------------------------
+    dumbbell = any(w in notes_low for w in ("dumbbell", "two lobes", "two-lobe"))
+
+    if kind == "rings":
+        # R2: q concentric rings → m = q or q+1 (rim counts as a node).
+        q = rad if rad is not None else (comps if isinstance(comps, int) else 1)
+        q = max(int(q), 1)
+        ev = dict(rule="R2", rings=q,
+                  note="rings are nodal-circle analogues; spacing check "
+                       "decides modal vs symbolic (R2/R9)")
+        emit(n_k or 0, q + 1, "membrane", 1.0, "MEDIUM",
+             dict(ev, interpretation="m = q+1 (rim counts as node)"))
+        emit(n_k or 0, q, "membrane", 0.7, "MEDIUM",
+             dict(ev, interpretation="m = q (rings as full radial order)"))
+        if n_k:
+            for d in _divisors(n_k):
+                emit(d, q + 1, "membrane", 0.35, "LOW",
+                     dict(rule="R1-alias", divisor_of=n_k))
+
+    elif kind == "radial":
+        if fractal:
+            # R8: fractal → comb spectrum at harmonics of the base order.
+            base = n_k or 3
+            ev = dict(rule="R8",
+                      note="fractal: angular spectrum is a comb at harmonics "
+                           "of the base order plus continuum — broadband, "
+                           "non-modal")
+            emit(base, 1, "membrane", 1.0, "LOW", ev)
+            alt = 3 if base == 6 else (6 if base == 3 else None)
+            if alt:
+                emit(alt, 1, "membrane", 0.6, "LOW",
+                     dict(ev, note="alternative base order "
+                                   "(Koch: n=3 or 6)"))
+        elif tetra:
+            # R10: tetrahedral pictogram → projective 3-fold.
+            ev = dict(rule="R10",
+                      note="2-D projection of tetrahedral T_d symmetry aliases "
+                           "multiple 3-D orientations")
+            emit(3, 1, "membrane", 1.0, "MEDIUM", ev)
+            emit(3, 2, "membrane", 0.65, "MEDIUM", ev)
+        elif ratchet and n_k:
+            # R6: s-segment ratchet → chiral traveling-wave candidate.
+            ev = dict(rule="R6", chirality=chirality,
+                      note=
