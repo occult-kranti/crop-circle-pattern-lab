@@ -1,0 +1,89 @@
+he linear trend), so the pitch-fit
+    # R² gate is relaxed from 0.9 to 0.6 when the slope is large — the C
+    # test remains the primary discriminator (§4.3).
+    if C < C_LO and ((slope_r2 > 0.9 and abs(slope) > 0.5)
+                     or (slope_r2 > 0.6 and abs(slope) > 1.0)):
+        cands = _spiral_decode(img, cx, cy, R, P, r, n_hat, C, slope,
+                               slope_r2, A, tau)
+        diag["route"] = "SPIRAL"
+        _attach_diag(cands, diag)
+        return (cands, diag) if return_diagnostics else cands
+
+    # ---- DISK path (§1.2 + §1.3) -------------------------------------------
+    signed_data = (img < 0).sum() > 0.02 * mask.sum()
+    m_results, measured = _m_sweep(P, r, R, n_hat, m_max=m_max,
+                                   signed=signed_data)
+    s_ang = float(A[n_hat] ** 2 / max((A[1:A.size // 2] ** 2).sum(), 1e-300))
+    raw = []
+    for res_m in m_results:
+        m = res_m["m"]
+        S = (W_ANG * s_ang + W_RAD * res_m["s_rad"]
+             + W_NODE * (-res_m["eps_node"])
+             + W_PRIOR * math.log(CLASS_PRIORS["disk"]))
+        raw.append([n_hat, m, "membrane", S,
+                    dict(route="DISK", s_ang=round(s_ang, 4),
+                         s_rad=round(res_m["s_rad"], 4),
+                         eps_node=round(res_m["eps_node"], 4),
+                         R_fit_px=round(res_m["R_fit"], 2))])
+    # divisor aliases (§3.2.1): penalty ∝ missing harmonic energy at d
+    for d in _divisors(n_hat):
+        share = float(A[d] ** 2 / max((A[1:A.size // 2] ** 2).sum(), 1e-300))
+        penalty = 0.9 if A[d] < tau else 0.45
+        m_best = max(m_results, key=lambda rr: rr["s_rad"] - rr["eps_node"])
+        S = W_ANG * share + W_RAD * m_best["s_rad"] * (1 - penalty) \
+            + W_PRIOR * math.log(CLASS_PRIORS["disk"])
+        raw.append([d, m_best["m"], "membrane", S,
+                    dict(route="DISK", alias_of=(n_hat, m_best["m"]),
+                         divisor_penalty=penalty, s_ang=round(share, 4),
+                         note="divisor alias: n-fold ⊃ d-fold (§3.2.1)")])
+    # harmonic aliases (§3.2.2)
+    for k in (2, 3):
+        if k * n_hat < A.size // 2 and A[k * n_hat] > 0.5 * A[n_hat]:
+            m_best = max(m_results, key=lambda rr: rr["s_rad"] - rr["eps_node"])
+            raw.append([k * n_hat, m_best["m"], "membrane",
+                        0.5 * max(rr[3] for rr in raw),
+                        dict(route="DISK", alias_of=(n_hat, m_best["m"]),
+                             note="harmonic alias: comparable power at k·n̂ "
+                                  "(§3.2.2)")])
+    raw.sort(key=lambda rr: -rr[3])
+    scores = _normalize_scores([rr[3] for rr in raw])
+    top = raw[:3]
+    out = []
+    for i, (n, m, model, _s, evd) in enumerate(top):
+        gap = scores[i] - (scores[i + 1] if i + 1 < len(scores) else 0.0)
+        conf = _classify(scores[i], gap, fisher_p=fisher_p,
+                         eps_node=evd.get("eps_node"))
+        evd = dict(evd)
+        evd["freq_ratio"] = bessel_zero(n, m) / bessel_zero(0, 1)
+        evd["measured_nodal_radii"] = [round(float(v), 3) for v in measured]
+        evd["expected_nodal_radii"] = [round(float(v), 3)
+                                       for v in nodal_circle_radii(n, m)]
+        evd["bessel_coincidences"] = _bessel_coincidences(n, m)
+        # systematic alias set (§3.2): divisors, harmonics, radial m±1
+        evd["aliases"] = {
+            "divisor_aliases": [(d, m) for d in _divisors(n)],
+            "harmonic_aliases": [(k * n, m) for k in (2, 3)
+                                 if k * n < A.size // 2],
+            "radial_aliases": [(n, max(m - 1, 1)), (n, m + 1)],
+        }
+        evd["fisher_p"] = fisher_p
+        evd["coherence_C"] = round(C, 3)
+        evd["rotation_note"] = ("phase φ unidentifiable from a static glyph "
+                                "(degenerate cos/sin pair, §3.2.4)")
+        out.append(ModeCandidate(n=n, m=m, model=model,
+                                 score=float(scores[i]), confidence=conf,
+                                 evidence=evd))
+    diag["route"] = "DISK"
+    diag["A_spectrum_top"] = sorted(
+        [(int(k), round(float(A[k]), 3)) for k in range(1, n_cap + 1)],
+        key=lambda kv: -kv[1])[:6]
+    _attach_diag(out, diag)
+    return (out, diag) if return_diagnostics else out
+
+
+def _attach_diag(cands, diag):
+    for c in cands:
+        c.evidence.setdefault("diagnostics", {})
+        c.evidence["diagnostics"].update(
+            {k: v for k, v in diag.items() if k != "route"})
+        c.evidence.setdefault("route", diag.get("route"))
