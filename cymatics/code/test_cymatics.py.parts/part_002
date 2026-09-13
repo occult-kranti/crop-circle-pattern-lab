@@ -1,0 +1,201 @@
+:
+        r = notes.freq_to_note(f)
+        ok &= (r["label"] == label and abs(r["cents"] - cents) < 0.15
+               and r["band"] == band)
+    check("presentation: §1.3 verified note rows (10 rows)", ok)
+
+
+def test_f_zero_handled():
+    """§5: f=0 → handled, no NaN, no exception."""
+    r = notes.freq_to_note(0.0)
+    ok = (r["note"] is None and r["midi"] is None
+          and r["flags"] and r["band"] == "INFRASONIC")
+    bt = notes.beat_table({"a": 0.0, "b": 440.0})
+    ok &= bt["pairs"][0]["category"] is not None
+    check("presentation: f=0 handled gracefully", ok)
+
+
+def test_infrasonic_8hz():
+    """§5: 8 Hz → C−1 −37.6 ¢, band INFRASONIC, negative MIDI legal."""
+    r = notes.freq_to_note(8.0)
+    ok = (r["band"] == "INFRASONIC" and r["label"] == "C-1"
+          and abs(r["cents"] - (-37.6)) < 0.1 and r["midi"] < 0)
+    check("presentation: 8 Hz infrasonic label + negative MIDI", ok)
+
+
+def test_cents_range():
+    """§1.1/§5: cents always in [−50, +50); ±50 boundary double-spelled."""
+    rng = np.random.default_rng(7)
+    ok = True
+    for f in np.exp(rng.uniform(math.log(5.0), math.log(22050.0), 400)):
+        r = notes.freq_to_note(float(f))
+        ok &= (-50.0 <= r["cents"] < 50.0)
+    # exactly ±50 ¢ boundary: f one quarter-tone above A4
+    f = 440.0 * 2 ** (0.5 / 12)
+    r = notes.freq_to_note(f)
+    ok &= r["alt_spelling"] is not None
+    check("presentation: cents in [−50,+50) over 400 random f; ±50 double spelling",
+          ok)
+
+
+def test_beat_categories():
+    """§2.2/§2.4: Δf=0 UNISON; 2 Hz SLOW BEAT; 5 Hz ROUGHNESS;
+    30 Hz TRANSITION; Δf>40 Hz DIFFERENCE TONE (not a beat)."""
+    bt = notes.beat_table({"u1": 440.0, "u2": 440.0, "s": 442.0,
+                           "r": 445.0, "t": 470.0, "d": 493.0})
+    cat = {p["b"]: p["category"] for p in bt["pairs"] if p["a"] == "u1"}
+    ok = (cat["u2"] == "UNISON (exact)" and cat["s"] == "SLOW BEAT"
+          and cat["r"] == "ROUGHNESS" and cat["t"] == "TRANSITION"
+          and cat["d"] == "DIFFERENCE TONE")
+    # unison row: ratio 1.000, JI 1:1, error 0, no beat period
+    u = [p for p in bt["pairs"] if p["b"] == "u2"][0]
+    ok &= u["ratio"] == 1.0 and u["ji"]["ratio_str"] == "1:1"
+    check("presentation: beat categories incl. Δf=0 UNISON and Δf>40 DIFF TONE", ok,
+          str(cat))
+
+
+def test_difference_tone_pitch():
+    """§2.4/§5: 440 vs 660 → Δf=220 Hz mapped as pitch A3; 110 vs 163 →
+    ratio 1.4818 ≈ perfect 5th (−21.1 ¢)."""
+    bt = notes.beat_table({"f440": 440.0, "f660": 660.0})
+    p = bt["pairs"][0]
+    ok = (p["category"] == "DIFFERENCE TONE"
+          and p["delta_f_note"]["label"] == "A3"
+          and p["ji"]["interval"] == "perfect 5th"
+          and abs(p["ji"]["cents_error"]) < 0.1)
+    bt2 = notes.beat_table({"f110": 110.0, "f163": 163.0})
+    p2 = bt2["pairs"][0]
+    ok &= (p2["category"] == "DIFFERENCE TONE"
+           and p2["ji"]["interval"] == "perfect 5th"
+           and abs(p2["ji"]["cents_error"] - (-21.1)) < 0.2)
+    check("presentation: difference tone mapped as pitch (Δf=A3); 110/163 5th",
+          ok)
+
+
+def test_ji_tolerance_tiers():
+    """§2.3: ≤5¢ exact (JI); ≤15¢ near; ≤50¢ approximate; >50¢ no close JI."""
+    ok = notes.nearest_ji(1.5)["tier"] == "exact (JI)"
+    ok &= notes.nearest_ji(1.51)["tier"] == "near"
+    ok &= notes.nearest_ji(2 ** (30 / 1200))["tier"] == "approximate"
+    ok &= notes.nearest_ji(2 ** (55 / 1200))["tier"] == "no close JI interval"
+    ok &= notes.nearest_ji(2 ** (55 / 1200))["interval"] is None
+    # octave-reduced compound ratio: 3.005 ≈ 2×3:2
+    red = notes.octave_reduced_match(3.005)
+    ok &= red is not None and red["ji"]["ratio_str"] == "3:2"
+    check("presentation: JI tolerance tiers + octave reduction", ok)
+
+
+def test_chord_view():
+    """§3.3: chord view sorted, ratio-to-root + consecutive JI matches."""
+    cv = notes.chord_view({"A2": 110.0, "E3ish": 163.0, "A3": 220.0})
+    rows = cv["rows"]
+    ok = (rows[0]["f_hz"] == 110.0 and rows[1]["f_hz"] == 163.0
+          and abs(rows[1]["ratio_to_root"] - 1.4818) < 1e-3
+          and rows[1]["ji_vs_root"]["interval"] == "perfect 5th"
+          and abs(rows[1]["ji_vs_root"]["cents_error"] - (-21.1)) < 0.2
+          and abs(rows[2]["ratio_to_root"] - 2.0) < 1e-9
+          and rows[2]["ji_consecutive"]["interval"] == "perfect 4th")
+    check("presentation: chord view (root/consecutive JI)", ok)
+
+
+def test_reference_resonators():
+    """§4: f01 = 255.2 / 2551.6 / 765.5 Hz for R1/R2/R3; honesty note."""
+    tab = notes.reference_resonator_table()
+    f01 = [r["f01_hz"] for r in tab]
+    ok = (abs(f01[0] - 255.2) < 0.1 and abs(f01[1] - 2551.6) < 0.5
+          and abs(f01[2] - 765.5) < 0.2)
+    ok &= "resonator-independent" in notes.HONESTY_NOTE
+    check("presentation: reference resonators 255.2/2551.6/765.5 Hz", ok,
+          str(f01))
+
+
+def test_plate_dispersion_option():
+    """Physics §1b: plate option f ∝ (p²+q²), membrane f ∝ √(p²+q²);
+    models tagged and divergent at high mode number."""
+    fm = cym.frequency_square(2, 3, 0.3, 1000.0, dispersion="membrane")
+    fp = cym.frequency_square(2, 3, 0.3, 1000.0, dispersion="plate")
+    ok = abs(fm / (1000 / 0.6) - math.sqrt(13)) < 1e-9
+    ok &= abs(fp / (1000 / 0.09) - 13.0) < 1e-9
+    try:
+        cym.frequency_square(1, 1, 0.3, 1000.0, dispersion="bogus")
+        ok = False
+    except ValueError:
+        pass
+    check("physics: square membrane vs biharmonic-plate dispersion options", ok)
+
+
+def test_bessel_exact_beyond_printed_table():
+    """Regression: bessel_zero must use scipy.special.jn_zeros for ALL
+    (n, m) in its practical range (n ≤ 100, m ≤ 20), not just the printed
+    §1a table (n ≤ 8).  The asymptotic at (10,1) errs by +2.35 %, which
+    corrupted pattern 9's ratios.  The asymptotic remains ONLY as the
+    true fallback beyond scipy's range."""
+    from scipy.special import jn_zeros
+    r = cym.frequency_ratio_membrane(10, 1)
+    exact = jn_zeros(10, 1)[0] / jn_zeros(0, 1)[0]
+    ok = abs(r - exact) < 1e-10
+    ok &= abs(r - 6.01936) < 5e-5                       # was 6.16056 (wrong)
+    ok &= abs(cym.frequency_ratio_membrane(10, 2) - 7.66520) < 5e-5
+    # spot-check the whole scipy range is exact, not asymptotic
+    for n, m in [(9, 1), (10, 3), (50, 1), (100, 1), (0, 20), (33, 20)]:
+        ok &= cym.bessel_zero(n, m) == jn_zeros(n, m)[m - 1]
+    # asymptotic is retained only as true fallback beyond n=100 / m=20
+    ok &= cym.bessel_zero(101, 1) == cym.asymptotic_zero(101, 1)
+    ok &= cym.bessel_zero(0, 21) == cym.asymptotic_zero(0, 21)
+    check("physics: Bessel zeros exact (scipy) beyond printed table; "
+          "(10,1) ratio 6.01936", ok, f"(10,1) ratio {r}")
+
+
+def test_decode_image_degenerate():
+    """Robustness: a uniform constant image (e.g. all-ones) has zero
+    intensity variance → clean ValueError, never a fabricated decode from
+    canvas pixelation."""
+    ok = True
+    for img in (np.ones((64, 64)), np.full((128, 128), 3.7),
+                np.zeros((64, 64))):
+        try:
+            dec.decode_image(img)
+            ok = False
+        except ValueError as exc:
+            if img.max() > 0:
+                ok &= "zero" in str(exc) and "variance" in str(exc)
+    check("decode: degenerate constant image raises ValueError "
+          "(zero variance)", ok)
+
+
+def test_notes_invalid_frequency():
+    """§5: freq_to_note(-5)/NaN must flag 'invalid frequency' (not 'f = 0');
+    NaN/negative Δf must yield an INVALID beat category, not a silently
+    fabricated DIFFERENCE TONE."""
+    r_neg = notes.freq_to_note(-5.0)
+    r_nan = notes.freq_to_note(float("nan"))
+    ok = (r_neg["note"] is None and r_neg["flags"]
+          and "invalid frequency" in r_neg["flags"][0]
+          and "f = 0" not in r_neg["flags"][0])
+    ok &= (r_nan["note"] is None and r_nan["flags"]
+           and "invalid frequency" in r_nan["flags"][0])
+    ok &= notes.beat_category(float("nan")).startswith("INVALID")
+    ok &= notes.beat_category(-2.0).startswith("INVALID")
+    # beat_table with NaN / negative inputs: explicit INVALID rows, no crash
+    bt = notes.beat_table({"ok": 440.0, "bad": float("nan"),
+                           "neg": -100.0})
+    cats = {(p["a"], p["b"]): p for p in bt["pairs"]}
+    ok &= cats[("ok", "bad")]["category"] == "INVALID"
+    ok &= cats[("ok", "neg")]["category"] == "INVALID"
+    ok &= cats[("bad", "neg")]["category"] == "INVALID"
+    ok &= all("invalid frequency" in p["flags"][0]
+              for p in bt["pairs"])
+    check("presentation: invalid frequency flags + INVALID beat category "
+          "for NaN/negative", ok)
+
+
+ALL_TESTS = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
+
+if __name__ == "__main__":
+    print(f"Running {len(ALL_TESTS)} tests...\n")
+    for t in ALL_TESTS:
+        try:
+            t()
+        except Exception as exc:  # noqa: BLE001 — report, don't hide
+            import traceback
+            RESULTS.append((t.__name__, False, rep
