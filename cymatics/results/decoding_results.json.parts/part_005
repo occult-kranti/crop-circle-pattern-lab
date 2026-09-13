@@ -1,0 +1,325 @@
+t_analysis_R1": {
+    "tuning": "12-TET, A4 = 440.00 Hz",
+    "resonator": "R1 drumhead 30cm",
+    "footnote": "roughness depends on absolute frequency and critical bandwidth (max roughness \u2248 \u00bc of the critical bandwidth); the absolute-\u0394f bands are a simplified presentation convention (\u00a72.2)",
+    "honesty": "absolute Hz depends on assumed resonator; ratios are resonator-independent.",
+    "pairs": [
+     {
+      "a": "(1,2)",
+      "b": "(1,149)",
+      "f_lo": 744.3769,
+      "f_hi": 49749.9151,
+      "delta_f": 49005.5383,
+      "category": "DIFFERENCE TONE",
+      "ratio": 66.8343,
+      "ji": {
+       "interval": null,
+       "ratio_str": null,
+       "cents_error": 6075.0,
+       "tier": "no close JI interval"
+      },
+      "octave_reduced": {
+       "text": "66.834 \u2248 2^6\u00d716:15 (minor 2nd, -36.7 \u00a2)",
+       "reduced_ratio": 1.0443,
+       "octaves": 6,
+       "ji": {
+        "interval": "minor 2nd",
+        "ratio_str": "16:15",
+        "cents_error": -36.7,
+        "tier": "approximate"
+       }
+      },
+      "delta_f_note": {
+       "f": 49005.53827661751,
+       "midi": 150.592,
+       "midi_nearest": 151,
+       "note": "G",
+       "octave": 11,
+       "label": "G11",
+       "cents": -40.8,
+       "cents_exact": -40.84303820205548,
+       "alt_spelling": null,
+       "band": "ULTRASONIC",
+       "wavelength_air_m": 0.007,
+       "flags": [
+        "not (reliably) audible; note name is mathematical only"
+       ],
+       "tuning": "12-TET, A4 = 440.00 Hz"
+      },
+      "gloss": "perceived as a separate (combination/difference) tone, not a beat"
+     },
+     {
+      "a": "(2,1)",
+      "b": "(1,149)",
+      "f_lo": 544.9065,
+      "f_hi": 49749.9151,
+      "delta_f": 49205.0087,
+      "category": "DIFFERENCE TONE",
+      "ratio": 91.2999,
+      "ji": {
+       "interval": null,
+       "ratio_str": null,
+       "cents_error": 6615.1,
+       "tier": "no close JI interval"
+      },
+      "octave_reduced": {
+       "text": "91.300 \u2248 2^6\u00d745:32 (tritone, +24.8 \u00a2)",
+       "reduced_ratio": 1.4266,
+       "octaves": 6,
+       "ji": {
+        "interval": "tritone",
+        "ratio_str": "45:32",
+        "cents_error": 24.8,
+        "tier": "approximate"
+       }
+      },
+      "delta_f_note": {
+       "f": 49205.00869128407,
+       "midi": 150.662,
+       "midi_nearest": 151,
+       "note": "G",
+       "octave": 11,
+       "label": "G11",
+       "cents": -33.8,
+       "cents_exact": -33.81058681751483,
+       "alt_spelling": null,
+       "band": "ULTRASONIC",
+       "wavelength_air_m": 0.007,
+       "flags": [
+        "not (reliably) audible; note name is mathematical only"
+       ],
+       "tuning": "12-TET, A4 = 440.00 Hz"
+      },
+      "gloss": "perceived as a separate (combination/difference) tone, not a beat"
+     },
+     {
+      "a": "(2,1)",
+      "b": "(1,2)",
+      "f_lo": 544.9065,
+      "f_hi": 744.3769,
+      "delta_f": 199.4704,
+      "category": "DIFFERENCE TONE",
+      "ratio": 1.3661,
+      "ji": {
+       "interval": "perfect 4th",
+       "ratio_str": "4:3",
+       "cents_error": 42.0,
+       "tier": "approximate"
+      },
+      "octave_reduced": null,
+      "delta_f_note": {
+       "f": 199.47041466656117,
+       "midi": 55.304,
+       "midi_nearest": 55,
+       "note": "G",
+       "octave": 3,
+       "label": "G3",
+       "cents": 30.4,
+       "cents_exact": 30.405510671756986,
+       "alt_spelling": null,
+       "band": "PITCH",
+       "wavelength_air_m": 1.7196,
+       "flags": [],
+       "tuning": "12-TET, A4 = 440.00 Hz"
+      },
+      "gloss": "perceived as a separate (combination/difference) tone, not a beat"
+     }
+    ],
+    "chord": {
+     "tuning": "12-TET, A4 = 440.00 Hz",
+     "resonator": "R1 drumhead 30cm",
+     "footnote": "'Chord' is descriptive only; decoded modes of one resonator are inharmonic overtones, not a musical chord in the tonal sense (\u00a73.3)",
+     "honesty": "absolute Hz depends on assumed resonator; ratios are resonator-independent.",
+     "rows": [
+      {
+       "rank": 1,
+       "label": "(2,1)",
+       "f_hz": 544.9065,
+       "ratio_to_root": 1.0,
+       "root_match": null,
+       "ji_vs_root": {
+        "interval": "unison",
+        "ratio_str": "1:1",
+        "cents_error": 0.0,
+        "tier": "exact (JI)"
+       },
+       "consecutive_ratio": null,
+       "ji_consecutive": null,
+       "note": {
+        "f": 544.9064501272817,
+        "midi": 72.702,
+        "midi_nearest": 73,
+        "note": "C#",
+        "octave": 5,
+        "label": "C#5",
+        "cents": -29.8,
+        "cents_exact": -29.793946442637775,
+        "alt_spelling": null,
+        "band": "PITCH",
+        "wavelength_air_m": 0.6295,
+        "flags": [],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      },
+      {
+       "rank": 2,
+       "label": "(1,2)",
+       "f_hz": 744.3769,
+       "ratio_to_root": 1.3661,
+       "root_match": null,
+       "ji_vs_root": {
+        "interval": "perfect 4th",
+        "ratio_str": "4:3",
+        "cents_error": 42.0,
+        "tier": "approximate"
+       },
+       "consecutive_ratio": 1.3661,
+       "ji_consecutive": {
+        "interval": "perfect 4th",
+        "ratio_str": "4:3",
+        "cents_error": 42.0,
+        "tier": "approximate"
+       },
+       "note": {
+        "f": 744.3768647938429,
+        "midi": 78.102,
+        "midi_nearest": 78,
+        "note": "F#",
+        "octave": 5,
+        "label": "F#5",
+        "cents": 10.2,
+        "cents_exact": 10.235632120779314,
+        "alt_spelling": null,
+        "band": "PITCH",
+        "wavelength_air_m": 0.4608,
+        "flags": [],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      },
+      {
+       "rank": 3,
+       "label": "(1,149)",
+       "f_hz": 49749.9151,
+       "ratio_to_root": 91.2999,
+       "root_match": "91.300 \u2248 2^6\u00d745:32 (tritone, +24.8 \u00a2)",
+       "ji_vs_root": {
+        "interval": "tritone",
+        "ratio_str": "45:32",
+        "cents_error": 24.8,
+        "tier": "approximate"
+       },
+       "consecutive_ratio": 66.8343,
+       "ji_consecutive": {
+        "interval": null,
+        "ratio_str": null,
+        "cents_error": 6075.0,
+        "tier": "no close JI interval"
+       },
+       "note": {
+        "f": 49749.91514141135,
+        "midi": 150.853,
+        "midi_nearest": 151,
+        "note": "G",
+        "octave": 11,
+        "label": "G11",
+        "cents": -14.7,
+        "cents_exact": -14.74392295161806,
+        "alt_spelling": null,
+        "band": "ULTRASONIC",
+        "wavelength_air_m": 0.0069,
+        "flags": [
+         "not (reliably) audible; note name is mathematical only"
+        ],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      }
+     ]
+    }
+   },
+   "top_candidate_png": "pattern_04_top_candidate.png"
+  },
+  {
+   "id": 5,
+   "name": "Silbury Koch snowflake 1997",
+   "descriptor": {
+    "kind": "radial",
+    "azimuthal_order": 6,
+    "boundary": "circle",
+    "notes": "Koch snowflake fractal: 6-fold boundary with 3-fold interior motif; circle model acceptable"
+   },
+   "structural_decode": [
+    {
+     "n": 6,
+     "m": 1,
+     "model": "membrane",
+     "score": 0.9545,
+     "confidence": "LOW",
+     "evidence": {
+      "rule": "R8",
+      "note": "fractal: angular spectrum is a comb at harmonics of the base order plus continuum \u2014 broadband, non-modal",
+      "route": "STRUCTURAL",
+      "boundary": "circle",
+      "freq_ratio": 4.131738159726709,
+      "bessel_coincidences": [
+       [
+        3,
+        2
+       ]
+      ],
+      "aliases": [
+       [
+        3,
+        1
+       ]
+      ]
+     },
+     "acoustics": {
+      "freq_ratio": 4.131738159726709,
+      "hz_at_reference_resonators": {
+       "R1 drumhead 30cm, c=100 m/s": {
+        "f_hz": 1054.25,
+        "note": {
+         "f": 1054.2539639211368,
+         "midi": 84.128,
+         "midi_nearest": 84,
+         "note": "C",
+         "octave": 6,
+         "label": "C6",
+         "cents": 12.8,
+         "cents_exact": 12.776420636492958,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.3253,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R2 plate 30cm, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 10542.54,
+        "note": {
+         "f": 10542.539639211369,
+         "midi": 123.991,
+         "midi_nearest": 124,
+         "note": "E",
+         "octave": 9,
+         "label": "E9",
+         "cents": -0.9,
+         "cents_exact": -0.909865498671536,
+         "alt_spelling": null,
+         "band": "HIGH (pitch weakens)",
+         "wavelength_air_m": 0.0325,
+         "flags": [
+          "pitch discrimination degrades >4\u20135 kHz"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R3 plate 1m, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 3162.76,
+        "note": {
+         "f": 3162.7618917634104,
+         "midi": 103.147,
+         "midi_nearest": 103,
+         "note": "G",
+         "octave": 7,
+         "l
