@@ -1,0 +1,365 @@
+hord in the tonal sense (\u00a73.3)",
+     "honesty": "absolute Hz depends on assumed resonator; ratios are resonator-independent.",
+     "rows": [
+      {
+       "rank": 1,
+       "label": "(2,1)",
+       "f_hz": 544.9065,
+       "ratio_to_root": 1.0,
+       "root_match": null,
+       "ji_vs_root": {
+        "interval": "unison",
+        "ratio_str": "1:1",
+        "cents_error": 0.0,
+        "tier": "exact (JI)"
+       },
+       "consecutive_ratio": null,
+       "ji_consecutive": null,
+       "note": {
+        "f": 544.9064501272817,
+        "midi": 72.702,
+        "midi_nearest": 73,
+        "note": "C#",
+        "octave": 5,
+        "label": "C#5",
+        "cents": -29.8,
+        "cents_exact": -29.793946442637775,
+        "alt_spelling": null,
+        "band": "PITCH",
+        "wavelength_air_m": 0.6295,
+        "flags": [],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      },
+      {
+       "rank": 2,
+       "label": "(10,1)",
+       "f_hz": 1535.8983,
+       "ratio_to_root": 2.8186,
+       "root_match": "2.819 \u2248 2^1\u00d745:32 (tritone, +3.8 \u00a2)",
+       "ji_vs_root": {
+        "interval": "tritone",
+        "ratio_str": "45:32",
+        "cents_error": 3.8,
+        "tier": "exact (JI)"
+       },
+       "consecutive_ratio": 2.8186,
+       "ji_consecutive": {
+        "interval": null,
+        "ratio_str": null,
+        "cents_error": 594.0,
+        "tier": "no close JI interval"
+       },
+       "note": {
+        "f": 1535.8983253301865,
+        "midi": 90.642,
+        "midi_nearest": 91,
+        "note": "G",
+        "octave": 6,
+        "label": "G6",
+        "cents": -35.8,
+        "cents_exact": -35.79125723687753,
+        "alt_spelling": null,
+        "band": "PITCH",
+        "wavelength_air_m": 0.2233,
+        "flags": [],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      },
+      {
+       "rank": 3,
+       "label": "(10,2)",
+       "f_hz": 1955.8512,
+       "ratio_to_root": 3.5893,
+       "root_match": "3.589 \u2248 2^1\u00d79:5 (minor 7th, -5.1 \u00a2)",
+       "ji_vs_root": {
+        "interval": "minor 7th",
+        "ratio_str": "9:5",
+        "cents_error": -5.1,
+        "tier": "near"
+       },
+       "consecutive_ratio": 1.2734,
+       "ji_consecutive": {
+        "interval": "major 3rd",
+        "ratio_str": "5:4",
+        "cents_error": 32.1,
+        "tier": "approximate"
+       },
+       "note": {
+        "f": 1955.8512406017244,
+        "midi": 94.827,
+        "midi_nearest": 95,
+        "note": "B",
+        "octave": 6,
+        "label": "B6",
+        "cents": -17.3,
+        "cents_exact": -17.334540598329795,
+        "alt_spelling": null,
+        "band": "PITCH",
+        "wavelength_air_m": 0.1754,
+        "flags": [],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      }
+     ]
+    }
+   },
+   "top_candidate_png": "pattern_09_top_candidate.png"
+  },
+  {
+   "id": 10,
+   "name": "Hackpen 3-D cubes 2012",
+   "descriptor": {
+    "kind": "radial",
+    "azimuthal_order": 6,
+    "radial_nodes": 3,
+    "boundary": "circle",
+    "notes": "6-fold hexagonal packing, ~3 radial shells"
+   },
+   "structural_decode": [
+    {
+     "n": 6,
+     "m": 4,
+     "model": "membrane",
+     "score": 0.6516,
+     "confidence": "MEDIUM",
+     "evidence": {
+      "rule": "R1+R2",
+      "azimuthal_order": 6,
+      "note": "n = k fundamental; divisor aliases at reduced score",
+      "radial_nodes": 3,
+      "route": "STRUCTURAL",
+      "boundary": "circle",
+      "freq_ratio": 8.450005510186461,
+      "bessel_coincidences": [],
+      "aliases": [
+       [
+        6,
+        3
+       ],
+       [
+        2,
+        4
+       ],
+       [
+        3,
+        4
+       ]
+      ]
+     },
+     "acoustics": {
+      "freq_ratio": 8.450005510186461,
+      "hz_at_reference_resonators": {
+       "R1 drumhead 30cm, c=100 m/s": {
+        "f_hz": 2156.1,
+        "note": {
+         "f": 2156.1027005783853,
+         "midi": 96.514,
+         "midi_nearest": 97,
+         "note": "C#",
+         "octave": 7,
+         "label": "C#7",
+         "cents": -48.6,
+         "cents_exact": -48.57943594347205,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.1591,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R2 plate 30cm, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 21561.03,
+        "note": {
+         "f": 21561.027005783853,
+         "midi": 136.377,
+         "midi_nearest": 136,
+         "note": "E",
+         "octave": 10,
+         "label": "E10",
+         "cents": 37.7,
+         "cents_exact": 37.734277921362036,
+         "alt_spelling": null,
+         "band": "ULTRASONIC",
+         "wavelength_air_m": 0.0159,
+         "flags": [
+          "not (reliably) audible; note name is mathematical only"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R3 plate 1m, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 6468.31,
+        "note": {
+         "f": 6468.308101735156,
+         "midi": 115.534,
+         "midi_nearest": 116,
+         "note": "G#",
+         "octave": 8,
+         "label": "G#8",
+         "cents": -46.6,
+         "cents_exact": -46.62443507808405,
+         "alt_spelling": null,
+         "band": "HIGH (pitch weakens)",
+         "wavelength_air_m": 0.053,
+         "flags": [
+          "pitch discrimination degrades >4\u20135 kHz"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       }
+      }
+     }
+    },
+    {
+     "n": 6,
+     "m": 3,
+     "model": "membrane",
+     "score": 0.3174,
+     "confidence": "MEDIUM",
+     "evidence": {
+      "rule": "R1+R2",
+      "azimuthal_order": 6,
+      "note": "n = k fundamental; divisor aliases at reduced score",
+      "radial_nodes": 3,
+      "interpretation": "ring-count ambiguity m~m\u00b11",
+      "route": "STRUCTURAL",
+      "boundary": "circle",
+      "freq_ratio": 7.070708149038691,
+      "bessel_coincidences": [],
+      "aliases": [
+       [
+        6,
+        4
+       ],
+       [
+        2,
+        4
+       ],
+       [
+        3,
+        4
+       ]
+      ]
+     },
+     "acoustics": {
+      "freq_ratio": 7.070708149038691,
+      "hz_at_reference_resonators": {
+       "R1 drumhead 30cm, c=100 m/s": {
+        "f_hz": 1804.16,
+        "note": {
+         "f": 1804.161301050739,
+         "midi": 93.429,
+         "midi_nearest": 93,
+         "note": "A",
+         "octave": 6,
+         "label": "A6",
+         "cents": 42.9,
+         "cents_exact": 42.90347958576177,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.1901,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R2 plate 30cm, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 18041.61,
+        "note": {
+         "f": 18041.61301050739,
+         "midi": 133.292,
+         "midi_nearest": 133,
+         "note": "C#",
+         "octave": 10,
+         "label": "C#10",
+         "cents": 29.2,
+         "cents_exact": 29.21719345059728,
+         "alt_spelling": null,
+         "band": "ULTRASONIC (borderline)",
+         "wavelength_air_m": 0.019,
+         "flags": [
+          "not (reliably) audible; note name is mathematical only"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R3 plate 1m, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 5412.48,
+        "note": {
+         "f": 5412.483903152217,
+         "midi": 112.449,
+         "midi_nearest": 112,
+         "note": "E",
+         "octave": 8,
+         "label": "E8",
+         "cents": 44.9,
+         "cents_exact": 44.858480451149774,
+         "alt_spelling": null,
+         "band": "HIGH (pitch weakens)",
+         "wavelength_air_m": 0.0634,
+         "flags": [
+          "pitch discrimination degrades >4\u20135 kHz"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       }
+      }
+     }
+    },
+    {
+     "n": 2,
+     "m": 4,
+     "model": "membrane",
+     "score": 0.031,
+     "confidence": "LOW",
+     "evidence": {
+      "rule": "R1-alias",
+      "divisor_of": 6,
+      "note": "n-fold \u2283 d-fold symmetry subsumption",
+      "route": "STRUCTURAL",
+      "boundary": "circle",
+      "freq_ratio": 6.1526091715892575,
+      "bessel_coincidences": [
+       [
+        0,
+        5
+       ],
+       [
+        7,
+        2
+       ]
+      ],
+      "aliases": [
+       [
+        6,
+        4
+       ],
+       [
+        6,
+        3
+       ],
+       [
+        3,
+        4
+       ]
+      ]
+     },
+     "acoustics": {
+      "freq_ratio": 6.1526091715892575,
+      "hz_at_reference_resonators": {
+       "R1 drumhead 30cm, c=100 m/s": {
+        "f_hz": 1569.9,
+        "note": {
+         "f": 1569.8992426070283,
+         "midi": 91.021,
+         "midi_nearest": 91,
+         "note": "G",
+         "octave": 6,
+         "label": "G6",
+         "cents": 2.1,
+         "cents_exact": 2.1158478803769754,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.2185,
+         "flags": [],
+         "tuning": "12-TET, A4 =
