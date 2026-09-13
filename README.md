@@ -32,7 +32,7 @@ Raw binaries (images, SQLite DB) are **not committed directly** — they ship as
 bash decode_b64.sh
 ```
 
-This decodes every `*.b64` next to its target (e.g. `data/cropcircles.sqlite.b64` → `data/cropcircles.sqlite`, `website/assets/cymatics/*.jpg.b64` → the `.jpg` figures the site displays).
+This decodes every `*.b64` next to its target (e.g. `data/cropcircles.sqlite.b64` → `data/cropcircles.sqlite`, `website/assets/cymatics/*.jpg.b64` → the `.jpg` figures the site displays). The two `cropcircles.sqlite.b64` sidecars are stored as `base64(gzip(db))` (the raw DB is mostly empty pages whose plain base64 is tens of KB of repeated `A` runs that cannot transit a text-only API intact); `decode_b64.sh` auto-detects the gzip magic and restores the byte-identical database.
 
 ## Reproduce
 
