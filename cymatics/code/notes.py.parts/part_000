@@ -1,0 +1,222 @@
+"""notes.py — presentation layer: frequencies → notes, beats, JI analysis.
+
+Implements the Presentation/Acoustics spec:
+
+  * §1   freq_to_note: 12-TET, A4 = 440 Hz; m = 69 + 12·log2(f/440);
+         cents in [−50, +50) (+ = sharp); scientific pitch notation
+         (octave = floor(m₀/12) − 1); band labels §1.2; λ_air = 343/f.
+  * §2   beat_table: pairwise Δf, beat categories §2.2 (UNISON/DRIFT/
+         SLOW BEAT/ROUGHNESS/TRANSITION/DIFFERENCE TONE), ratio r = f_hi/f_lo,
+         nearest just-intonation interval from the 13-interval table §2.3
+         with tolerance tiers (≤5¢ exact (JI); ≤15¢ near; ≤50¢ approximate;
+         >50¢ "no close JI interval"), octave-reduced matching for
+         compound ratios §2.1, Δf itself mapped as a pitch when it is a
+         DIFFERENCE TONE (§5).
+  * §3.3 chord view: sorted frequencies, ratio-to-root and consecutive
+         ratios checked against the JI table.
+  * §4   honesty framing: every output carries the absolute-frequency caveat.
+
+Global conventions: A4 = 440.00 Hz stated on every output; cents to 0.1 ¢;
+c_air = 343 m/s (20 °C).
+"""
+
+from __future__ import annotations
+
+import math
+
+A4_HZ = 440.0
+C_AIR = 343.0                      # m/s, 20 °C (presentation spec §1.1)
+NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#',
+              'G', 'G#', 'A', 'A#', 'B']
+TUNING_REF = "12-TET, A4 = 440.00 Hz"
+
+HONESTY_NOTE = ("absolute Hz depends on assumed resonator; ratios are "
+                "resonator-independent.")
+
+ABSOLUTE_FREQUENCY_CAVEAT = (
+    "The geometry decode yields dimensionless mode ratios only. Any Hz value "
+    "follows entirely from an assumed resonator (size + wave speed + boundary "
+    "model). Primary output: dimensionless ratios r = f_mode/f_fundamental; "
+    "secondary: Hz at reference resonators. Sensitivity: f ∝ c/a — halving "
+    "radius or doubling c doubles every frequency: "
+    "f_new = f_ref · (c_new/c_ref)·(a_ref/a_new). Membrane/plate mode ratios "
+    "(1.594, 2.136, …) are inharmonic overtones, not integer harmonics; any "
+    "'note' rendering of overtones is nominal.")
+
+#: 13-interval just-intonation table (presentation spec §2.3).
+JI_TABLE = [
+    ("unison",       1,  1),
+    ("minor 2nd",    16, 15),
+    ("major 2nd",    9,  8),
+    ("minor 3rd",    6,  5),
+    ("major 3rd",    5,  4),
+    ("perfect 4th",  4,  3),
+    ("tritone",      45, 32),
+    ("perfect 5th",  3,  2),
+    ("minor 6th",    8,  5),
+    ("major 6th",    5,  3),
+    ("minor 7th",    9,  5),
+    ("major 7th",    15, 8),
+    ("octave",       2,  1),
+]
+
+
+# --------------------------------------------------------------------------
+# §1 frequency → note
+# --------------------------------------------------------------------------
+
+def band_label(f):
+    """Perceptual range labels (presentation spec §1.2)."""
+    if f < 20.0:
+        return "INFRASONIC"
+    if f < 30.0:
+        return "SUB-PITCH EDGE"
+    if f < 4000.0:
+        return "PITCH"
+    if f < 16000.0:
+        return "HIGH (pitch weakens)"
+    if f <= 20000.0:
+        return "ULTRASONIC (borderline)"
+    return "ULTRASONIC"
+
+
+def freq_to_note(f):
+    """Map a frequency to the 12-TET lattice (presentation spec §1).
+
+    Returns a dict: f, midi (real), midi_nearest, note, octave, label,
+    cents (∈ [−50, +50), + = sharp), band, wavelength_air_m, flags.
+
+    Edge cases (§5): f = 0 is handled (no pitch, no NaN); invalid
+    frequencies (f < 0, NaN, ±inf, None) are rejected with an explicit
+    "invalid frequency" flag — never silently mapped.  MIDI may go
+    negative (<20 Hz) or exceed 127 (>~16 kHz) — MIDI is a mapping device,
+    not a limit.  At |cents| ≥ 49.95 both adjacent spellings are reported.
+    """
+    flags = []
+    if f is None or not isinstance(f, (int, float)) \
+            or not math.isfinite(float(f)) or float(f) <= 0.0:
+        # §5: f = 0 → handled; never produce NaN.  Negative/NaN/inf inputs
+        # are invalid frequencies, flagged explicitly (not as "f = 0").
+        if f is None or not isinstance(f, (int, float)) \
+                or not math.isfinite(float(f)):
+            flag = (f"invalid frequency (f = {f!r}): note mapping requires a "
+                    "finite f ≥ 0 — no note emitted (presentation spec §5)")
+            f_out = None
+        elif float(f) < 0.0:
+            flag = (f"invalid frequency (f = {float(f)} Hz < 0): negative "
+                    "frequencies have no pitch — no note emitted "
+                    "(presentation spec §5)")
+            f_out = float(f)
+        else:
+            flag = ("f = 0: no periodic vibration — note mapping "
+                    "undefined (handled, presentation spec §5)")
+            f_out = 0.0
+        return dict(f=f_out, midi=None, midi_nearest=None,
+                    note=None, octave=None, label="— (no pitch)", cents=None,
+                    band="INFRASONIC", wavelength_air_m=None,
+                    flags=[flag], tuning=TUNING_REF)
+    f = float(f)
+    m = 69.0 + 12.0 * math.log2(f / A4_HZ)
+    m0 = math.floor(m + 0.5)               # nearest semitone, cents ∈ [−50,50)
+    cents = 100.0 * (m - m0)
+    cents_r = round(cents, 1)
+    note = NOTE_NAMES[m0 % 12]
+    octave = m0 // 12 - 1                  # scientific pitch notation
+    label = f"{note}{octave}"
+    alt = None
+    if abs(cents) >= 49.95:                # exactly ±50.0 ¢ boundary (§5)
+        m1 = m0 + (1 if cents > 0 else -1)
+        alt = f"{NOTE_NAMES[m1 % 12]}{m1 // 12 - 1}"
+        flags.append(f"|cents| ≈ 50: ambiguous spelling, also {alt} "
+                     f"({cents_r - 100 * math.copysign(1, cents):+.1f} ¢)")
+    band = band_label(f)
+    if band == "INFRASONIC":
+        flags.append("perceived as rhythm/pressure, not pitch; note name is "
+                     "a mathematical placement on the 12-TET lattice only")
+    elif band == "SUB-PITCH EDGE":
+        flags.append("pitch perception unreliable below ~30 Hz; note nominal")
+    elif band.startswith("HIGH"):
+        flags.append("pitch discrimination degrades >4–5 kHz")
+    elif band.startswith("ULTRASONIC"):
+        flags.append("not (reliably) audible; note name is mathematical only")
+    return dict(f=f, midi=round(m, 3), midi_nearest=m0, note=note,
+                octave=octave, label=label, cents=cents_r,
+                cents_exact=cents, alt_spelling=alt, band=band,
+                wavelength_air_m=round(C_AIR / f, 4), flags=flags,
+                tuning=TUNING_REF)
+
+
+# --------------------------------------------------------------------------
+# §2 difference vibrations
+# --------------------------------------------------------------------------
+
+def beat_category(df):
+    """Beat-rate perception categories (presentation spec §2.2).
+
+    Input validation (§5): NaN/inf or negative Δf is not a beat rate and
+    returns an explicit INVALID category instead of falling through all
+    comparisons into a nonsense DIFFERENCE TONE.
+    """
+    if df is None or not math.isfinite(float(df)):
+        return "INVALID (Δf not finite)"
+    if float(df) < 0.0:
+        return "INVALID (Δf < 0)"
+    if df == 0.0:
+        return "UNISON (exact)"
+    if df < 0.5:
+        return "DRIFT"
+    if df < 4.0:
+        return "SLOW BEAT"
+    if df < 20.0:
+        return "ROUGHNESS"
+    if df <= 40.0:
+        return "TRANSITION"
+    return "DIFFERENCE TONE"
+
+
+def nearest_ji(r):
+    """Nearest just-intonation interval (presentation spec §2.1, §2.3).
+
+    cents_error = 1200·log2(r / (p/q)); tiers: ≤5¢ "exact (JI)",
+    ≤15¢ "near", ≤50¢ "approximate", >50¢ → None ("no close JI interval").
+    """
+    if r is None or r <= 0 or not math.isfinite(r):
+        return None
+    best = None
+    for name, p, q in JI_TABLE:
+        err = 1200.0 * math.log2(r / (p / q))
+        if best is None or abs(err) < abs(best[3]):
+            best = (name, p, q, err)
+    name, p, q, err = best
+    aerr = abs(err)
+    if aerr <= 5.0:
+        tier = "exact (JI)"
+    elif aerr <= 15.0:
+        tier = "near"
+    elif aerr <= 50.0:
+        tier = "approximate"
+    else:
+        return dict(interval=None, ratio_str=None, cents_error=round(err, 1),
+                    tier="no close JI interval")
+    return dict(interval=name, ratio_str=f"{p}:{q}",
+                cents_error=round(err, 1), tier=tier)
+
+
+def octave_reduced_match(r):
+    """Reduce r into [1, 2) by dividing by 2^k, then JI-match (§2.1).
+
+    Returns e.g. dict(text='3.01 ≈ 2×3:2', ...); None if r already < 2
+    or r is not a finite positive number.
+    """
+    if r is None or not math.isfinite(r) or r < 2.0:
+        return None
+    rr, k = r, 0
+    while rr >= 2.0:
+        rr /= 2.0
+        k += 1
+    ji = nearest_ji(rr)
+    if ji is None or ji["interval"] is None:
+        return dict(text=f"{r:.3f} ≈ 2^{k}×(no close JI interval)",
+                    reduced_ratio=round(rr, 4), octaves=k, ji=ji)
+    return dict(text=f"{r:.3f} ≈ 2^{k}×{ji['ratio_str']} ({ji['interval']}, "
+             
