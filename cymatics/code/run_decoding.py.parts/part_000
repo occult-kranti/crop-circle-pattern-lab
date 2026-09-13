@@ -1,0 +1,196 @@
+#!/usr/bin/env python3
+"""run_decoding.py — decode the 10 SPEC patterns and render results.
+
+  * Structural path (math spec §2, rules R1–R11) for all 10 patterns.
+  * Self-consistency demo: patterns 3, 6 and 7 are additionally decoded
+    with decode_image (math spec §1) on forward-rendered synthetic images.
+  * Writes results/decoding_results.json and ≥10 PNGs (top-candidate
+    forward render per pattern + 3 top-3 comparison grids).
+
+Output conventions (presentation spec §4): dimensionless ratios are the
+PRIMARY output; absolute Hz at reference resonators R1–R3 are secondary,
+assumption-tagged sensitivity illustrations.  Every output carries the
+honesty note: "absolute Hz depends on assumed resonator; ratios are
+resonator-independent."
+
+matplotlib Agg backend, warm 'copper' colormap, dpi = 110.
+"""
+
+import json
+import os
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+
+import cymatics as cym
+import decode as dec
+import notes
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+RESULTS = os.path.abspath(os.path.join(HERE, "..", "results"))
+CMAP = "copper"
+DPI = 110
+
+# --------------------------------------------------------------------------
+# The 10 patterns (master spec §"The 10 patterns to decode")
+# --------------------------------------------------------------------------
+
+PATTERNS = [
+    dict(id=1, name="Punchbowl quintuplet 1983",
+         descriptor=dict(kind="cluster", components=5, arms=4, radial_nodes=1,
+                         boundary="circle",
+                         notes="4 satellites around 1 center, equal ring "
+                               "radius")),
+    dict(id=2, name="Cheesefoot dumbbell 1990",
+         descriptor=dict(kind="composite", boundary="circle",
+                         notes="dumbbell: two lobes on an axis")),
+    dict(id=3, name="Barbury Castle tetrahedron 1991",
+         descriptor=dict(kind="radial", azimuthal_order=3, radial_nodes=2,
+                         boundary="circle",
+                         notes="tetrahedral 3-fold pictogram, 1-2 radial "
+                               "rings")),
+    dict(id=4, name="Stonehenge Julia Set 1996",
+         descriptor=dict(kind="spiral", arms=1, components=149,
+                         boundary="circle", chirality=None,
+                         notes="julia set fractal spiral, ~149 circles on a "
+                               "single winding spiral; chirality unknown - "
+                               "test both")),
+    dict(id=5, name="Silbury Koch snowflake 1997",
+         descriptor=dict(kind="radial", azimuthal_order=6, boundary="circle",
+                         notes="Koch snowflake fractal: 6-fold boundary with "
+                               "3-fold interior motif; circle model "
+                               "acceptable")),
+    dict(id=6, name="Milk Hill Galaxy 2001",
+         descriptor=dict(kind="spiral", arms=6, components=409,
+                         boundary="circle", chirality=None,
+                         notes="6 arms, ~68 circles per arm (409 total)")),
+    dict(id=7, name="Chilbolton Arecibo grid 2001",
+         descriptor=dict(kind="grid", components=(23, 73), boundary="square",
+                         notes="23x73 cells, rectangular binary array")),
+    dict(id=8, name="Crabwood disc 2002",
+         descriptor=dict(kind="composite", boundary="circle",
+                         components=[dict(kind="rings", radial_nodes=15,
+                                          boundary="circle",
+                                          notes="archimedean spiral groove, "
+                                                "high radial order")],
+                         notes="figure + disc; disc = Archimedean spiral "
+                               "groove (high radial order)")),
+    dict(id=9, name="Barbury pi wheel 2008",
+         descriptor=dict(kind="radial", azimuthal_order=10, radial_nodes=1,
+                         boundary="circle", chirality=1,
+                         notes="10-segment ratchet wheel, chiral")),
+    dict(id=10, name="Hackpen 3-D cubes 2012",
+         descriptor=dict(kind="radial", azimuthal_order=6, radial_nodes=3,
+                         boundary="circle",
+                         notes="6-fold hexagonal packing, ~3 radial shells")),
+]
+
+# Patterns additionally decoded via decode_image (self-consistency demo).
+IMAGE_DEMO = {3: "disk", 6: "spiral", 7: "grid"}
+
+
+# --------------------------------------------------------------------------
+# Forward rendering helpers
+# --------------------------------------------------------------------------
+
+def render_candidate_image(cand, descriptor, res=512):
+    """Forward-render a candidate mode/construction to an image array."""
+    if cand.model == "square":
+        # pure container mode (sign=0: no degenerate partner for a≠b)
+        pat = cym.square_pattern(cand.n, cand.m, res=res, sign=0)
+        return pat["amplitude"], f"square ({cand.n},{cand.m})"
+    if cand.m is not None and cand.m > 6 and descriptor.get("kind") == "spiral":
+        return render_spiral_construction(cand.n, cand.m, res=res), \
+            f"spiral construction ({cand.n} arms x {cand.m} beads)"
+    pat = cym.membrane_pattern(cand.n, max(cand.m or 1, 1), res=res)
+    return pat["amplitude"], f"membrane ({cand.n},{max(cand.m or 1, 1)})"
+
+
+def render_spiral_construction(arms, beads_per_arm, res=512, b=None,
+                               chirality=+1):
+    """Beads on logarithmic spiral arms (decorative construction, §4.4)."""
+    img = np.zeros((res, res))
+    yy, xx = np.mgrid[0:res, 0:res]
+    c = (res - 1) / 2.0
+    R = c * 0.96
+    r0 = 0.06 * R
+    if b is None:
+        # choose b so arms wind ~1.2 turns over the radius range
+        b = np.log(R / r0) / (1.2 * 2 * np.pi)
+    t_max = np.log(R / r0) / b
+    sig = max(1.5, 0.008 * res)
+    for a in range(max(arms, 1)):
+        for t in np.linspace(0, t_max, max(beads_per_arm, 1)):
+            rr = r0 * np.exp(b * t)
+            th = chirality * t + 2 * np.pi * a / max(arms, 1)
+            img += np.exp(-(((xx - (c + rr * np.cos(th))) ** 2
+                             + (yy - (c + rr * np.sin(th))) ** 2)
+                            / (2 * sig ** 2)))
+    return img
+
+
+def save_png(img, title, path, subtitle=""):
+    fig, ax = plt.subplots(figsize=(5, 5))
+    ax.imshow(img, cmap=CMAP, origin="lower")
+    ax.set_title(title, fontsize=10)
+    if subtitle:
+        ax.set_xlabel(subtitle, fontsize=8)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    fig.tight_layout()
+    fig.savefig(path, dpi=DPI)
+    plt.close(fig)
+
+
+def make_synthetic_image(pid, res=384):
+    """Forward-rendered synthetic glyph for the decode_image demo."""
+    if pid == 3:    # Barbury: 3-fold with 1-2 rings → membrane (3,2)
+        return np.sign(cym.membrane_pattern(3, 2, res=res)["u"])
+    if pid == 6:    # Milk Hill: 6 arms x ~68 beads
+        return render_spiral_construction(6, 68, res=res, b=0.15)
+    if pid == 7:    # Chilbolton: 23x73 random-bit grid, 6 px cells
+        rng = np.random.default_rng(2001)
+        bits = rng.integers(0, 2, size=(73, 23))
+        return np.kron(bits, np.ones((6, 6))).astype(float)
+    raise KeyError(pid)
+
+
+# --------------------------------------------------------------------------
+# Frequency / presentation assembly
+# --------------------------------------------------------------------------
+
+def candidate_acoustics(cand):
+    """Ratios (primary) + Hz at reference resonators (secondary), §4."""
+    out = dict(freq_ratio=cand.evidence.get("freq_ratio"))
+    if cand.model == "membrane" and cand.m:
+        hz = {}
+        for rname, rp in notes.RESONATORS.items():
+            f = cym.frequency_membrane(cand.n, cand.m, rp["R"], rp["c"])
+            hz[rname] = dict(f_hz=round(f, 2), note=notes.freq_to_note(f))
+        out["hz_at_reference_resonators"] = hz
+    elif cand.model == "square" and cand.m:
+        # illustrative 30 cm plate, K' = c/(2L), c = 1000 m/s (§1b model i);
+        # plate option (ii) rescales by (p²+q²)/√(p²+q²) — tagged.
+        f_mem = cym.frequency_square(cand.n, cand.m, 0.30, 1000.0,
+                                     dispersion="membrane")
+        f_pla = cym.frequency_square(cand.n, cand.m, 0.30, 17.4 * 0.09,
+                                     dispersion="plate")
+        out["hz_at_reference_resonators"] = {
+            "square plate 30cm membrane-model, c=1000 m/s (illustrative)":
+                dict(f_hz=round(f_mem, 2), note=notes.freq_to_note(f_mem)),
+            "square plate 30cm plate-model, K''=17.4 Hz h=1mm (dispersive!)":
+                dict(f_hz=round(f_pla, 2), note=notes.freq_to_note(f_pla)),
+        }
+        out["dispersion_models"] = ["membrane (i)", "biharmonic plate (ii)"]
+    return out
+
+
+def beat_analysis(cands):
+    """Pairwise beat table + chord view of candidate freqs at R1 (§2, §3.3)."""
+    rp = notes.RESONATORS["R1 drumhead 30cm, c=100 m/s"]
+    freqs = {}
+    for c in cands:
+        if c.model == "membrane" and c.m:
+   
