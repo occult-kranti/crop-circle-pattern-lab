@@ -1,0 +1,61 @@
+id,name,geometry_family,n_fold,n_basis
+1,Mowing-Devil pamphlet,folklore,,folklore
+2,Capron's circular spots,other,0.0,concentric rings
+3,Stoughton Down rings,rings,0.0,rings
+4,Charlton 'crater' circles,simple circles,0.0,ovals
+5,Tully 'saucer nest',nest,0.0,nest spiral
+6,Duhamel circles,other,0.0,circles
+7,Bower & Chorley's first circle,simple circles,0.0,single circle
+8,Bratton 'Mystery Circles',multiple circles,3.0,triplet line->low
+9,Cheesefoot Head triplet,multiple circles,3.0,triplet
+10,Punchbowl quintuplet,multiple circles,4.0,quintuplet 4+1
+11,Silbury Hill quintuplets,multiple circles,4.0,quintuplets
+12,Cheesefoot Head first pictogram,pictogram,2.0,dumbbell 2-lobe
+13,East Field double pictogram ('Led Zeppelin'),pictogram,2.0,double pictogram
+14,Operation Blackbird hoax,pictogram,,hoax pictogram
+15,Etchilhampton formation,pictogram,,pictogram
+16,Barbury Castle tetrahedron,pictogram,3.0,tetrahedral 3-fold
+17,Ickleton Mandelbrot,fractal,,Mandelbrot bilateral
+18,Székesfehérvár teen circle,simple circles,0.0,circle
+19,Berkshire circle-making competition,other,,various
+20,East Field 'DNA' double helix,pictogram,2.0,double helix chain
+21,Stonehenge Julia Set,fractal,1.0,single spiral
+22,Windmill Hill Triple Julia,fractal,3.0,triple spiral
+23,Silbury Hill Koch I snowflake,fractal,6.0,Koch 6-fold
+24,Milk Hill Koch II fractal,fractal,6.0,Koch 6-fold
+25,Hackpen Hill 'Strange Attractor',fractal,3.0,fractal triangle
+26,Chilbolton Sierpinski diamond,fractal,4.0,Sierpinski diamond 4-fold
+27,Daily Mail 3-D impossible triangle,3-D illusion,3.0,impossible triangle
+28,Chilbolton fractal ('telescope'),fractal,,fractal interlocked
+29,Picked Hill pi mandala,math/code,44.0,44 circles + 14 rings
+30,Milk Hill 'Galaxy Spiral',fractal,6.0,6-arm galaxy
+31,Chilbolton 'Face',message/portrait,,face (rect)
+32,Chilbolton 'Arecibo reply',message/portrait,,grid 23x73
+33,Crabwood alien face & disc,message/portrait,2.0,figure + disc
+34,South Field 'Squared Ropes',geometry,4.0,interlocking squares
+35,Crooked Soley DNA ring,pictogram,0.0,helix ring
+36,Silbury Hill Greco-Egyptian mandala,3-D illusion,,mandala
+37,Hello Kitty commission,message/portrait,,character
+38,The Sun Olympic-rings circles,logo/brand,5.0,Olympic rings
+39,Nike footprint circles (Italy),logo/brand,,footprints
+40,Wayland's Smithy 'The Towers' 3-D,3-D illusion,6.0,3D hex packing
+41,East Field 'Om',pictogram,,Om
+42,Barbury Castle pi,math/code,10.0,10-segment ratchet
+43,Avebury Manor 'solar system',math/code,9.0,9 planets row
+44,08-08-08 infinity figure,geometry,2.0,figure-8
+45,Oxfordshire 'Jellyfish',pictogram,,jellyfish
+46,Yatesbury 'Dragonfly',pictogram,,dragonfly
+47,Silbury 'Mayan headdress',pictogram,,headdress
+48,Wilton Windmill 'Euler's identity',math/code,12.0,12-spoke wheel
+49,Korn concert circle,logo/brand,,logo
+50,Olympic rings stunt (Heathrow flight path),logo/brand,5.0,Olympic rings
+51,Hackpen Hill 3-D cubes,3-D illusion,6.0,3D cubes hex
+52,Chualar 'Nvidia' circle,other,,chip rect
+53,Mulino Bianco commission,logo/brand,,brand
+54,Supreme box-logo circle,logo/brand,4.0,box logo square
+55,Star Wars Rebel Alliance circle,logo/brand,,insignia
+56,Cley Hill 'coronavirus',pictogram,,virion radial
+57,Sixpenny Handley yin-yang,pictogram,2.0,yin-yang
+58,Potterne Hill 18-fold mandala,geometry,18.0,18-fold mandala
+59,Stonehenge Visitor Centre circle,simple circles,,circle design
+60,Sutton Veny barley circle,simple circles,,circle design
