@@ -1,0 +1,410 @@
+39378,
+         "midi": 123.683,
+         "midi_nearest": 124,
+         "note": "E",
+         "octave": 9,
+         "label": "E9",
+         "cents": -31.7,
+         "cents_exact": -31.68830582191049,
+         "alt_spelling": null,
+         "band": "HIGH (pitch weakens)",
+         "wavelength_air_m": 0.0331,
+         "flags": [
+          "pitch discrimination degrades >4\u20135 kHz"
+         ],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       },
+       "R3 plate 1m, c_eff\u22481000 m/s (crude)": {
+        "f_hz": 3107.03,
+        "note": {
+         "f": 3107.0301615418134,
+         "midi": 102.84,
+         "midi_nearest": 103,
+         "note": "G",
+         "octave": 7,
+         "label": "G7",
+         "cents": -16.0,
+         "cents_exact": -16.047018821357995,
+         "alt_spelling": null,
+         "band": "PITCH",
+         "wavelength_air_m": 0.1104,
+         "flags": [],
+         "tuning": "12-TET, A4 = 440.00 Hz"
+        }
+       }
+      }
+     }
+    }
+   ],
+   "beat_analysis_R1": {
+    "tuning": "12-TET, A4 = 440.00 Hz",
+    "resonator": "R1 drumhead 30cm",
+    "footnote": "roughness depends on absolute frequency and critical bandwidth (max roughness \u2248 \u00bc of the critical bandwidth); the absolute-\u0394f bands are a simplified presentation convention (\u00a72.2)",
+    "honesty": "absolute Hz depends on assumed resonator; ratios are resonator-independent.",
+    "pairs": [
+     {
+      "a": "(3,1)",
+      "b": "(3,2)",
+      "f_lo": 676.9562,
+      "f_hi": 1035.6767,
+      "delta_f": 358.7205,
+      "category": "DIFFERENCE TONE",
+      "ratio": 1.5299,
+      "ji": {
+       "interval": "perfect 5th",
+       "ratio_str": "3:2",
+       "cents_error": 34.2,
+       "tier": "approximate"
+      },
+      "octave_reduced": null,
+      "delta_f_note": {
+       "f": 358.720518205364,
+       "midi": 65.464,
+       "midi_nearest": 65,
+       "note": "F",
+       "octave": 4,
+       "label": "F4",
+       "cents": 46.4,
+       "cents_exact": 46.428092338680926,
+       "alt_spelling": null,
+       "band": "PITCH",
+       "wavelength_air_m": 0.9562,
+       "flags": [],
+       "tuning": "12-TET, A4 = 440.00 Hz"
+      },
+      "gloss": "perceived as a separate (combination/difference) tone, not a beat"
+     }
+    ],
+    "chord": {
+     "tuning": "12-TET, A4 = 440.00 Hz",
+     "resonator": "R1 drumhead 30cm",
+     "footnote": "'Chord' is descriptive only; decoded modes of one resonator are inharmonic overtones, not a musical chord in the tonal sense (\u00a73.3)",
+     "honesty": "absolute Hz depends on assumed resonator; ratios are resonator-independent.",
+     "rows": [
+      {
+       "rank": 1,
+       "label": "(3,1)",
+       "f_hz": 676.9562,
+       "ratio_to_root": 1.0,
+       "root_match": null,
+       "ji_vs_root": {
+        "interval": "unison",
+        "ratio_str": "1:1",
+        "cents_error": 0.0,
+        "tier": "exact (JI)"
+       },
+       "consecutive_ratio": null,
+       "ji_consecutive": null,
+       "note": {
+        "f": 676.9562023085739,
+        "midi": 76.459,
+        "midi_nearest": 76,
+        "note": "E",
+        "octave": 5,
+        "label": "E5",
+        "cents": 45.9,
+        "cents_exact": 45.870768356644476,
+        "alt_spelling": null,
+        "band": "PITCH",
+        "wavelength_air_m": 0.5067,
+        "flags": [],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      },
+      {
+       "rank": 2,
+       "label": "(3,2)",
+       "f_hz": 1035.6767,
+       "ratio_to_root": 1.5299,
+       "root_match": null,
+       "ji_vs_root": {
+        "interval": "perfect 5th",
+        "ratio_str": "3:2",
+        "cents_error": 34.2,
+        "tier": "approximate"
+       },
+       "consecutive_ratio": 1.5299,
+       "ji_consecutive": {
+        "interval": "perfect 5th",
+        "ratio_str": "3:2",
+        "cents_error": 34.2,
+        "tier": "approximate"
+       },
+       "note": {
+        "f": 1035.6767205139379,
+        "midi": 83.82,
+        "midi_nearest": 84,
+        "note": "C",
+        "octave": 6,
+        "label": "C6",
+        "cents": -18.0,
+        "cents_exact": -18.002019686744575,
+        "alt_spelling": null,
+        "band": "PITCH",
+        "wavelength_air_m": 0.3312,
+        "flags": [],
+        "tuning": "12-TET, A4 = 440.00 Hz"
+       }
+      }
+     ]
+    }
+   },
+   "top_candidate_png": "pattern_03_top_candidate.png",
+   "image_decode_demo": {
+    "synthetic_image": "disk",
+    "route": "DISK",
+    "diagnostics": {
+     "center": [
+      191.5,
+      191.5
+     ],
+     "R_px": 186.61859500060544,
+     "comb_strength": [
+      1.49,
+      1.67
+     ],
+     "n_hat": 3,
+     "fisher_p": 0.0,
+     "fisher_g": 0.8174242826899534,
+     "coherence_C": 0.101,
+     "slope": 0.965,
+     "slope_R2": 0.36,
+     "noise_floor_tau": 3276.2688916007573,
+     "A_spectrum_top": [
+      [
+       3,
+       10850575.45
+      ],
+      [
+       9,
+       3610098.514
+      ],
+      [
+       15,
+       2164718.924
+      ],
+      [
+       21,
+       1539661.326
+      ],
+      [
+       27,
+       1194922.24
+      ],
+      [
+       5,
+       37730.689
+      ]
+     ]
+    },
+    "candidates": [
+     {
+      "n": 3,
+      "m": 2,
+      "model": "membrane",
+      "score": 0.6182,
+      "confidence": "HIGH",
+      "evidence": {
+       "route": "DISK",
+       "s_ang": 0.8174,
+       "s_rad": 0.8235,
+       "eps_node": 0.0005,
+       "R_fit_px": 191.28,
+       "freq_ratio": 4.058931883331435,
+       "measured_nodal_radii": [
+        0.671
+       ],
+       "expected_nodal_radii": [
+        0.654
+       ],
+       "bessel_coincidences": [
+        [
+         6,
+         1
+        ]
+       ],
+       "aliases": {
+        "divisor_aliases": [
+         [
+          1,
+          2
+         ]
+        ],
+        "harmonic_aliases": [
+         [
+          6,
+          2
+         ],
+         [
+          9,
+          2
+         ]
+        ],
+        "radial_aliases": [
+         [
+          3,
+          1
+         ],
+         [
+          3,
+          3
+         ]
+        ]
+       },
+       "fisher_p": 0.0,
+       "coherence_C": 0.101,
+       "rotation_note": "phase \u03c6 unidentifiable from a static glyph (degenerate cos/sin pair, \u00a73.2.4)",
+       "diagnostics": {
+        "center": [
+         191.5,
+         191.5
+        ],
+        "R_px": 186.61859500060544,
+        "comb_strength": [
+         1.49,
+         1.67
+        ],
+        "n_hat": 3,
+        "fisher_p": 0.0,
+        "fisher_g": 0.8174242826899534,
+        "coherence_C": 0.101,
+        "slope": 0.965,
+        "slope_R2": 0.36,
+        "noise_floor_tau": 3276.2688916007573,
+        "A_spectrum_top": [
+         [
+          3,
+          10850575.45
+         ],
+         [
+          9,
+          3610098.514
+         ],
+         [
+          15,
+          2164718.924
+         ],
+         [
+          21,
+          1539661.326
+         ],
+         [
+          27,
+          1194922.24
+         ],
+         [
+          5,
+          37730.689
+         ]
+        ]
+       }
+      }
+     },
+     {
+      "n": 3,
+      "m": 1,
+      "model": "membrane",
+      "score": 0.2183,
+      "confidence": "LOW",
+      "evidence": {
+       "route": "DISK",
+       "s_ang": 0.8174,
+       "s_rad": 0.2264,
+       "eps_node": 0.105,
+       "R_fit_px": 167.96,
+       "freq_ratio": 2.653066404549215,
+       "measured_nodal_radii": [
+        0.671
+       ],
+       "expected_nodal_radii": [],
+       "bessel_coincidences": [],
+       "aliases": {
+        "divisor_aliases": [
+         [
+          1,
+          1
+         ]
+        ],
+        "harmonic_aliases": [
+         [
+          6,
+          1
+         ],
+         [
+          9,
+          1
+         ]
+        ],
+        "radial_aliases": [
+         [
+          3,
+          1
+         ],
+         [
+          3,
+          2
+         ]
+        ]
+       },
+       "fisher_p": 0.0,
+       "coherence_C": 0.101,
+       "rotation_note": "phase \u03c6 unidentifiable from a static glyph (degenerate cos/sin pair, \u00a73.2.4)",
+       "diagnostics": {
+        "center": [
+         191.5,
+         191.5
+        ],
+        "R_px": 186.61859500060544,
+        "comb_strength": [
+         1.49,
+         1.67
+        ],
+        "n_hat": 3,
+        "fisher_p": 0.0,
+        "fisher_g": 0.8174242826899534,
+        "coherence_C": 0.101,
+        "slope": 0.965,
+        "slope_R2": 0.36,
+        "noise_floor_tau": 3276.2688916007573,
+        "A_spectrum_top": [
+         [
+          3,
+          10850575.45
+         ],
+         [
+          9,
+          3610098.514
+         ],
+         [
+          15,
+          2164718.924
+         ],
+         [
+          21,
+          1539661.326
+         ],
+         [
+          27,
+          1194922.24
+         ],
+         [
+          5,
+          37730.689
+         ]
+        ]
+       }
+      }
+     },
+     {
+      "n": 3,
+      "m": 4,
+      "model": "membrane",
+      "score": 0.1635,
+      "confidence": "LOW",
+      "evidence": {
+       "route": "DISK",
+       "s_ang": 0.8174,
+       "s_rad": 0.2649,
+       "eps_node": 0.1795,
+       "R_fit_px": 1
