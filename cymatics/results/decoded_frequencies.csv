@@ -1,0 +1,11 @@
+id,name,model,n,m,confidence,freq_ratio,ref_resonator,ref_hz,ref_note,cents,band,hz_2,hz_3,hz_4
+1,Punchbowl quintuplet 1983,membrane,4,1,MEDIUM,3.1555,"R1 drumhead 30cm, c=100 m/s",805.15,G5,46.1,PITCH,805.15,8051.48,2415.44
+2,Cheesefoot dumbbell 1990,membrane,1,1,MEDIUM,1.5933,"R1 drumhead 30cm, c=100 m/s",406.56,G#4,-36.9,PITCH,406.56,4065.57,1219.67
+3,Barbury Castle tetrahedron 1991,membrane,3,1,MEDIUM,2.6531,"R1 drumhead 30cm, c=100 m/s",676.96,E5,45.9,PITCH,676.96,6769.56,2030.87
+4,Stonehenge Julia Set 1996,membrane,1,149,LOW,194.9754,"R1 drumhead 30cm, c=100 m/s",49749.92,G11,-14.7,ULTRASONIC,49749.92,497499.15,149249.75
+5,Silbury Koch snowflake 1997,membrane,6,1,LOW,4.1317,"R1 drumhead 30cm, c=100 m/s",1054.25,C6,12.8,PITCH,1054.25,10542.54,3162.76
+6,Milk Hill Galaxy 2001,membrane,6,68,LOW,92.3922,"R1 drumhead 30cm, c=100 m/s",23574.8,F#10,-7.7,ULTRASONIC,23574.8,235747.97,70724.39
+7,Chilbolton Arecibo grid 2001,square,23,73,HIGH,54.1202,"square plate 30cm membrane-model, c=1000 m/s (illustrative)",127562.62,B12,15.4,ULTRASONIC,127562.62,101929.2,
+8,Crabwood disc 2002,membrane,0,16,MEDIUM,20.5764,"R1 drumhead 30cm, c=100 m/s",5250.27,E8,-7.8,HIGH (pitch weakens),5250.27,52502.68,15750.8
+9,Barbury pi wheel 2008,membrane,10,1,MEDIUM,6.0194,"R1 drumhead 30cm, c=100 m/s",1535.9,G6,-35.8,PITCH,1535.9,15358.98,4607.69
+10,Hackpen 3-D cubes 2012,membrane,6,4,MEDIUM,8.45,"R1 drumhead 30cm, c=100 m/s",2156.1,C#7,-48.6,PITCH,2156.1,21561.03,6468.31
