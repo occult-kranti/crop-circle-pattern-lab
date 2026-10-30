@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Case Study: The Carbon-12 Decode — Crop Circles</title>
+<link rel="stylesheet" href="assets/style.css"></head><body>
+<div class="masthead"><div class="wrap"><span>Field Notes on Flattened Wheat</span><span>Case Study 01 · September 2026</span></div></div>
+<header class="top"><div class="wrap">
+<div class="brand">Crop<span>Circles</span> · Data & Patterns</div>
+<nav>
+<a href="index.html">Overview</a><a href="timeline.html">Timeline</a>
+<a href="dataset.html">Dataset</a><a href="analysis.html">Analysis</a>
+<a href="experiments.html">Hypotheses & Experiments</a><a href="papers.html">Research Papers</a>
+<a href="cymatics.html">Cymatics Lab</a><a href="compare.html">DMT × Sacred Geometry</a>
+<a href="carbon12.html" class="active">Case: Carbon-12</a>
+</nav></div></header>
+
+<div class="hero"><div class="wrap">
+<div class="kicker">Case study · claim adjudication</div>
+<h1>The "Carbon-12 decode," on the evidence.</h1>
+<p>A 45-minute video argues that "50 crop circles of the year 2000" are not art but an extraterrestrial
+physics lesson about the atom — revealing a "three-alpha lock" in Carbon-12 — read by the narrator through an
+implant from a 2012 Cancún abduction, and tied to a recurring "2.17 mm X-ray measurement." We took the claim
+seriously enough to test it: source forensics, real nuclear physics, a census of the 2000 season, and our own
+formation dataset. Here is what survives scrutiny, and what doesn't.</p></div></div>
+
+<section><div class="wrap">
+<h2 class="sec">The claim stack</h2>
+<p class="sub">Nine testable sub-claims, each classified against the published record: <b>consistent with science</b>,
+<b>garbled real science</b>, <b>unsupported</b>, <b>fabricated/untraceable</b>, <b>disproven by data</b>, or <b>unfalsifiable</b>.</p>
+
+<div class="claim"><span class="stamp consistent">Consistent with science</span>
+<h3>Three helium-4 nuclei form carbon-12</h3>
+<p class="note">True and textbook: the triple-alpha process (Salpeter 1952) — two α particles form fleeting ⁸Be (unbound, lifetime ~10⁻¹⁶ s), which captures a third α through a resonance in ¹²C. The claim's poetic kernel is real physics.</p></div>
+
+<div class="claim"><span class="stamp consistent">Consistent with science</span>
+<h3>A special resonance makes carbon possible</h3>
+<p class="note">True: the Hoyle state — a 0⁺ excited state of ¹²C at 7.654 MeV, ~285 keV above the 3α threshold, predicted by Fred Hoyle (measured by Dunbar et al. 1953, Kellogg Lab) and canonized as a fine-tuning icon (Oberhummer et al., <i>Science</i> 2000). Hoyle's prediction is one of nuclear astrophysics' great theory-experiment successes — though its "anthropic" framing is a 1980s retrospective gloss (Kragh 2010).</p></div>
+
+<div class="claim"><span class="stamp garbled">Garbled real science</span>
+<h3>"The three-alpha lock": three He-4 nuclei "bond" in carbon's nucleus</h3>
+<p class="note">No such term exists anywhere in the nuclear literature. Nuclei do not "bond" — clustering is a quantum correlation via the strong force, and the Hoyle state is <i>unbound</i>: it falls back to 3α in ~10⁻¹⁶ s unless it radiates. The real phenomena (triple-alpha process, Hoyle-state cluster geometry) are mangled into a rigid "lock."</p></div>
+
+<div class="claim"><span class="stamp garbled">Garbled real science · anachronistic</span>
+<h3>C-12 has a triangular three-alpha geometry</h3>
+<p class="note">Real research — but published <i>after</i> the alleged message. Lattice EFT (Epelbaum et al., PRL 2012) finds the ¹²C ground state is a <b>compact triangle</b> and the Hoyle state a <b>"bent-arm" obtuse triangle</b>; Shen et al. (Nature Communications 2023) map the triangle/obtuse duality of all low-lying states. A 2000 field pattern "revealing" triangular clustering would only echo textbooks (Morinaga 1956, Kamimura 1981) — the genuinely new geometry arrived 2011–2023.</p></div>
+
+<div class="claim"><span class="stamp disproven">Unsupported</span>
+<h3>The circles reveal "a missing geometric detail" in atomic models</h3>
+<p class="note">A real diagram of the Hoyle state is an energy-level diagram — MeV axes, quantum numbers J^π, thresholds, radiative widths. A static 2D glyph contains no numbers, no quantum numbers, no thresholds: no nuclear physics. The actual open problems (radiative width ~10% uncertainty; condensate vs compact structure) are not depictable as mandalas, and nothing in the circles anticipated the 2011–2023 results.</p></div>
+
+<div class="claim"><span class="stamp disproven">Unsupported — off by ~37 orders of magnitude</span>
+<h3>Gravity "links into atomic structure" through this geometry</h3>
+<p class="note">Direct calculation from CODATA constants: gravitational force between two protons at 1 fm is 1.9×10⁻³⁴ N vs 231 N Coulomb — a ratio of 8×10⁻³⁷; against the strong force ~10⁻³⁸–10⁻³⁹. Gravity's role in ¹²C structure is exactly zero at any conceivable precision; it enters only cumulatively in stars and neutron stars. This framing echoes debunked fringe models (e.g., the "Schwarzschild proton").</p></div>
+
+<div class="claim"><span class="stamp disproven">Fabricated / untraceable</span>
+<h3>The recurring "2.17 mm X-ray measurement"</h3>
+<p class="note">Not found in any published source. The BLT/Levengood literature it mimics measured plant <i>nodes</i> with a vernier micrometer (reported as ratios Rn = Nd/Id, or % change) — not X-rays. The only X-ray work in that corpus is X-ray <i>diffraction</i> of clay minerals (dimensionless crystallinity). The nearest real figure is a 2.0 mm average control node length (Haselhoff et al. 2014). The figure splices a plausible millimetre-scale node length onto an X-ray label from an unrelated study.</p></div>
+
+<div class="claim"><span class="stamp disproven">Disproven by data</span>
+<h3>"A 2000 series of 50 crop circles"</h3>
+<p class="note">Every archive contradicts the count: Crop Circle Connector lists <b>125 formations</b> in England for 2000 (+67 international); the ICCA annual report documents <b>139 in England / 253 worldwide</b>; Colin Andrews counted <b>175 worldwide</b>. Only Lucy Pringle's personal photo subset (57) is near 50. No archive documents a curated "50-formation series." And the season's documented themes were triangles, moiré/grids, 11-fold geometry, and pi geometry — <b>no 2000 formation was described at the time as an atom or nucleus, and no 2000–01 commentary links the season to carbon or nuclear physics</b>. (The element-coded formation — silicon added to the Arecibo line — is Chilbolton, August <b>2001</b>.)</p></div>
+
+<div class="claim"><span class="stamp unfalsifiable">Unfalsifiable</span>
+<h3>The alien implant (Cancún, Feb 2012)</h3>
+<p class="note">A brain-computer-interface implant that "reads" crop geometry is a personal narrative with no checkable evidence: no medical record, no device, no independent witness has been produced. It cannot be disproven — and therefore carries no evidential weight. Notably, the implant story also makes the decoding unfalsifiable by design: the "reading" is whatever the narrator says it is.</p></div>
+</div></section>
+
+<section class="band"><div class="wrap">
+<h2 class="sec">What the 2000 season actually contained</h2>
+<p class="sub">From the Connector's 125-formation archive, Pringle's 57 photo records and the ICCA report (253 worldwide).
+The "most amazing design" of 2000 per the Connector was the Avebury Trusloe <b>Moiré</b> (read by one visitor as a
+bar magnet with field lines — the season's only physics-flavoured moment); the Chilbolton fractal and the 22-fold
+Woodborough "Sunflower" (which Glickman linked to π, as in 22/7 — geometry, not atomic physics) headlined August.
+Also in 2000: Matthew Williams became the first person convicted for making a crop circle — a seven-pointed star at
+West Overton, 24 August — and Colin Andrews announced on the BBC that ~80% of formations were man-made.</p>
+<div class="cards">
+<div class="card"><div class="num">125–139</div><div class="lbl">formations in England, 2000 — not 50</div></div>
+<div class="card"><div class="num">0</div><div class="lbl">2000 formations described as atoms/nuclei at the time</div></div>
+<div class="card"><div class="num">7.654 MeV</div><div class="lbl">the real Hoyle state — needs no mandala</div></div>
+<div class="card"><div class="num">8×10⁻³⁷</div><div class="lbl">gravity ÷ electromagnetism at 1 fm</div></div>
+</div></div></section>
+
+<section><div class="wrap">
+<h2 class="sec">Cross-check against our dataset</h2>
+<p class="sub">Our curated dataset's 1999–2001 entries: a Sierpinski diamond (1999), a 3-D impossible triangle (1999, a
+documented Daily Mail commission), the Chilbolton fractal and the π mandala (2000), then the Milk Hill galaxy,
+Face and Arecibo reply (2001). If a "three-
