@@ -1,0 +1,291 @@
+spacing_m": 3.14,
+    "slot_gaps_m": [
+     1.0,
+     1.5
+    ]
+   },
+   "dims_status": null,
+   "modes_modeled": [
+    {
+     "kind": "first Bragg/stop-band scale of 30-sarsen array",
+     "f_hz": 54.6,
+     "formula": "c/(2d), d=2piR/30=3.14 m",
+     "provenance": "MODELED"
+    },
+    {
+     "kind": "slot-gap scattering band",
+     "f_hz": "229-343",
+     "formula": "c/gap, gap 1.0-1.5 m",
+     "provenance": "MODELED"
+    },
+    {
+     "kind": "cross-circle echo repetition pitch",
+     "f_hz": 11.4,
+     "formula": "c/(2R) (delay 2R/c ~ 87 ms)",
+     "provenance": "MODELED"
+    },
+    {
+     "kind": "whispering-gallery creeping waves (infrasonic)",
+     "f_hz": "3.64*n",
+     "formula": "n*c/(2piR)",
+     "provenance": "MODELED"
+    }
+   ],
+   "measured": [
+    {
+     "f_hz": null,
+     "metric": "mid-frequency RT60 0.64 ± 0.03 s; speech-band gain +4.3 ± 0.9 dB (complete monument)",
+     "source": "Cox, Fazenda & Greaney 2020, JAS 122:105218",
+     "method": "1:12 ultrasonic scale model + Maryhill replica + ruin",
+     "tier": 1,
+     "provenance": "MEASURED"
+    }
+   ],
+   "mode_space": {
+    "mn": null,
+    "reason": "not a confined resonator (open-air diffractor or geometric item); no (m,n) assigned by design (physics spec §4.1)"
+   },
+   "signature_card": {
+    "title": "Sonic Signature Card — Stonehenge, Sarsen circle (open-air — NOT a resonator)",
+    "location_date_material": "Wiltshire, England / c. 2200 BCE (complete circle state) / sarsen stone + bluestone, open air",
+    "dims": {
+     "circle_radius_m": 15.0,
+     "sarsen_count": 30,
+     "sarsen_spacing_m": 3.14,
+     "slot_gaps_m": [
+      1.0,
+      1.5
+     ]
+    },
+    "volume_m3": "not published / n/a",
+    "geometry_class": "periodic scatterer array (comb filter + short reverb); no eigenmodes, no (m,n)",
+    "rt60": "not published",
+    "top_modes_modeled": [
+     {
+      "type": "first Bragg/stop-band scale of 30-sarsen array",
+      "indices": null,
+      "f_hz": 54.6,
+      "provenance": "MODELED",
+      "note": "A1",
+      "cents": -12.6,
+      "band": "PITCH"
+     },
+     {
+      "type": "cross-circle echo repetition pitch",
+      "indices": null,
+      "f_hz": 11.4,
+      "provenance": "MODELED",
+      "note": "F#-1",
+      "cents": -24.5,
+      "band": "INFRASONIC"
+     }
+    ],
+    "measured_resonances": [
+     {
+      "f_hz": null,
+      "metric": "mid-frequency RT60 0.64 ± 0.03 s; speech-band gain +4.3 ± 0.9 dB (complete monument)",
+      "source": "Cox, Fazenda & Greaney 2020, JAS 122:105218",
+      "method": "1:12 ultrasonic scale model + Maryhill replica + ruin",
+      "tier": 1,
+      "tier_label": "calibrated/replicated",
+      "provenance": "MEASURED"
+     }
+    ],
+    "measured_unverified": [],
+    "vocal_range_overlap": {
+     "male_82_330_hz": [],
+     "female_165_523_hz": []
+    },
+    "sub_20hz_content": {
+     "frequencies_hz": [
+      11.4
+     ],
+     "label": "below pitch perception — felt as pressure/vibration, not heard"
+    },
+    "intra_chamber_beats": [
+     {
+      "f1_hz": 11.4,
+      "f2_hz": 54.6,
+      "delta_f_hz": 43.2,
+      "category": "DIFFERENCE TONE"
+     }
+    ],
+    "provenance_summary": "1 MEASURED entries, 4 MODELED values, 0 DECODED links",
+    "mode_space": {
+     "mn": null,
+     "reason": "not a confined resonator (open-air diffractor or geometric item); no (m,n) assigned by design (physics spec §4.1)"
+    },
+    "caveats": [
+     "Open top + large gaps => radiation boundary. Any engine assigning membrane modes to Stonehenge is overfitting; treat as comb filter + 0.6 s reverb.",
+     "Bluestones ring when struck (lithophone, kHz structural modes) — real and documented."
+    ]
+   }
+  },
+  {
+   "id": "el_castillo",
+   "site": "El Castillo, Chichén Itzá",
+   "chamber": "Main staircase (reflection grating — NOT a cavity)",
+   "n_fold": 4,
+   "key_ratio": [],
+   "geometry_class": "transient diffraction grating / comb-filter chirp; no (m,n)",
+   "dims": {
+    "steps_per_stairway": 91,
+    "tread_m": 0.26,
+    "riser_m": 0.24,
+    "slope_deg": 43.0,
+    "base_m": 55.5,
+    "height_m": 30.0
+   },
+   "dims_status": null,
+   "modes_modeled": [
+    {
+     "kind": "staircase reflection-grating comb peak",
+     "f_hz": 970,
+     "formula": "1/tau, tau=(tread*cos+riser*sin)/c",
+     "tau_ms": 1.031,
+     "provenance": "MODELED"
+    },
+    {
+     "kind": "dominant chirp band (descending)",
+     "f_hz": "800-1300, descending ~30%",
+     "formula": "geometry drift along staircase glides instantaneous period",
+     "provenance": "MODELED"
+    }
+   ],
+   "measured": [
+    {
+     "f_hz": null,
+     "metric": "chirped echo sweeping ~1310 -> 922 Hz over >100 ms (handclap)",
+     "source": "Lubman 1998, JASA 104(3):1763",
+     "method": "handclap spectrograms",
+     "tier": 1,
+     "provenance": "MEASURED"
+    },
+    {
+     "f_hz": null,
+     "metric": "repetition-pitch glide 796 -> 471 Hz over 177 ms (psychoacoustic pitch)",
+     "source": "Bilsen 2006, JASA 120(2):594-596",
+     "method": "psychoacoustic analysis",
+     "tier": 1,
+     "provenance": "MEASURED"
+    }
+   ],
+   "mode_space": {
+    "mn": null,
+    "reason": "not a confined resonator (open-air diffractor or geometric item); no (m,n) assigned by design (physics spec §4.1)"
+   },
+   "signature_card": {
+    "title": "Sonic Signature Card — El Castillo, Chichén Itzá, Main staircase (reflection grating — NOT a cavity)",
+    "location_date_material": "Yucatán, Mexico / c. 9th-12th c. CE / limestone pyramid, 4 stairways x 91 steps",
+    "dims": {
+     "steps_per_stairway": 91,
+     "tread_m": 0.26,
+     "riser_m": 0.24,
+     "slope_deg": 43.0,
+     "base_m": 55.5,
+     "height_m": 30.0
+    },
+    "volume_m3": "not published / n/a",
+    "geometry_class": "transient diffraction grating / comb-filter chirp; no (m,n)",
+    "rt60": "not published",
+    "top_modes_modeled": [
+     {
+      "type": "staircase reflection-grating comb peak",
+      "indices": null,
+      "f_hz": 970,
+      "provenance": "MODELED",
+      "note": "B5",
+      "cents": -31.4,
+      "band": "PITCH"
+     }
+    ],
+    "measured_resonances": [
+     {
+      "f_hz": null,
+      "metric": "chirped echo sweeping ~1310 -> 922 Hz over >100 ms (handclap)",
+      "source": "Lubman 1998, JASA 104(3):1763",
+      "method": "handclap spectrograms",
+      "tier": 1,
+      "tier_label": "calibrated/replicated",
+      "provenance": "MEASURED"
+     },
+     {
+      "f_hz": null,
+      "metric": "repetition-pitch glide 796 -> 471 Hz over 177 ms (psychoacoustic pitch)",
+      "source": "Bilsen 2006, JASA 120(2):594-596",
+      "method": "psychoacoustic analysis",
+      "tier": 1,
+      "tier_label": "calibrated/replicated",
+      "provenance": "MEASURED"
+     }
+    ],
+    "measured_unverified": [],
+    "vocal_range_overlap": {
+     "male_82_330_hz": [],
+     "female_165_523_hz": []
+    },
+    "sub_20hz_content": {
+     "frequencies_hz": [],
+     "label": "below pitch perception — felt as pressure/vibration, not heard"
+    },
+    "intra_chamber_beats": [],
+    "provenance_summary": "2 MEASURED entries, 2 MODELED values, 0 DECODED links",
+    "mode_space": {
+     "mn": null,
+     "reason": "not a confined resonator (open-air diffractor or geometric item); no (m,n) assigned by design (physics spec §4.1)"
+    },
+    "caveats": [
+     "Physics is settled (Declercq 2004: any comparable periodic staircase chirps); design intent is not verifiable.",
+     "Dominant band for matching: 0.8-1.3 kHz descending ~30%."
+    ]
+   }
+  },
+  {
+   "id": "chavin_galleries",
+   "site": "Chavín de Huántar",
+   "chamber": "Underground galleries (Lanzón Gallery network)",
+   "n_fold": 2,
+   "key_ratio": [],
+   "geometry_class": "multi-gallery waveguide/filter network (coupled system)",
+   "dims": {
+    "gallery_width_m_assumed": [
+     1.0,
+     1.5
+    ]
+   },
+   "dims_status": "assumed for waveguide-cutoff estimate only; site-specific Hz live in Kolar 2013 PhD (Stanford CCRMA), not reproduced here",
+   "modes_modeled": [
+    {
+     "kind": "gallery waveguide transverse cutoff, W=1.0 m (assumed)",
+     "f_hz": 171.5,
+     "formula": "c/2W",
+     "provenance": "MODELED (assumed dims)"
+    },
+    {
+     "kind": "gallery waveguide transverse cutoff, W=1.5 m (assumed)",
+     "f_hz": 114.3,
+     "formula": "c/2W",
+     "provenance": "MODELED (assumed dims)"
+    }
+   ],
+   "measured": [
+    {
+     "f_hz": null,
+     "metric": "gallery-filtered pututu (Strombus galeatus) spectra; Lanzón->Circular Plaza transmission path; localization/disorientation effects",
+     "source": "Abel et al. 2008, JASA 123(3):605; Cook et al. 2010, JASA 128(2):359; Kolar et al. 2012",
+     "method": "calibrated sources/mics, impulse responses, auralization",
+     "tier": 1,
+     "provenance": "MEASURED"
+    }
+   ],
+   "mode_space": {
+    "mn": [
+     1,
+     1
+    ],
+    "bessel_zero": 3.8317,
+    "dominant_mode_f_hz": 171.5,
+    "comment": "waveguide axial class (assumed 1.0 m width); network resonator in reality"
+   },
+   "signature_card": {
+    
