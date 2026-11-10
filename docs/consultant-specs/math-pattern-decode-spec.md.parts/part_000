@@ -1,0 +1,168 @@
+# Reverse Cymatic Decoder — Estimation-Algorithm Design
+
+**Goal.** Given a geometric pattern (image or structural description), estimate candidate
+vibration modes — azimuthal order `n`, radial order `m` — and hence candidate frequencies,
+with quantified ambiguity. Inversion is **set-valued**: we return a ranked list of candidate
+modes with scores and a confidence class, never a single answer without caveats.
+
+---
+
+## 0. Physical priors (the forward models we invert)
+
+We invert against a small library of canonical resonators. The decoder's job is pattern →
+(resonator class, mode indices).
+
+### 0.1 Circular membrane / Chladni-on-disk
+Mode shapes (standing waves on a disk of radius R, fixed rim):
+
+```
+ψ_{n,m}(r,θ) = J_n( α_{n,m} · r/R ) · cos(nθ + φ),   n = 0,1,2,…  (azimuthal order)
+                                                      m = 1,2,3,…  (radial order)
+```
+- `J_n` = Bessel function of the first kind; `α_{n,m}` = m-th positive zero of `J_n`.
+- Nodal set: `n` equally spaced nodal **diameters** + `(m−1)` nodal **circles** (+ rim).
+- Frequency: `f_{n,m} = (α_{n,m} / 2πR) · c`, with `c = √(T/σ)` (wave speed of the plate/membrane).
+  **All frequency estimates are relative**: ratios `f/f₀ = α_{n,m}/α_{n₀,m₀}` are absolute,
+  absolute Hz require `c·(1/R)` calibration.
+- Degeneracy: `cos(nθ)` and `sin(nθ)` are a degenerate pair (same frequency, arbitrary
+  rotation `φ`). Chirality/rotation cannot change `f` for a disk.
+
+### 0.2 Rectangular plate / grid resonator
+For an `a × b` rectangle (simply supported):
+```
+ψ_{p,q}(x,y) = sin(pπx/a)·sin(qπy/b),   f_{p,q} ∝ √( (p/a)² + (q/b)² )
+```
+Nodal set: `(p−1)` vertical + `(q−1)` horizontal interior nodal lines.
+**Degeneracy:** if `a = b` (square), `(p,q)` and `(q,p)` are exactly degenerate; grids with
+gcd structure (e.g. 23×73 — both prime — has no subharmonic aliasing; a 24×72 grid would).
+
+### 0.3 Ring / annulus and curved boundaries
+Concentric-ring glyphs map to radial-only modes `(n=0, m)` of a disk or annulus; annular
+modes use cross-product Bessel combinations `J_n(k r) + β Y_n(k r)`. We treat rings as
+`n=0` candidates plus a "decorative ring" hypothesis (see §4.2).
+
+### 0.4 Spirals (non-modal excitation or traveling-wave modes)
+A pure standing disk mode is achiral. Spirals indicate (a) a **traveling wave**
+`cos(nθ − ωt)` snapshot (two degenerate standing modes 90° out of phase), or (b) a
+non-resonant construction (logarithmic growth spiral). Log-spiral arm:
+```
+r(θ) = a·e^{bθ}  ⇔  θ = (1/b)·ln(r/a)      b = cot(γ),  γ = pitch angle
+```
+In log-polar coordinates `(u,θ)` with `u = ln r`, an n-arm log-spiral becomes `n` straight
+lines of slope `1/b`; a 2-D FFT peak at `(ν_u, ν_θ)` gives `n = ν_θ` and `b = ν_θ/ν_u`.
+
+---
+
+## 1. Image path (raster or vectorized glyph)
+
+Pipeline: `preprocess → center/scale normalize → route (disk | spiral | grid | ring) →
+order estimation → candidate-mode fitting → scoring`.
+
+### 1.1 Preprocessing and centering
+1. **Segment**: threshold (Otsu) or edge-detect (Canny); keep the glyph mask `M(x,y) ∈ {0,1}`
+   or a signed intensity field `I(x,y)` (use signed sand-on-plate density if available).
+2. **Centroid** by first moments: `c = Σ x·M / Σ M`. If the glyph has an obvious outer disc,
+   prefer the disc's fitted-circle center (Hough circle) — it is more robust to asymmetric
+   interior features than the raw moment centroid.
+3. **Radius normalization**: `R` = 95th-percentile of `‖x − c‖` over mask pixels
+   (robust to spikes). Optionally fit an outer ellipse; if eccentricity `e > 0.1`, apply the
+   inverse affine warp to circularize, and flag "non-circular boundary" (→ §4.5).
+4. Optional **rotation-invariance step**: none needed — all order estimators below are
+   rotation-equivariant (orders are magnitudes; only the phase `φ` rotates).
+
+### 1.2 Polar unwrap and angular FFT → azimuthal order n
+
+Resample the field on a polar grid:
+```
+P(r_k, θ_j) = I( c + r_k·(cos θ_j, sin θ_j) ),
+   r_k = k·R/N_r  (k=0..N_r−1),   θ_j = 2πj/N_θ  (j=0..N_θ−1)
+```
+Recommended: `N_r ≥ 4m_max`, `N_θ ≥ 4n_max` (Nyquist ×2 safety; e.g. `N_θ = 2048` allows
+`n ≤ 256`; for the 409-circle galaxy glyph use `N_θ ≥ 8192` in the arm-detection variant, §1.4).
+
+**Angular spectrum** (energy-weighted; power-summed over radius, *not* coherently
+integrated — coherent radial integration mis-ranks orders across nodal-circle sign flips,
+see §7 note 1):
+```
+A(n) = Σ_k | Σ_j w(r_k)·P(r_k,θ_j) · e^{−2πi n j/N_θ} |,   n = 0..N_θ/2
+```
+with radial weight `w(r) = r` (area weighting — *essential*: high-n energy lives at large r;
+without `w(r)=r`, estimates are biased low) or `w(r) = r·σ²(r)⁻¹` (variance weighting) if
+per-radius noise estimates exist.
+
+**Estimator:**
+```
+n̂ = argmax_{n ≥ 1} A(n)          (exclude n=0 DC unless the glyph is ring-dominated)
+```
+**Significance (Rayleigh / Fisher g-test):** under H₀ (no angular structure), normalized
+power `g = A(n̂)² / Σ_n A(n)²` has p-value `≈ N·(1−g)^{N−1}` (Fisher's g). Require
+`p < 10⁻³` for "n detected", else route to ring/grid-only hypotheses.
+
+**Harmonic check:** if `A(n̂)` dominates, inspect `A(k·n̂)`, k=2,3,… A true n̂-fold pattern
+with non-sinusoidal angular profile (e.g. narrow arms) has power at harmonics; keep the
+*fundamental* as n. Conversely, if only even harmonics appear (`A(2),A(4),…` with `A(1)=0`),
+report n̂ as the fundamental and note "odd orders forbidden" (see dumbbell, §2).
+
+**Subharmonic ambiguity:** a pattern with n̂-fold symmetry is also n̂/d-fold symmetric for
+every divisor d of n̂. We always report the *maximal* order and list divisors as aliases
+with degraded scores (§3).
+
+### 1.3 Radial profile → radial order m
+
+Two complementary estimators:
+
+**(a) Mean radial profile (for n = 0 / ring-dominated glyphs):**
+```
+R̄(r_k) = (1/N_θ) Σ_j P(r_k, θ_j)
+```
+Count interior extrema/zero-crossings of the detrended, band-passed `R̄`. For a signed sand
+density, nodal circles = zeros; for a mask of ringed features, rings = peaks.
+```
+m̂ = 1 + #{interior nodal circles}   (disk convention: m counts rim as the m-th zero)
+```
+
+**(b) Order-conditioned radial profile (for n̂ > 0):** project onto the detected angular
+harmonic first:
+```
+P_n(r_k) = | (1/N_θ) Σ_j P(r_k,θ_j) e^{−2πi n̂ j/N_θ} |   (complex demodulation)
+```
+`P_n(r)` behaves like `|J_{n̂}(α_{n̂,m}·r/R)|` (mod envelope). On signed/gray data,
+template-match the envelope against the Bessel library; on **thresholded/binary images the
+envelope is flattened and the robust estimator is nodal-circle detection**: minima of the
+normalized demodulation `P_n(r)/R̄(r)`, matched to the zero-ratio table `α_{n̂,j}/α_{n̂,m}`
+by bipartite assignment with count-mismatch penalty (validated in §7 note 2). The envelope
+correlation form:
+```
+m̂ = argmax_m  corr( P̂_n(r), |J_{n̂}(α_{n̂,m} r/R)| ),    m = 1..m_max
+```
+where `P̂_n` is `P_n` normalized to unit RMS. Optionally fit `R` simultaneously:
+`(m̂, R̂) = argmax_{m,R'∈[0.9R,1.05R]} corr(...)`.
+
+**Zero-table sanity check:** the fitted nodal radii must fall at
+`r_j/R = α_{n̂,j}/α_{n̂,m̂}`, j = 1..m̂−1. Report the residual RMS of measured nodal radii
+against this table as `ε_node` (used in scoring, §3).
+
+### 1.4 Spirals: log-polar unwrap, arm count, chirality
+
+1. **Log-polar resample:** `L(u_k, θ_j) = I(c + e^{u_k}(cosθ_j, sinθ_j))`,
+   `u_k ∈ [ln r_min, ln R]` uniformly spaced. Choose `r_min ≥` a few pixels; features at
+   `r < r_min` are ignored (center clutter is rarely modal).
+2. **2-D FFT** of `L` (with Hann window): peaks at integer pairs `(ν_u, ν_θ)`.
+   - `n̂ = ν_θ` (arm count / azimuthal order),
+   - pitch parameter `b̂ = ν_θ / ν_u`, pitch angle `γ = arctan(1/b̂)`,
+   - **chirality** `χ = −sign(dφ/d ln r)` for demodulation kernel `e^{−inθ}` (equivalently
+     `sign(ν_u · ν_θ)` in the log-polar FFT peak); fixed convention: `χ = +1` = radius grows
+     clockwise (right-handed). `χ = 0` (`ν_u = 0`) ⇒ concentric rings, not a spiral. See §7
+     note 3 for the sign-convention caveat.
+3. **Radial order along the arm:** for each detected arm, unwrap the 1-D intensity profile
+   along the arm's centerline and count feature beads `B_arm`. Then `m̂ ≈ B_arm` if the
+   glyph reads as "n arms × m beads" (e.g. the 6-arm, 409-circle galaxy: `409/6 ≈ 68`
+   per arm → candidates `m̂ ∈ {68 ± 2}` — but see §3: this is a *construction-count* m,
+   physically meaningful only under the standing-wave-with-beaded-arms hypothesis; list
+   `(6, 68)` as a low-confidence candidate and `(6, m≤6)` as medium-confidence modal
+   candidates, since 409 circles is decorative capacity, not modal nodes).
+4. **Spiral-vs-standing-mode discriminator:** compute the radial phase coherence
+   ```
+   C = | Σ_k w(r_k) e^{iφ(r_k)} | / Σ_k w(r_k),   φ(r_k) = arg Σ_j P e^{−2πi n̂ j/N_θ}
+   ```
+   `C

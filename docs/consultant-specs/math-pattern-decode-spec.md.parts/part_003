@@ -1,0 +1,54 @@
+l, notes: [...]}, … top-k ],
+  diagnostics: {A(n) spectrum, Fisher p, radial profile, Bessel corr vs m,
+                phase coherence C, nodal residual ε_node, noise floor τ}
+}
+```
+
+The decoder never collapses to one mode silently; uniqueness claims are only ever made at
+the level of *frequency-ratio clusters* under a stated Q and resolution.
+
+---
+
+## 7. Numerical validation results (reference implementation of §1, NumPy/SciPy prototype)
+
+A prototype of the disk, spiral, and grid estimators was run against the §5 battery
+(512×512 images, N_r=200, N_θ=2048 polar grid, area weight `w=r`):
+
+| Test | Planted | Recovered | Result |
+|---|---|---|---|
+| V1 clean disk mode | (5,3) | n̂=5 exact; m̂=3 via nodal-circle/Bessel-zero matching | PASS |
+| V2 sweep n=1..8, m=1..3 (24 modes) | each | top-1 exact on **23/24**; angular order n̂ exact on 24/24 | PASS (≥95% gate) |
+| V4 noisy (σ = 0.6·signal) | (6,2) | (6,2), template corr 0.90 vs ≤0.37 for all other m | PASS |
+| V5/V5b log spirals, 3 arms, b=0.4, both chiralities | n=3 | n̂=3; C=0.26 < 0.5 → spiral flagged; \|dφ/d ln r\| = 7.38 (theory n/b = 7.5); chirality sign correctly opposite between the two | PASS |
+| V6 rings with 3-fold wobble (same A(n) as V5) | ring | n̂=3 but C=0.91 → standing/ring path, **not** reported as spiral | PASS (§4.3 conflation avoided) |
+| V8 23×73 random-bit grid | plate (23,73) | cell pitch 6 px recovered exactly → (23, 73) | PASS |
+| V9 6-arm × 68-bead galaxy | (6, constr. 68) | n̂=6 exact; C=0.10 (spiral flagged); bead count kept as construction m with LOW physical confidence per §4.4 | PASS |
+
+**Implementation notes discovered during validation (fold back into spec):**
+
+1. **Angular FFT must be radially power-summed** (`Σ_r |FFT_θ{w·P}|`), not coherently
+   integrated across radius — a coherent sum couples radial and angular structure and
+   mis-ranks orders when the radial phase flips sign across nodal circles.
+2. **Radial order m on thresholded/binary images:** raw `|J_n|` envelope correlation has
+   poor contrast (thresholding flattens the envelope; worst case 0.16 vs 0.21 between wrong
+   and right m). The robust estimator is **nodal-circle detection**: minima of the
+   normalized demodulation amplitude `|⟨P e^{−in̂θ}⟩| / ⟨P⟩`, matched to the Bessel-zero
+   ratio table `α_{n,j}/α_{n,m}` with a bipartite assignment (tolerance 0.07 R) plus a
+   count-mismatch penalty. This took the clean sweep from 14/24 to 23/24 top-1.
+3. **Chirality sign convention:** with demodulation kernel `e^{−inθ}`, the measured slope
+   sign `dφ/d ln r` is the *negative* of the generator convention `θ = χ·ln(r)/b`. The
+   decoder must fix and document one convention: we define
+   `χ := −sign(dφ/d ln r)` so that `χ = +1` = right-handed (radius grows clockwise).
+   Chirality is metadata; it never affects `f` for isotropic resonators (§4.3).
+4. **Grid pitch lives in the cell boundaries, not the content.** For random-content grids
+   (23×73), axis-mean intensity is spectrally white (sinc² envelope, no comb): FFT,
+   autocorrelation, and fold-periodograms on mean intensity all fail or lock onto
+   subharmonics/window taper. The correct observable is the **edge/gradient map**
+   `E = |∂x I| + |∂y I|`; comb-fitting `E`'s axis profiles (maximize mean power at comb
+   teeth `k/d`, with a `d^{−1/2}` subharmonic penalty) recovered pitch = 6 px → (23, 73)
+   exactly. §1.5 step 2 is amended accordingly: *"compute cell pitch from the comb
+   spectrum of the edge map, not the raw image."*
+5. **Window tapers masquerade as correlation** in pixel-level autocorrelation (lag-0
+   triangle tail beats the true pitch peak). Any autocorrelation-based pitch/node detector
+   must be bias-corrected (`÷ (N − lag)`) and restricted to lags above the minimum
+   physically plausible spacing.

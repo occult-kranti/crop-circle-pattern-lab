@@ -1,0 +1,143 @@
+disk 0.5, square plate 0.2, annulus 0.15, spiral
+  construction 0.1, fractal/non-modal 0.05 — configurable).
+- Default weights: `w_ang = 1.0, w_rad = 1.0, w_node = 2.0, w_prior = 0.25`.
+
+Normalize: `score(μ) = S(μ) / Σ_{top-k} S`.
+
+### 3.2 Systematic alias set (always enumerate)
+For a detected `(n̂, m̂)`, the following candidates are mathematically indistinguishable or
+near-indistinguishable and must be returned with penalties:
+1. **Divisor aliases:** `(d, m̂)` for `d | n̂` — any n̂-fold pattern is also d-fold. Penalty
+   proportional to missing harmonic energy at `d` (if `A(d) ≈ 0`, large penalty; if
+   `A(d) > 0`, genuine ambiguity).
+2. **Harmonic aliases:** `(k·n̂, m̂)` if `A(k·n̂)` is comparable — narrow-armed patterns put
+   real energy at harmonics; the fundamental is chosen only if `A(n̂)` is the *first* large
+   peak.
+3. **Radial aliases:** `(n̂, m̂ ± 1)` — one missed/spurious nodal circle.
+4. **Degenerate rotation pair:** `(n̂, m̂, φ)` — phase `φ` is unidentifiable from a static
+   glyph (and irrelevant to frequency).
+5. **Square-plate swap:** `(p,q) ↔ (q,p)` when `a = b` (exact degeneracy, same f).
+6. **Bessel near-coincidences:** distinct `(n,m)` pairs with `α_{n,m} ≈ α_{n',m'}` (e.g.
+   `α_{0,3} = 8.654 ≈ α_{3,2} = 8.536`, 1.4% apart) are frequency-degenerate within any
+   realistic plate tolerance; group candidates by `α_{n,m}` cluster width = plate Q⁻¹
+   (fractional frequency resolution). Candidates in one cluster are physically
+   indistinguishable at finite Q.
+
+### 3.3 Confidence classes
+```
+HIGH:   top score ≥ 0.6  AND  gap(top, 2nd) ≥ 0.15  AND  p_Fisher < 1e-3  AND  ε_node < 5%
+MEDIUM: top score ≥ 0.4  AND  gap ≥ 0.05, or single-estimate paths (structural rules)
+LOW:    everything else; also forced for fractal/broadband and >200-feature glyphs
+```
+### 3.4 Why unique inversion is impossible in general
+1. **Projection loss:** a glyph is a *nodal-line set* (or thresholded |ψ|), i.e. we observe
+   `sgn`/`|·|` information at best; amplitude and phase are gone. Infinitely many
+   superpositions `Σ c_{n,m} ψ_{n,m}` share a nodal set approximately.
+2. **Symmetry subsumption:** n-fold ⊃ d-fold for all `d | n` — order is only upper-bounded
+   by symmetry, never lower-bounded.
+3. **Frequency degeneracy:** rotation pair (n, ±), square-plate swap, and Bessel
+   near-coincidences (§3.2.6) make the map mode → frequency many-to-one and its inverse
+   one-to-many.
+4. **Non-modal content:** glyphs routinely encode *information* (23×73 bits, Koch
+   recursion) that is not a vibration at all; no physical prior forces a modal reading.
+5. **Finite resolution:** with N_θ angular samples, orders `n > N_θ/2` alias; two modes
+   differing only above the resolution limit are identical to the decoder.
+
+Hence the decoder contract is: **ranked candidate set + scores + alias list + confidence
+class + falsifiable frequency ratios** (`f_{n,m}/f_{ref} = α_{n,m}/α_{ref}`).
+
+---
+
+## 4. Edge cases
+
+### 4.1 Off-center features / displaced centroid
+- Symptom: `A(1)` spuriously large (an off-center blob mimics a dipole), smeared high-n peaks.
+- Fix: (i) re-estimate center by *symmetry maximization*:
+  `c* = argmax_c A_{c}(n̂)/Σ_{ℓ≠n̂,0} A_{c}(ℓ)` over a local grid around the moment centroid;
+  (ii) if the glyph is a figure inside a disc, center on the **disc**, not the figure;
+  (iii) report `A(1)` dominance with a "possible decentering" warning whenever
+  `A(1) > A(n̂)/2`.
+
+### 4.2 Multi-component glyphs (figure + disc, ring + text)
+- Connected-component analysis; decode each component separately; the outer disc/ring acts
+  as the **boundary condition anchor** (fixes R and n=0 baseline) and should not be fed to
+  the angular FFT of the interior figure.
+- Compose candidates: `μ_glyph = (μ_figure; boundary = disc)`; scoring adds a small bonus if
+  the figure's inferred R matches the disc radius within 3%.
+
+### 4.3 Chiral spirals vs. concentric rings with identical angular spectra
+- `A(n)` is a magnitude: it annihilates the radial phase `φ(r)`. A 3-arm spiral and 3
+  concentric rings with a slight azimuthal modulation can produce the same `A(n)`.
+- Discriminator (§1.4): radial phase coherence `C` and the slope `dφ/d ln r`. **The decoder
+  must always output the phase diagnostics alongside the spectrum**, or these cases are
+  silently conflated.
+- Chirality itself is physically unobservable in *frequency* for isotropic resonators; it is
+  reported as metadata, not as a frequency discriminator (rotating/gyrotropic media excepted
+  — flag only if the application implies rotation).
+
+### 4.4 Very high order (409 circles on 6 arms)
+- Sampling: need `N_θ ≥ 2·n_max·(margin)` and per-arm unwrapping; feature-count m=68/arm is
+  far above credible membrane radial orders (`m` that large implies nodal circles ~1.5% of R
+  apart — below typical glyph line width). Rule: if estimated `m·(line_width/R) > 0.5`,
+  declare the count *sub-resolution for modal purposes* and emit "construction count, not a
+  mode" (confidence LOW for physical f, but keep the exact integer counts as data).
+- Conversely the *azimuthal* order n=6 is robust (low n, strong fundamental).
+
+### 4.5 Non-circular outer boundaries
+- Eccentricity test (§1.1). Rectangle → square-plate model (§0.2, §1.5); regular k-gon
+  boundary → polygonal membrane: report `n = k` symmetry class and note that polygon modes
+  are *not* Bessel modes (frequency ratios differ; requires FEM for exact f — out of scope,
+  return symmetry-class candidates only, confidence MEDIUM).
+- Elliptical boundary → Mathieu-function modes; we return the nearest circular-mode
+  candidates with an "ellipticity correction unknown" penalty.
+
+### 4.6 Noise, line thickness, partial occlusion
+- Noise floor via MAD of high-n spectrum: `τ = median(A[n≥8]) + 3·MAD`.
+- Thick glyph lines: skeletonize (medial axis) before radial node counting; raw profiles
+  overcount nodes by splitting one thick node into two edges.
+- Occlusion / missing wedge (θ-range gaps): use **non-uniform / Lomb–Scargle angular
+  periodogram** instead of FFT; flag orders whose confidence interval spans an alias.
+- Multiple nearby exposures/snapshots: average complex demodulates `P_n(r)` *coherently*
+  only if phase-locked; otherwise average powers.
+
+---
+
+## 5. Validation battery
+
+All synthetic tests generate the forward model, corrupt it, and require the decoder to
+recover the planted mode within tolerance. Suggested acceptance gates (must pass 100% on
+clean, ≥90% on noisy suites):
+
+| ID | Generator | Planted truth | Corruption | Pass criterion |
+|---|---|---|---|---|
+| V1 | `ψ_{5,3}` disk, binary sand image (pixels where ψ>0 vs ≤0) | (5,3) | none | top-1 = (5,3), HIGH |
+| V2 | `ψ_{n,m}` for all n≤12, m≤5 sweep | each (n,m) | none | top-1 exact on ≥95% of grid; top-3 on 100% |
+| V3 | V1 + decenter by 8% of R | (5,3) | shift | top-3 contains (5,3); recentered run → top-1 |
+| V4 | `ψ_{6,2}` + Gaussian noise σ = 20% of signal | (6,2) | noise | top-3 contains (6,2); n̂ exact |
+| V5 | 3-arm log spiral, b = 0.15, 24 beads/arm | n=3, chirality + | none | n̂=3, χ correct, C < C_lo (spiral flagged) |
+| V6 | 3 concentric rings with 3-fold wobble (same A(n) as V5) | (0,3)-ish ring | — | must NOT report spiral; C ≈ 1 → ring/standing path |
+| V7 | 16×16 binary grid | plate (16,16) | none | top-1 (16,16) + swap note; n-Fisher significant |
+| V8 | 23×73 grid | plate (23,73) | none | top-1 (23,73) |
+| V9 | 6-arm × 68-bead "galaxy" | (6, constr. 68) | none | n̂=6 HIGH; m reported LOW with sub-resolution flag |
+| V10 | dumbbell `ψ_{1,1}` and quadrant `ψ_{2,1}` | (1,1),(2,1) | none | both correctly separated by nodal-line count |
+| V11 | Koch snowflake (iteration 4) | n=3/6 comb | none | n_base ∈ {3,6} reported, class LOW, "non-modal" flag |
+| V12 | superposition `0.7ψ_{5,3} + 0.7ψ_{2,1}` | mixture | — | decoder returns ≥2 candidates; no fabricated single mode |
+| V13 | ellipse boundary (e = 0.2), `ψ_{4,2}`-like | (4,~2) | geometry | n̂=4 recovered; ellipticity warning emitted |
+| V14 | 25° occlusion wedge on `ψ_{7,2}` | (7,2) | missing data | Lomb–Scargle path keeps (7,·) in top-3 |
+| V15 | divisor trap: `ψ_{12,1}` clean | (12,1) | none | top-1 = (12,1); aliases (6,1),(4,1),(3,1),(2,1),(1,1) listed with lower scores |
+
+Frequency check: for every V-test, verify `f̂/f̂_ref = α_{n̂,m̂}/α_{ref}` exactly (it's a
+table lookup — the physics is in the mode ID, not the arithmetic).
+
+---
+
+## 6. Summary of deliverable contract
+
+```
+decode(input) → {
+  route:            DISK | SPIRAL | GRID | RING | COMPOSITE | NON_MODAL,
+  center, R:        fitted anchor (with eccentricity/ellipse warning if any),
+  candidates: [ {n, m, class: disk|plate|annulus|spiral|construction,
+                 score, confidence: HIGH|MEDIUM|LOW,
+                 freq_ratio: α_{n,m}/α_ref  (or plate formula),
+                 aliases: [...], chirality: ±1|0|nul

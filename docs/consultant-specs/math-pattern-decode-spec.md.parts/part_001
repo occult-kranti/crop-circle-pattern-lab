@@ -1,0 +1,142 @@
+≈ 1` ⇒ constant phase with radius ⇒ **standing mode** (nodal diameters are straight).
+   `C ≪ 1` with linear `φ(r)` ⇒ **traveling wave / geometric spiral**. This is the rigorous
+   version of the "chiral spiral vs. concentric rings give the same angular spectrum" issue
+   (§4.3): the *magnitude* spectrum `A(n)` is identical; only the **radial phase structure**
+   separates them.
+
+### 1.5 Grids / lattices: 2-D Cartesian FFT → square-plate modes
+
+For grid glyphs (e.g. a 23×73 binary array):
+1. Do **not** polar-unwrap. Compute `F(u,v) = |FFT2(I·w_2D)|` with 2-D Hann window.
+2. Compute cell pitch from the **comb spectrum of the edge map** `E = |∂x I| + |∂y I|`
+   (boundaries are periodic even when cell content is random; mean intensity is not — see
+   §7 note 4). For trial pitch d, score `Σ_k S_E(k/d)/k_count` with a `d^{−1/2}`
+   subharmonic penalty; take the argmax in each axis. Equivalently find the reciprocal
+   lattice vectors `g₁, g₂` from the two dominant non-DC peaks `(±u₁,±v₁)`, `(±u₂,±v₂)` of
+   `FFT2(E)`. If `|g₁×g₂|` corresponds to a rectangular cell, the plate model applies:
+   ```
+   p̂ = a·|u₁| / (image sampling),  q̂ = b·|v₂|   — i.e., counts of half-wave periods
+   ```
+   equivalently, **count rows/columns of cells**: `p̂ = #cells_x`, `q̂ = #cells_y` (with the
+   convention that a p×q binary grid reads as plate mode `(p,q)` *if the bits encode
+   nodal-line positions*; if the bits are arbitrary data (Arecebo-style 23×73 = 1679 bits),
+   report `(p,q) = (23,73)` as the *container* mode and state that the content is
+   non-modal information, not a vibration pattern — confidence "low" for physical
+   interpretation, "high" for the geometric count).
+3. Hexagonal/triangular lattices (angle between `g₁,g₂` = 60°) → report `n̂ = 6` or `3`
+   azimuthal + lattice constant; hex plates have their own mode families (flag as
+   "non-Bessel resonator class").
+
+### 1.6 Ringed circles: radial profile peaks → (0, m)
+
+1. Confirm isotropy: `A(n) < τ` for all `n ≥ 1` (τ = noise floor + 3σ).
+2. Detect peaks of `R̄(r)` (§1.3a) via matched filtering with a ring template
+   (difference-of-Gaussians at expected ring width), or simply `find_peaks` with
+   min-distance `≥ 2px`.
+3. Candidate mapping (in descending score order):
+   - **Disk radial mode** `(0, m̂)`: requires ring radii to match `α_{0,j}/α_{0,m̂}` ratios
+     (2.405, 5.520, 8.654, … normalized). Compute `ε_node`.
+   - **Annular / DNA-ring decorative rings**: equal or arbitrary spacing → accept
+     `(0, m̂)` formally but tag "spacing non-Bessel: likely symbolic".
+   - **Beat note / moiré** of a high-n mode sampled on rings — tested by checking for weak
+     but significant `A(n)` at large n (`n ≥ 8`); if found, demote the pure-ring candidate.
+
+### 1.7 Routing logic
+
+```
+route(M, I):
+    compute A(n) (§1.2), isotropy τ, C (§1.4), grid peak sharpness G = max|F|/median|F|
+    if G > G_thresh and peaks form a lattice:      → GRID path  (§1.5)
+    elif A-isotropic (all A(n≥1) < τ):             → RING path  (§1.6)
+    elif C < C_lo and pitch fit R² > 0.9:          → SPIRAL path (§1.4)
+    else:                                          → DISK path  (§1.2+1.3)
+    Always also return runner-up route if its score is within 20% of the winner.
+```
+
+### 1.8 Pseudocode — image path
+
+```
+function decode_image(I):
+    M, signed ← segment(I)
+    c ← robust_center(M)                # moment centroid, refined by Hough disc if found
+    R ← robust_radius(M, c)             # 95th percentile
+    if outer_boundary_eccentricity > 0.1: flag NON_CIRCULAR; consider grid path
+    P ← polar_resample(I, c, R, N_r, N_θ)
+    A ← angular_spectrum(P, w=r)        # §1.2
+    τ ← noise_floor(A)                  # median + k·MAD over n ∈ [8, N_θ/2]
+    route ← route(...)
+    candidates ← []
+    if route == DISK:
+        n̂ ← argmax_{n≥1} A(n);  check harmonics; p_Fisher(g)
+        P_n ← demodulate(P, n̂)
+        for m in 1..m_max:
+            s_m ← corr(P_n, |J_{n̂}(α_{n̂,m}·r/R)|)
+            ε_m ← nodal_residual(P_n, n̂, m)
+            candidates.push((n̂, m, score(s_m, ε_m, g)))
+    if route == SPIRAL:
+        L ← logpolar_resample(I, c, r_min, R)
+        (ν_u, ν_θ) ← argmax |FFT2(L)|
+        n̂ ← ν_θ; b̂ ← ν_θ/ν_u; χ ← sign(ν_u·ν_θ)
+        B ← beads_per_arm(L, n̂);  candidates.push((n̂, B, low_conf), (n̂, ≤6, med_conf))
+    if route == GRID:
+        (g1,g2) ← lattice_peaks(FFT2(I))
+        (p̂,q̂) ← cell_counts(g1,g2, image_extent)
+        candidates.push((p̂, q̂, SQUARE_PLATE, score))
+        if a≈b: candidates.push((q̂, p̂, same_score))      # exact degeneracy
+    if route == RING:
+        rings ← peaks(R̄(r)); m̂ ← #rings + 1
+        ε ← match_to_zeros(α_0, ring_radii)
+        candidates.push((0, m̂, score(ε)))
+    candidates ← add_divisor_aliases(candidates)          # §3.2
+    return rank_and_classify(candidates)                  # §3
+```
+
+---
+
+## 2. Structural path (descriptors → candidate (n,m) sets)
+
+Rule-based mapping, no image required. Each rule emits `(n, m, confidence, note)`.
+Composition rules: conjunction of independent descriptors multiplies scores; conflicting
+descriptors emit multiple candidates.
+
+| # | Descriptor pattern | Rule | Output candidates |
+|---|---|---|---|
+| R1 | "k-fold symmetric" / "k arms" / "k-petal" | `n = k` (fundamental); aliases `n ∈ divisors(k)` at reduced score | `(k, ?, high for n)` |
+| R2 | "q concentric rings of features" | `m = q` (rings are nodal-circle analogues) or `m = q+1` if rim counts as a node | `(0 or k, q∼q+1, medium)` |
+| R3 | "mirror symmetric about d diameters" | `n = d` or `2d` (mirror symmetry implies standing wave `cos(nθ)`, any n̂ with that mirror count) | `(d, ?, medium)` |
+| R4 | "k-arm spiral (logarithmic)" | `n = k`, chirality recorded; m from bead count per arm if given, else `m ∈ {1..3}` medium-low | `(k, ·, medium)` |
+| R5 | "p × q grid/array" | square/rectangular plate `(p, q)`; if p = q: add swapped degenerate note; if p,q prime: flag "no subharmonic ambiguity" | `(p, q, high geometric / low physical)` |
+| R6 | "s-segment ratchet / gear" | `n = s` + **chirality** (ratchet teeth are chiral): report as traveling-wave candidate `cos(sθ − ωt)` | `(s, 1..2, medium)` |
+| R7 | "dumbbell / two lobes" | `n = 1` dipole (two opposite lobes, one nodal diameter) — equivalently `n = 2` if lobes are opposite quadrants; disambiguate by counting nodal lines between lobes: 1 line → n=1, 2 lines → n=2 | `{(1,1),(2,1)} medium` |
+| R8 | "fractal (Koch snowflake, Julia set, Sierpinski)" | no single mode: angular spectrum is a **comb** at harmonics of the base order (Koch: base n=3 or 6; Julia `z²+c` spirals: n=2 arms typical) + continuum. Report `(n_base, ·, low)` and state "broadband, non-modal" | `(n_base, ?, low)` |
+| R9 | "concentric ring + central disc" (figure+disc) | two-component glyph (§4.2): disc = `n=0` boundary anchor; interior figure decoded separately by R1–R8 | composite candidate |
+| R10 | "tetrahedral / 3-fold 3-D pictogram" | projective symmetry of tetrahedron `T_d`: angular orders `{3}` in the view plane, but true object is 3-D → flag "2-D projection aliases multiple 3-D orientations"; candidates `(3, m∈{1,2})` | `(3, ·, low-medium)` |
+| R11 | "N discrete dots/circles arranged on k arms or rings" | `n = k`; `m ≈ N/k` per arm (or per ring: `m = #rings`); divisors of N that factor as `n·m` give the alias set | factor-pair list |
+
+**Worked mappings for the canonical test glyphs:**
+
+| Glyph | Rule(s) | Top candidates (n, m) | Class |
+|---|---|---|---|
+| Quintuplet (5 dots / 5-fold) | R1 | (5, 1); alias (1, ·) degenerate | high for n |
+| Julia-set spiral | R4, R8 | (2, ·), low; "broadband" note | low |
+| Koch snowflake | R8 | (6, ·) or (3, ·); comb spectrum | low |
+| 6-arm galaxy, 409 circles | R4+R11 | (6, 68) construction count — low; (6, 1..6) modal — medium | medium |
+| 23×73 binary grid | R5 | (23, 73) square-plate container; "content non-modal" | high geom / low phys |
+| 10-segment ratchet wheel | R6 | (10, 1), chiral traveling-wave candidate | medium |
+| Concentric DNA ring | R2+R9 | (0, q), q = #rings; "spacing check decides modal vs symbolic" | medium |
+| Dumbbell | R7 | {(1,1), (2,1)} | medium |
+| 3-fold tetrahedral pictogram | R10 | (3, 1..2) | low-medium |
+
+---
+
+## 3. Ambiguity quantification and scoring
+
+### 3.1 Match score
+For each candidate mode `μ = (n, m, class)`:
+```
+S(μ) = w_ang · s_ang(n) + w_rad · s_rad(n,m) + w_node · (−ε_node(n,m)) + w_prior · log π(class)
+```
+- `s_ang(n) = A(n)² / Σ_{ℓ≥1} A(ℓ)²` — normalized angular power share.
+- `s_rad(n,m) = max(0, corr(P̂_n, |J_n(α_{n,m}·r/R)|))` — Bessel template correlation.
+- `ε_node` = RMS residual of measured nodal radii vs. `α_{n,j}/α_{n,m}` table (§1.3).
+- `π(class)` = resonator-class prior (
