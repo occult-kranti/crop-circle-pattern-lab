@@ -1,0 +1,487 @@
+*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      3,
+      0,
+      2
+     ],
+     "type": "tangential",
+     "f_hz": 76.58,
+     "membrane_analog": [
+      3,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      4,
+      1,
+      1
+     ],
+     "type": "oblique",
+     "f_hz": 78.92,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      2,
+      2,
+      1
+     ],
+     "type": "oblique",
+     "f_hz": 78.93,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      5,
+      0,
+      0
+     ],
+     "type": "axial",
+     "f_hz": 81.9,
+     "membrane_analog": [
+      1,
+      3
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      3,
+      2,
+      0
+     ],
+     "type": "tangential",
+     "f_hz": 81.91,
+     "membrane_analog": [
+      3,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      3,
+      1,
+      2
+     ],
+     "type": "oblique",
+     "f_hz": 83.29,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      5,
+      0,
+      1
+     ],
+     "type": "tangential",
+     "f_hz": 87.01,
+     "membrane_analog": [
+      5,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      3,
+      2,
+      1
+     ],
+     "type": "oblique",
+     "f_hz": 87.02,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      4,
+      0,
+      2
+     ],
+     "type": "tangential",
+     "f_hz": 87.99,
+     "membrane_analog": [
+      4,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      2,
+      2
+     ],
+     "type": "tangential",
+     "f_hz": 88.0,
+     "membrane_analog": "mixed (0,2)+(4,1)",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      0,
+      3
+     ],
+     "type": "axial",
+     "f_hz": 88.1,
+     "membrane_analog": [
+      1,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      5,
+      1,
+      0
+     ],
+     "type": "tangential",
+     "f_hz": 88.21,
+     "membrane_analog": [
+      5,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      1,
+      2,
+      2
+     ],
+     "type": "oblique",
+     "f_hz": 89.51,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      1,
+      0,
+      3
+     ],
+     "type": "tangential",
+     "f_hz": 89.61,
+     "membrane_analog": [
+      3,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      4,
+      2,
+      0
+     ],
+     "type": "tangential",
+     "f_hz": 92.67,
+     "membrane_analog": [
+      4,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      5,
+      1,
+      1
+     ],
+     "type": "oblique",
+     "f_hz": 92.97,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      4,
+      1,
+      2
+     ],
+     "type": "oblique",
+     "f_hz": 93.89,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      2,
+      2,
+      2
+     ],
+     "type": "oblique",
+     "f_hz": 93.9,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      2,
+      0,
+      3
+     ],
+     "type": "tangential",
+     "f_hz": 93.99,
+     "membrane_analog": [
+      3,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      1,
+      3
+     ],
+     "type": "tangential",
+     "f_hz": 94.0,
+     "membrane_analog": [
+      3,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      1,
+      1,
+      3
+     ],
+     "type": "oblique",
+     "f_hz": 95.41,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      4,
+      2,
+      1
+     ],
+     "type": "oblique",
+     "f_hz": 97.21,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      6,
+      0,
+      0
+     ],
+     "type": "axial",
+     "f_hz": 98.28,
+     "membrane_analog": [
+      1,
+      3
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      3,
+      0
+     ],
+     "type": "axial",
+     "f_hz": 98.3,
+     "membrane_analog": [
+      1,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      2,
+      1,
+      3
+     ],
+     "type": "oblique",
+     "f_hz": 99.54,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      1,
+      3,
+      0
+     ],
+     "type": "tangential",
+     "f_hz": 99.65,
+     "membrane_analog": [
+      3,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      5,
+      0,
+      2
+     ],
+     "type": "tangential",
+     "f_hz": 100.78,
+     "membrane_analog": [
+      5,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      3,
+      2,
+      2
+     ],
+     "type": "oblique",
+     "f_hz": 100.79,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      3,
+      0,
+      3
+     ],
+     "type": "tangential",
+     "f_hz": 100.88,
+     "membrane_analog": [
+      3,
+      3
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      6,
+      0,
+      1
+     ],
+     "type": "tangential",
+     "f_hz": 102.57,
+     "membrane_analog": [
+      6,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      3,
+      1
+     ],
+     "type": "tangential",
+     "f_hz": 102.59,
+     "membrane_analog": [
+      3,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      6,
+      1,
+      0
+     ],
+     "type": "tangential",
+     "f_hz": 103.6,
+     "membrane_analog": [
+      6,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      2,
+      3,
+      0
+     ],
+     "type": "tangential",
+     "f_hz": 103.61,
+     "membrane_analog": [
+      3,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      1,
+      3,
+      1
+     ],
+     "type": "oblique",
+     "f_hz": 103.89,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      5,
+      2,
+      0
+     ],
+     "type": "tangential",
+     "f_hz": 104.89,
+     "membrane_analog": [
+      5,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "i
