@@ -1,0 +1,151 @@
+# Monument Resonator Integration — Round 1 Consultation Spec
+**Conventions:** 12-TET, A4 = 440 Hz. Cents = signed deviation from nearest 12-TET note.
+Provenance classes: **MEASURED** > **MODELED** > **DECODED** (strict confidence ordering).
+
+---
+
+## 1. Presentation updates — provenance honesty in shared tables
+
+**Problem:** monument chamber tones (e.g., a swept-sine measured resonance) are empirical
+physical facts about a room. Our pattern decodes are frequencies *conditional on a decoding
+assumption chain* (geometry → mode index → resonator reference → Hz). Mixing them in one
+column implies equal epistemic status. Fix with mandatory provenance tagging.
+
+### Rules
+1. **Every Hz value carries a provenance tag:** `[MEASURED]`, `[MODELED]`, `[DECODED]`.
+   Never display a bare number.
+2. **Tag definitions (print once, link everywhere):**
+   - `MEASURED` — published in-situ acoustic measurement (swept sine, impulse response,
+     ambient-noise peak). Requires citation + method + stated uncertainty if available.
+   - `MODELED` — computed from room geometry (axial/tangential/oblique mode formulas,
+     FEM/BEM). Assumption-dependent on dimensions, boundary conditions, absorption.
+     Requires stated dimensions + formula.
+   - `DECODED` — output of the reverse-cymatic engine. Conditional on decode hypothesis.
+     Requires decode-chain ID so the assumption chain is one click away.
+3. **Visual treatment:** tags rendered as colored chips (MEASURED solid / MODELED outline /
+   DECODED hatched). Optionally a 3-level confidence glyph ●◐○.
+4. **Sorting:** default sort = provenance first, then Hz. A `DECODED` value must never sit
+   above a `MEASURED` value for the same resonator in default view.
+5. **Uncertainty column:** MEASURED → measurement error (±Hz or ±cents);
+   MODELED → dimension tolerance propagated (±cents); DECODED → "n/a (hypothesis)" —
+   do *not* fabricate error bars on decodes; the uncertainty is the hypothesis itself.
+6. **Cross-match display:** when a DECODED Hz lands within tolerance of a MEASURED Hz,
+   render as "concordance" with explicit ΔHz and Δcents — never silently merge rows.
+   Suggested concordance windows: **±25 cents** = "match", ±25–50c = "near match",
+   >50c = no match. (±25c ≈ just-noticeable for steady tones; defensible.)
+
+---
+
+## 2. Ritual / perception angles — what's worth computing, and honest caveats
+
+### 2a. Vocal-range monument tones (strong, defensible)
+- **110 Hz = A2 exactly (±0c).** Sits in low male fundamental range (bass ~E2–E4,
+  82–330 Hz). Chanting at/around the Hypogeum's reported ~110 Hz band would produce
+  audible reinforcement and slow beats — this is real, computable physics.
+- Worth computing per monument: overlap of top modes with vocal ranges
+  (bass 82–294 Hz, baritone, tenor to ~523 Hz; female fundamentals ~165–523 Hz),
+  plus **beat rates vs. common chant fundamentals** (e.g., ~110, ~123.5 [B2], ~147 [D3]).
+- Overtone angle: if a chant fundamental locks to mode f₁, its 2nd/3rd harmonics may
+  excite higher modes — flag mode pairs near 2:1 / 3:1 ratios.
+
+### 2b. Infrasound thresholds (compute, but label carefully)
+- Tones **< 20 Hz** are below pitch perception; felt as pressure/vibration, not heard as
+  notes. Some monument *difference frequencies* and very large-chamber fundamentals land
+  here. Threshold rises steeply below 20 Hz (~90+ dB SPL needed near 16 Hz).
+- The "18–19 Hz ghost/unease" claim (Tandy) is anecdotal-tier; eye resonance ~18 Hz is
+  real physics, causal fear claims are not established. Present as **speculative**.
+
+### 2c. Theta-band "entrainment" (4–8 Hz) — critical assessment
+- 4–8 Hz is **not a tone**. A 110 vs. 114 Hz pair gives a 4 Hz *amplitude modulation*
+  (beat), which is genuinely audible as loudness fluctuation, and a 4 Hz *binaural beat*
+  exists as a perceptual illusion (dichotic presentation, works best < ~1 kHz carriers).
+- **But:** "theta entrainment" (EEG following the beat rate into theta) is weakly
+  supported at best. Meta-analyses find binaural-beat effects on cognition/mood small and
+  inconsistent; steady-state auditory evoked responses to AM exist, but robust 4–8 Hz
+  cortical entrainment from incidental room beats is **not established science**.
+- **Presentation rule:** beat rates in 4–8 Hz may be *tabulated* and labeled
+  "theta-rate AM (audible modulation; entrainment claim unproven)". Never state or imply
+  brainwave entrainment as fact.
+
+### 2d. Beat-rate perceptual categories (use in all beat tables)
+| Δf | Perception |
+|---|---|
+| < 0.5 Hz | slow swell, slow beating |
+| 0.5–6 Hz | clear beats / tremolo-like pulsing |
+| ~6–15 Hz | rapid flutter, starts to roughen |
+| ~15–40 Hz | **roughness zone** (max ≈ 30–40 Hz) — dissonant, "rattling" |
+| ~40–120 Hz | roughness fades, two tones emerge |
+| > ~120 Hz (or > critical band) | separate tones; beats no longer perceived |
+
+---
+
+## 3. Beat analysis between monument tones and pattern decodes — the rules
+
+**Core rule: a beat is only a physical prediction when both frequencies are physically
+realized in the same acoustic space at the same time.** Decode-to-decode "beats" are
+arithmetic coincidences until provenance justifies them.
+
+### R1 — Legitimacy classes (in order of meaning)
+1. **MEASURED ↔ MEASURED** (same site): physically real beat; report Δf + perceptual
+   category. Strongest result type.
+2. **MEASURED ↔ vocal/instrumental standard** (A2 chant, conch, drum): real *if performed
+   in the chamber*. Label "performance hypothesis."
+3. **MEASURED ↔ DECODED**: meaningful **only as a conditional prediction** — "IF decode
+   chain X is correct AND the decoded pattern's tone were sounded in this chamber, Δf =
+   Y Hz (category Z)." Label **HYPOTHETICAL BEAT**. Never present as an observed property.
+4. **MODELED ↔ DECODED / DECODED ↔ DECODED**: arithmetic only. Permitted in an
+   "internal concordance" appendix, clearly fenced off from physical claims. These are
+   pattern-matching outputs, not acoustics.
+5. **Cross-site beats (different monuments)**: physically meaningless as beats (tones
+   never coexist); only allowed as *interval* comparison (ratio, cents, interval name).
+
+### R2 — Tolerance & reporting
+- Concordance window ±25c (match) / 25–50c (near), as in §1.
+- Always report both Δf (Hz) and perceptual category; Δf in cents alone hides beat rate
+  (10c at 110 Hz ≈ 0.6 Hz; 10c at 4 kHz ≈ 23 Hz — totally different percepts).
+- Propagate provenance: a beat row inherits the **lower** of the two tags.
+- Difference/combination tones: also compute f₂−f₁ and 2f₁−f₂ (cubic difference tone,
+  often audible in loud nonlinear conditions); flag if either lands < 20 Hz (infrasound)
+  or in 4–8 Hz (theta-rate AM — with §2c caveat).
+
+### R3 — Bans
+- No beats between DECODED values presented without the chain IDs of both.
+- No entrainment-language ("induces theta", "trance frequency") anywhere in output.
+  Permitted: "theta-rate modulation", "ritual-plausible beat rate (speculative)".
+
+---
+
+## 4. "Sonic Signature Card" — per-monument spec
+
+Compact card, one per resonator. All fields mandatory; unknown = "not published".
+
+```markdown
+### 🜏 Sonic Signature Card — {Monument}, {Chamber}
+- **Location / Date / Material:** …
+- **Dimensions (L×W×H, m) / Volume (m³):** …
+- **Geometry class:** rectangular-ish / irregular-cave / corbelled …
+- **Absorption / RT60:** {s @ band, or "not published"; stone chambers typically
+  long — estimate only if labeled MODELED}
+- **Top 3 modes (MODELED):**
+  | # | Type (axial/tang/oblique, indices) | f (Hz) | Note | Cents |
+- **Measured resonances (MEASURED):** | f (Hz) | Note | Cents | Source | Method |
+- **Vocal-range overlap:** which modes fall in 82–330 Hz (male) / 165–523 Hz (female)
+- **Sub-20 Hz content:** any mode or difference tone below pitch perception
+- **Intra-chamber beats:** top mode-pair Δf values + perceptual category
+- **Provenance summary:** e.g. "2 MEASURED peaks, 3 MODELED modes, 0 DECODED links"
+- **Caveats:** measurement quality, single-study status, decode dependencies
+```
+
+### Reference fill-ins (flag publication quality!)
+
+**Hypogeum of Ħal Saflieni (Oracle Room)** — irregular limestone chamber, ~Neolithic.
+Frequently cited resonance band **~70–114 Hz, center claims ≈ 110 Hz (= A2, +0c)** —
+MEASURED but single-group/limited-peer-review provenance (Devereux/Jahn-era work,
+replication thin). 70 Hz ≈ C#2 +18c; 114 Hz ≈ A#2 −38c. RT60: not well published.
+Intra-band beats vs. 110 Hz: 4–40 Hz range — several land in **theta-rate AM** (§2c) and
+**roughness** zones. Vocal: entire band is male-chant range — strongest ritual angle.
+
+**King's Chamber, Great Pyramid** — granite, ~10.5 × 5.2 × 5.8 m.
+Axial modes (MODELED, c=343): L: f = 343/(2·10.5) ≈ **16.3 Hz (infrasound — felt, not
+heard)**; W: ≈ **33 Hz**; H: ≈ **29.6 Hz**. These are below/at the edge of pitch
+pe
