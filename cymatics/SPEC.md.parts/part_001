@@ -1,0 +1,12 @@
+re kept.
+  Sand grains default to accent #f54001 on `lab-paper` (bright-stop otherwise).
+- Item 6: honesty-labeling adopted as `CYM.HONESTY_NOTE` + SPEC text; the full
+  `presets.ts` preset catalog was NOT ported (no preset UI exists yet in the
+  static site; convention documented for whoever builds it).
+- Item 7 (audioLink.ts) and plate3d/plate5d/instrument: not ported (out of
+  scope for the simulation layer; no tone generator on the site yet).
+- `plateLadder()` always returns the nearest modes (no 0.15 tolerance cutoff)
+  so detune in cents is always defined; `frequencyToModes` keeps the source
+  tolerance semantics.
+- Python free-rim zeros use scipy `jnp_zeros` (more accurate than the
+  hardcoded A&S tables), per the intake merge strategy.
