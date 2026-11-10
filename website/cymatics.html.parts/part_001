@@ -1,4 +1,4 @@
-{d.ji_ratio?(' ('+d.ji_ratio+')'):''}</td>
+ <td>${d.beat_category}</td><td>${d.ratio}</td><td>${d.ji_interval||'—'}${d.ji_ratio?(' ('+d.ji_ratio+')'):''}</td>
   <td>${d.ji_cents_error??'—'}</td></tr>`).join('');
 }
 ['df','dq'].forEach(id=>document.getElementById(id).addEventListener('input',renderDif));
@@ -6,9 +6,10 @@ renderDif();
 const NAMES={1:'quintuplet 1983',2:'dumbbell 1990',3:'tetrahedron 1991',4:'Julia Set 1996',5:'Koch snowflake 1997',6:'Milk Hill Galaxy 2001',7:'Chilbolton grid 2001',8:'Crabwood disc 2002',9:'pi wheel 2008',10:'3-D cubes 2012'};
 let imgs='';
 for(let i=1;i<=10;i++){const n=String(i).padStart(2,'0');
- imgs+=`<figure><img class="cym-img" src="assets/cymatics/pattern_${n}_top_candidate.jpg"><figcaption>${i}. ${NAMES[i]}</figcaption></figure>`;}
+ imgs+=`<figure><img class="cym-img" data-boot-img="assets/cymatics/pattern_${n}_top_candidate.jpg"><figcaption>${i}. ${NAMES[i]}</figcaption></figure>`;}
 imgs+=['comparison_03_image_decode.jpg','comparison_06_image_decode.jpg','comparison_07_image_decode.jpg'].map(c=>
- `<figure><img class="cym-img" src="assets/cymatics/${c}"><figcaption>self-check: ${c.replace('comparison_0','pattern ').replace('_image_decode.jpg','')}</figcaption></figure>`).join('');
+ `<figure><img class="cym-img" data-boot-img="assets/cymatics/${c}"><figcaption>self-check: ${c.replace('comparison_0','pattern ').replace('_image_decode.jpg','')}</figcaption></figure>`).join('');
 document.getElementById('ims').innerHTML=imgs;
+BOOT.loadImages('img[data-boot-img]');
 </script>
 </body></html>
