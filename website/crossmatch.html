@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crossmatch Engine — Crop Circles</title>
+<link rel="stylesheet" href="assets/style.css"></head><body>
+<div class="masthead"><div class="wrap"><span>Field Notes on Flattened Wheat</span><span>Methods Paper · September 2026</span></div></div>
+<header class="top"><div class="wrap">
+<div class="brand">Crop<span>Circles</span> · Data & Patterns</div>
+<nav>
+<a href="index.html">Overview</a><a href="timeline.html">Timeline</a>
+<a href="dataset.html">Dataset</a><a href="analysis.html">Analysis</a>
+<a href="experiments.html">Hypotheses & Experiments</a><a href="papers.html">Research Papers</a>
+<a href="cymatics.html">Cymatics Lab</a><a href="compare.html">DMT × Sacred Geometry</a>
+<a href="carbon12.html">Case: Carbon-12</a><a href="monuments.html">Monuments</a>
+<a href="crossmatch.html" class="active">Crossmatch</a>
+</nav></div></header>
+
+<div class="hero"><div class="wrap">
+<div class="kicker">Brute force · anti-apophenia edition</div>
+<h1>The cross-pattern similarity engine.</h1>
+<p>We brute-forced every pair across four pattern domains — 60 crop formations, 4 Klüver form constants,
+8 sacred-geometry motifs, 13 monument resonators (85 items, 3,570 pairs, 139 cross-domain pairs testable) —
+with a weighted Gower-style distance over symmetry, vibration-mode, ratio and shape features. Then we did the
+part pattern-hunters skip: <b>pre-registered an "interesting" criterion and ran 100,000 label-shuffle
+permutations</b> (Westfall–Young family-wise error control).</p></div></div>
+
+<section><div class="wrap">
+<div class="disc"><b>Headline result: a clean null — and a ceiling theorem.</b> Zero cross-domain pairs pass
+(FWER 0 · Bonferroni 0 · BH-FDR 0). The permutation null's minimum-distance statistic is <i>degenerate at zero</i>:
+the profile space collapses to O(10) cells shared by every ornamental tradition, so one duplicate pair (which always
+exists) puts an atom of mass ≈0.47 at the null's minimum and the test's power is identically zero. Read this precisely:
+<b>cross-sectional motif matching is uninformative</b> — it can neither prove nor refute cross-domain relatedness.
+The only substantive null is the enrichment count test (p=0.55), which rules out broad closeness. The identifiable
+signal is temporal (see Experiments, Round 2). <i>— panel mathematics review</i></div>
+
+<div class="grid2" style="margin-top:22px">
+<div class="panel"><p class="chart-title">Design</p><p class="note">
+Features: n-fold symmetry (octave-tolerant), topology flags (spiral/grid/concentric/chiral), decoded membrane modes
+(n,m) with Bessel-zero proximity (T=0.05), canonical-ratio signatures ({φ, √2, √3, 2, 3, π}, log-Gaussian σ=2%,
+ratio-octave folded), 32-dim rotation-invariant Fourier descriptors. Gower-style weighted composite over jointly
+observed features only; pairs with &lt;3 shared feature groups excluded (1,549 of 1,688 excluded by rule —
+Klüver items carry no size/mode data). Pre-registration: τ=0.25, FWER α=0.05, FDR q=0.10, robust-z≥2, seed 20240601.</p></div>
+<div class="panel"><p class="chart-title">Statistics</p><p class="note" id="stats"></p></div>
+</div>
+
+<div class="panel"><p class="chart-title">Closest matches — all statistically null (FWER p ≈ 0.91–1.00)</p>
+<p class="note">Shown for transparency: these are the pairs a naive pattern-hunter would headline. Each is geometrically
+generic — the match is real as geometry and meaningless as evidence.</p>
+<div style="overflow:auto"><table class="data"><thead><tr><th>#</th><th>item A</th><th>item B</th><th>distance D</th><th>FWER p</th></tr></thead><tbody id="top"></tbody></table></div></div>
+
+<div class="panel"><p class="chart-title">Unit checks</p><p class="note" id="uc"></p></div>
+</div></section>
+
+<footer><div class="wrap"><div>Engine: cymatics/code/crossmatch.py · spec: similarity_engine_design.md (panel math consultation) · results: cymatics/results/crossmatch.json. The multiple-comparison guardrails follow Westfall–Young min-statistic FWER + Bonferroni floor + BH-FDR, with a HARKing firewall (post-hoc patterns require independent confirmation).</div><div class="fmeta">Methods Paper<br>Crossmatch</div></div></footer>
+<script src="assets/crossmatch_data.js"></script>
+<script>
+const ms=CM.matrix_summary;
+document.getElementById('stats').innerHTML=
+ `Pairs: ${CM.population.n_pairs.toLocaleString()} total · ${CM.population.n_cross_domain.toLocaleString()} cross-domain · ${CM.population.n_cross_tested} tested · ${CM.population.n_cross_excluded_min_coverage.toLocaleString()} excluded (coverage rule).<br>
+  Median cross-domain D = ${ms.median_cross_D.toFixed(3)} (MAD ${ms.mad_cross.toFixed(3)}) · observed minimum D = ${ms.min_cross_D_T_obs}.<br>
+  Null min-statistic quantiles (0.1%–50%): all 0.0 — the null is degenerate.<br>
+  Enrichment count test: C_obs=${ms.count_statistic_enrichment_test.C_obs_pairs_below_tau} vs null median ${ms.count_statistic_enrichment_test.C_null_median} → p=${ms.count_statistic_enrichment_test.p_enrichment.toFixed(2)}.<br>
+  Pass: FWER ${ms.n_wy_fwer_pass} · Bonferroni ${ms.n_bonferroni_pass} · BH-FDR ${ms.n_bh_fdr_pass}.`;
+document.getElementById('top').innerHTML=CM.global_top.map((t,i)=>
+ `<tr><td>${i+1}</td><td>${t.a}</td><td>${t.b}</td><td>${t.D.toFixed(3)}</td><td>${(t.p_fwer??t.p).toFixed(2)}</td></tr>`).join('');
+document.getElementById('uc').innerHTML=CM.unit_checks.map(u=>typeof u==='string'?u:JSON.stringify(u)).join('<br>');
+</script>
+</body></html>
