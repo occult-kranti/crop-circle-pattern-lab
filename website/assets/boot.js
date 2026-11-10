@@ -28,7 +28,10 @@
   }
 
   async function bootEval(path) {
-    const src = await bootText(path);
+    let src = await bootText(path);
+    // indirect eval runs in global scope, but top-level const/let do NOT bind globals.
+    // Our data files are generated with top-level const — demote to var for global binding.
+    src = src.replace(/^(const|let)\s+/gm, "var ");
     (0, eval)(src + "\n//# sourceURL=" + path); // indirect eval → global scope
   }
 
