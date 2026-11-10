@@ -1,0 +1,112 @@
+SA 99(2):649-658",
+     "method": "swept sine",
+     "tier": 1,
+     "provenance": "MEASURED",
+     "note": "West chamber primary"
+    }
+   ],
+   "mode_space": {
+    "mn": [
+     1,
+     1
+    ],
+    "bessel_zero": 3.8317,
+    "dominant_mode_f_hz": 112.0,
+    "comment": "low-order axial chamber modes; dims not in specs"
+   },
+   "signature_card": {
+    "title": "Sonic Signature Card — Wayland's Smithy, East + West chambers (transepted gallery grave)",
+    "location_date_material": "Oxfordshire, England / Neolithic, c. 3600 BCE / stone long barrow chambers",
+    "dims": {},
+    "volume_m3": "not published / n/a",
+    "geometry_class": "transepted gallery grave (small stone chambers)",
+    "rt60": "not published",
+    "top_modes_modeled": [],
+    "measured_resonances": [
+     {
+      "f_hz": 112.0,
+      "metric": null,
+      "source": "Jahn, Devereux & Ibison 1996, JASA 99(2):649-658",
+      "method": "swept sine",
+      "tier": 1,
+      "tier_label": "calibrated/replicated",
+      "provenance": "MEASURED",
+      "note": "A2",
+      "cents": 31.2,
+      "band": "PITCH"
+     },
+     {
+      "f_hz": 119.0,
+      "metric": null,
+      "source": "Jahn, Devereux & Ibison 1996, JASA 99(2):649-658",
+      "method": "swept sine",
+      "tier": 1,
+      "tier_label": "calibrated/replicated",
+      "provenance": "MEASURED",
+      "note": "A#2",
+      "cents": 36.1,
+      "band": "PITCH"
+     },
+     {
+      "f_hz": 95.0,
+      "metric": null,
+      "source": "Jahn, Devereux & Ibison 1996, JASA 99(2):649-658",
+      "method": "swept sine",
+      "tier": 1,
+      "tier_label": "calibrated/replicated",
+      "provenance": "MEASURED",
+      "note": "F#2",
+      "cents": 46.2,
+      "band": "PITCH"
+     }
+    ],
+    "measured_unverified": [],
+    "vocal_range_overlap": {
+     "male_82_330_hz": [
+      112.0,
+      119.0,
+      95.0
+     ],
+     "female_165_523_hz": []
+    },
+    "sub_20hz_content": {
+     "frequencies_hz": [],
+     "label": "below pitch perception — felt as pressure/vibration, not heard"
+    },
+    "intra_chamber_beats": [
+     {
+      "f1_hz": 112.0,
+      "f2_hz": 119.0,
+      "delta_f_hz": 7.0,
+      "category": "ROUGHNESS"
+     },
+     {
+      "f1_hz": 95.0,
+      "f2_hz": 112.0,
+      "delta_f_hz": 17.0,
+      "category": "ROUGHNESS"
+     },
+     {
+      "f1_hz": 95.0,
+      "f2_hz": 119.0,
+      "delta_f_hz": 24.0,
+      "category": "TRANSITION"
+     }
+    ],
+    "provenance_summary": "3 MEASURED entries, 0 MODELED values, 0 DECODED links",
+    "mode_space": {
+     "mn": [
+      1,
+      1
+     ],
+     "bessel_zero": 3.8317,
+     "dominant_mode_f_hz": 112.0,
+     "comment": "low-order axial chamber modes; dims not in specs"
+    },
+    "caveats": [
+     "95-120 Hz clustering is dimensionally expected for human-scale stone chambers (brief §4 caveat 1)."
+    ]
+   }
+  }
+ ]
+}
