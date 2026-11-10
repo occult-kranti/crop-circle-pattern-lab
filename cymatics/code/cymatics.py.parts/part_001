@@ -1,0 +1,229 @@
+u = u + sign * np.sin(q * np.pi * X / L) * np.sin(p * np.pi * Y / L)
+    amp = np.abs(u)
+    amax = amp.max()
+    nodal = amp <= eps * amax
+    return dict(u=u, amplitude=amp, nodal=nodal, x=x, y=x,
+                p=p, q=q, L=L, sign=sign, eps=eps)
+
+
+def square_superposition(modes, L=1.0, res=512, eps=DEFAULT_EPS):
+    """Superposition of square modes: A = Σ_k w_k sin(p_kπx/L)sin(q_kπy/L).
+
+    modes: iterable of (p, q, weight).
+    """
+    _validate_geometry(L=L, eps=eps)
+    acc = None
+    for md in modes:
+        p, q = md[0], md[1]
+        w = md[2] if len(md) > 2 else 1.0
+        x = np.linspace(0.0, L, int(res))
+        X, Y = np.meshgrid(x, x)
+        term = w * np.sin(int(p) * np.pi * X / L) * np.sin(int(q) * np.pi * Y / L)
+        acc = term if acc is None else acc + term
+    if acc is None:
+        raise ValueError("square_superposition: empty mode list")
+    amp = np.abs(acc)
+    nodal = amp <= eps * amp.max()
+    return dict(u=acc, amplitude=amp, nodal=nodal, x=x, y=x, L=L, eps=eps)
+
+
+# --------------------------------------------------------------------------
+# Frequency mapping (physics spec §2.1 step 5, §2.2 scaling law)
+# --------------------------------------------------------------------------
+
+def frequency_membrane(n, m, R, c):
+    """f_{n,m} = z_{n,m} · c / (2πR)  (physics spec §1a, §2.1).
+
+    f ∝ 1/R and f ∝ c (scaling law §2.2).  All frequency *ratios*
+    f_{n,m}/f_{0,1} = z_{n,m}/z_{0,1} are resonator-independent.
+    """
+    n, m = _validate_nm(n, m)
+    _validate_geometry(R=R, c=c)
+    return bessel_zero(n, m) * c / (2.0 * np.pi * R)
+
+
+def frequency_square(p, q, L, c, dispersion="membrane"):
+    """Square-plate frequency (physics spec §1b, §2.1).
+
+    dispersion='membrane' (default, model i):  f = (c/2L)·√(p²+q²),  c in m/s.
+    dispersion='plate'   (model ii, biharmonic thin free plate):
+        f = (c_flex/L²)·(p²+q²),  where the `c` argument is the flexural
+        coefficient c_flex = C·h·√(E/(12ρ(1−ν²))) in m²/s — flexural waves
+        are dispersive, so a constant wave speed is *not* used (§1b, §3.8).
+        The sin·sin shapes are only an interior ansatz for model (ii).
+    """
+    p = int(p)
+    q = int(q)
+    if p < 1 or q < 1:
+        raise ValueError("square mode numbers p, q must be ≥ 1")
+    _validate_geometry(L=L, c=c)
+    s2 = p * p + q * q
+    if dispersion == "membrane":
+        return (c / (2.0 * L)) * np.sqrt(s2)
+    if dispersion == "plate":
+        return (c / (L * L)) * float(s2)
+    raise ValueError("dispersion must be 'membrane' or 'plate'")
+
+
+# --------------------------------------------------------------------------
+# Free-rim (J' zeros) back-port from Open Sync chladni.ts (MIT) — Cymatics v2
+#
+# The clamped model uses zeros of J_n (rim nodal).  A free rim is approximated
+# by zeros of J'_n (radial slope nodal) — the boundary condition used by the
+# Open Sync forward engine for its free-rim steel disc.  scipy's jnp_zeros is
+# used inside its practical range (n ≤ 100, m ≤ 20) and a brentq root search
+# on scipy.special.jvp as the true fallback beyond it.
+# --------------------------------------------------------------------------
+
+from scipy.optimize import brentq as _brentq
+from scipy.special import jnp_zeros as _jnp_zeros, jvp as _jvp
+
+_FREE_ZERO_CACHE: dict[tuple[int, int], np.ndarray] = {}
+
+
+def _jnp_zero_search(n: int, m: int) -> float:
+    """Fallback: m-th zero of J'_n by sign-change bracketing + brentq.
+
+    Only used beyond scipy.special.jnp_zeros's practical range.  Zeros of J'_n
+    are interlaced with zeros of J_n and J_{n+1}, so a π/2 scan never misses
+    a bracket.
+    """
+    def f(x):
+        return float(_jvp(n, x))
+
+    found = 0
+    x0 = 1e-6
+    f0 = f(x0)
+    # generous upper bound: z'_{n,m} < π(m + n/2 + 1/4) + correction
+    x_max = np.pi * (m + n / 2.0 + 1.0) + n + 10.0
+    step = np.pi / 4.0
+    while x0 < x_max:
+        x1 = x0 + step
+        f1 = f(x1)
+        if f0 * f1 < 0:
+            found += 1
+            if found == m:
+                return float(_brentq(f, x0, x1, xtol=1e-14, rtol=1e-14))
+        x0, f0 = x1, f1
+    raise ValueError(f"_jnp_zero_search: could not bracket zero {m} of J'_{n}")
+
+
+def bessel_derivative_zero(n: int, m: int) -> float:
+    """Scalar accessor for z'_{n,m}, the m-th zero of J'_n (free rim).
+
+    scipy.special.jnp_zeros inside its practical range (n ≤ 100, m ≤ 20);
+    brentq search on J'_n as the true fallback beyond it.  Identity
+    J'_0 = −J_1 makes row n=0 equal to the J_1 zeros (z'_{0,1} = 3.83171).
+    """
+    n = int(n)
+    m = int(m)
+    if n < 0 or m < 1:
+        raise ValueError("bessel_derivative_zero: require n ≥ 0 and m ≥ 1")
+    if n <= N_MAX_SCIPY and m <= M_MAX_SCIPY:
+        return float(_jnp_zeros(n, m)[m - 1])
+    return _jnp_zero_search(n, m)
+
+
+def bessel_derivative_zeros(n_max: int = 8, m_max: int = 6) -> np.ndarray:
+    """Table Z'[n, m-1] = z'_{n,m} for n = 0..n_max, m = 1..m_max (free rim).
+
+    Same contract as bessel_zeros: scipy exact inside its range, brentq
+    fallback beyond, rows enforced strictly increasing in m (interlacing).
+    """
+    n_max = int(n_max)
+    m_max = int(m_max)
+    if n_max < 0 or m_max < 1:
+        raise ValueError("bessel_derivative_zeros: require n_max ≥ 0, m_max ≥ 1")
+    key = (n_max, m_max)
+    if key in _FREE_ZERO_CACHE:
+        return _FREE_ZERO_CACHE[key]
+    table = np.zeros((n_max + 1, m_max))
+    for n in range(n_max + 1):
+        if n <= N_MAX_SCIPY:
+            n_exact = min(m_max, M_MAX_SCIPY)
+            row = list(_jnp_zeros(n, n_exact))
+            for m in range(M_MAX_SCIPY + 1, m_max + 1):
+                row.append(_jnp_zero_search(n, m))
+        else:
+            row = [_jnp_zero_search(n, m) for m in range(1, m_max + 1)]
+        for m in range(1, m_max):
+            if row[m] <= row[m - 1]:
+                row[m] = np.nextafter(row[m - 1], np.inf)
+        table[n, :] = row
+    _FREE_ZERO_CACHE[key] = table
+    return table
+
+
+def frequency_membrane_free(n, m, R, c):
+    """Free-rim circular frequency f'_{n,m} = z'_{n,m} · c / (2πR).
+
+    Same scaling law as frequency_membrane (f ∝ c, f ∝ 1/R; all ratios
+    f'_{n,m}/f'_{0,1} = z'_{n,m}/z'_{0,1} are resonator-independent) but with
+    the free-rim boundary (zeros of J'_n instead of J_n), matching the Open
+    Sync engine's free-rim disc model.
+    """
+    n, m = _validate_nm(n, m)
+    _validate_geometry(R=R, c=c)
+    return bessel_derivative_zero(n, m) * c / (2.0 * np.pi * R)
+
+
+def lorentzian_superposition(modes, f_drive, gamma=None):
+    """Lorentzian resonance weights for a driven plate (Cymatics v2 back-port
+    of Open Sync drivenSquareModes/drivenCircularModes; Tuan et al. 2018
+    model re-implemented from the published physics).
+
+        w_k ∝ 1 / ((f_drive − f_k)² + γ²)
+
+    modes: iterable of dicts {n, m, hz} (aliases f/freq accepted) or tuples
+        (n, m, hz).  n/m are carried through opaquely (square or circular).
+    f_drive: driving frequency, Hz (≥ 0; f_drive = 0 is legal — every mode is
+        then off-resonance and weights still normalize to 1).
+    gamma: damping half-width, Hz.  Default 6 % of f_drive (measured plate
+        damping ratios ~0.08–0.12).  gamma = 0 is clamped to 1e-6 so the
+        weights never NaN; gamma < 0 raises ValueError.
+
+    Returns a list of dicts {n, m, hz, weight}, sorted by weight descending,
+    weights normalized to sum to 1.
+    """
+    f_drive = float(f_drive)
+    if not (np.isfinite(f_drive) and f_drive >= 0):
+        raise ValueError("lorentzian_superposition: f_drive must be finite and ≥ 0")
+    if gamma is None:
+        gamma = max(1e-6, 0.06 * f_drive)
+    gamma = float(gamma)
+    if not np.isfinite(gamma):
+        raise ValueError("lorentzian_superposition: gamma must be finite")
+    if gamma < 0:
+        raise ValueError("lorentzian_superposition: gamma must be ≥ 0")
+    gamma = max(1e-6, gamma)  # γ → 0 clamp: sharp but never NaN
+    g2 = gamma * gamma
+
+    terms = []
+    for md in modes:
+        if isinstance(md, dict):
+            hz = md.get("hz", md.get("f", md.get("freq")))
+            terms.append((md.get("n"), md.get("m"), hz))
+        else:
+            terms.append((md[0], md[1], md[2] if len(md) > 2 else None))
+    if not terms:
+        raise ValueError("lorentzian_superposition: empty mode list")
+
+    raw = []
+    for n, m, hz in terms:
+        if hz is None:
+            raise ValueError("lorentzian_superposition: each mode needs hz")
+        hz = float(hz)
+        if not (np.isfinite(hz) and hz > 0):
+            raise ValueError("lorentzian_superposition: mode hz must be > 0")
+        d = hz - f_drive
+        raw.append(dict(n=n, m=m, hz=hz, weight=1.0 / (d * d + g2)))
+    raw.sort(key=lambda t: -t["weight"])
+    total = sum(t["weight"] for t in raw) or 1.0
+    for t in raw:
+        t["weight"] /= total
+    return raw
+
+
+# --------------------------------------------------------------------------
+# Reference data helpers
+# ---------
