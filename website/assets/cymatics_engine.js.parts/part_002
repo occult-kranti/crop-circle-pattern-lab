@@ -244,4 +244,4 @@ ush({ n: n, m: m, hz: f, weight: 1 / (d * d + g2) });
   /* Frame rendering (typed-array core)                                       */
   /*                                                                          */
   /* Sharpening trick: render |f|^p with p ≈ 0.25 so antinodes stay fat      */
-  /* while nodal lines go razor-thin; line emphasis via Gaussian ridge        
+  /* while nodal lines go razor-thin; line emphasis via Gaussian ridge        */
