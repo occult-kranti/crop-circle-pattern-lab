@@ -1,0 +1,150 @@
+fdr": 1.0,
+   "robust_z": 0.45,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.7009,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 1,
+    "chiral": 0,
+    "log_size": 0.3449
+   }
+  },
+  {
+   "a": "Silbury Hill Koch I snowflake",
+   "b": "Newgrange — Cruciform chamber",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.4333,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.42,
+   "breakdown": {
+    "n_fold": 0.2767,
+    "mode": 0.6667,
+    "fd": 0.9088,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Barbury Castle tetrahedron",
+   "b": "Great Pyramid of Khufu — King's Chamber",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.4341,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.42,
+   "breakdown": {
+    "n_fold": 0.2767,
+    "mode": 0.5833,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0,
+    "log_size": 0.5063
+   }
+  },
+  {
+   "a": "Silbury Hill Koch I snowflake",
+   "b": "Chartres Cathedral — West rose window (geometric item — no resonator)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.4359,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.4,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.7009,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 1,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Silbury Hill Koch I snowflake",
+   "b": "Metatron's Cube",
+   "domains": [
+    "crop",
+    "motif"
+   ],
+   "D": 0.4359,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.4,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.7009,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 1,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Milk Hill Koch II fractal",
+   "b": "Metatron's Cube",
+   "domains": [
+    "crop",
+    "motif"
+   ],
+   "D": 0.4359,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.4,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.7009,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 1,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  }
+ ],
+ "verdicts": [
+  "No cross-domain pair passes the pre-registered interesting criterion."
+ ],
+ "unit_checks": [
+  {
+   "check": "U1 determinism (run twice, identical matrix + null + verdicts)",
+   "passed": true
+  },
+  {
+   "check": "U2 d_sym octave sanity: d(6,12)=0.0000 ~ 0 < d(6,24)=0.6667",
+   "passed": true
+  },
+  {
+   "check": "U3 WY superset of Bonferroni (Bonf 0 <= WY 0)",
+   "passed": true
+  },
+  {
+   "check": "U4 within-domain pilot: D(Koch I, Koch II) = 0.0000 <= 0.2",
+   "passed": true
+  }
+ ],
+ "caveats": [
+  "d_sym is a semi-metric (octave equivalence is non-transitive: 6~12, 12~24, 6!~24) — do not feed D to metric-space algorithms (§6.4).",
+  "FD silhouettes are procedural proxies (rosette/rect/circle) since no images exist for most items; FD peaks at n_fold by construction (§2.4 note).",
+  "Monument (m,n) values come from the physics spec's heuristic symmetry-class mapping, NOT from isomorphic transforms; Stonehenge/El Castillo carry no modes by design.",
+  "The 95-120 Hz megalithic band is dimensionally inevitable for 1.5-12 m stone rooms; a bare-frequency match to ~110 Hz has very low evidentiary weight (archaeoacoustics brief §4).",
+  "Domain sizes are wildly unequal (60/4/8/13); shared feature pipelines induce dependence. WY min-statistic handles the multiplicity, not the interpretation (§3.2).",
+  "Patterns noticed after seeing this matrix are hypothesis-generating only (§4.4 HARKing firewall)."
+ ]
+}
