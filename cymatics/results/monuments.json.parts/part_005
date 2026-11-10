@@ -1,0 +1,395 @@
+ 1,
+      "tier_label": "calibrated/replicated",
+      "provenance": "MEASURED",
+      "note": "D#2",
+      "cents": -40.1,
+      "band": "PITCH"
+     },
+     {
+      "f_hz": 70.0,
+      "metric": null,
+      "source": "Debertolis, Coimbra & Eneix 2015, JAA 3(1):59-79",
+      "method": "uncalibrated voice/drum excitation",
+      "tier": 3,
+      "tier_label": "low-rigor",
+      "provenance": "MEASURED (contested)",
+      "note": "C#2",
+      "cents": 17.5,
+      "band": "PITCH"
+     },
+     {
+      "f_hz": 114.0,
+      "metric": null,
+      "source": "Debertolis, Coimbra & Eneix 2015, JAA 3(1):59-79",
+      "method": "uncalibrated voice/drum excitation",
+      "tier": 3,
+      "tier_label": "low-rigor",
+      "provenance": "MEASURED (contested)",
+      "note": "A#2",
+      "cents": -38.2,
+      "band": "PITCH"
+     }
+    ],
+    "measured_unverified": [],
+    "vocal_range_overlap": {
+     "male_82_330_hz": [
+      94.54,
+      98.0,
+      113.45,
+      113.45,
+      114.33,
+      114.33,
+      124.39,
+      124.39,
+      127.04,
+      127.83,
+      127.83,
+      114.0
+     ],
+     "female_165_523_hz": []
+    },
+    "sub_20hz_content": {
+     "frequencies_hz": [],
+     "label": "below pitch perception — felt as pressure/vibration, not heard"
+    },
+    "intra_chamber_beats": [
+     {
+      "f1_hz": 57.17,
+      "f2_hz": 57.17,
+      "delta_f_hz": 0.0,
+      "category": "UNISON (exact)"
+     },
+     {
+      "f1_hz": 75.29,
+      "f2_hz": 75.29,
+      "delta_f_hz": 0.0,
+      "category": "UNISON (exact)"
+     },
+     {
+      "f1_hz": 113.45,
+      "f2_hz": 113.45,
+      "delta_f_hz": 0.0,
+      "category": "UNISON (exact)"
+     }
+    ],
+    "provenance_summary": "5 MEASURED entries, 17 MODELED values, 0 DECODED links",
+    "mode_space": {
+     "mn": [
+      2,
+      1
+     ],
+     "bessel_zero": 5.1356,
+     "dominant_mode_f_hz": 114.0,
+     "comment": "room mode (2,1)-class at ~114 Hz + niche (0,1) at ~70 Hz (superposition)",
+     "effective_R_m": 1.83,
+     "membrane_f01_at_R_hz": 71.8
+    },
+    "caveats": [
+     "110 Hz adjudication: the site's calibrated modes are 41/72/76 Hz (Till 2017); the popular '110 Hz oracle room' is refuted by the claimants' own 70/114 Hz data and by Till. Treat 110 Hz here as a meme, not a measurement.",
+     "Network resonator: whole-complex claims imply coupled modes of the 3-level cavity network, not a single room.",
+     "Curved ceilings break the rectangular formula: expect ±5-10% detuning and doublet splitting."
+    ]
+   }
+  },
+  {
+   "id": "hypogeum_niche",
+   "site": "Ħal Saflieni Hypogeum",
+   "chamber": "Oracle niche ('megaphone')",
+   "n_fold": 0,
+   "key_ratio": [],
+   "geometry_class": "coupled Helmholtz resonator (niche), NOT a megaphone",
+   "dims": {
+    "opening_m2": 0.39,
+    "opening_hw_m": [
+     0.65,
+     0.6
+    ],
+    "cavity_m3_range": [
+     0.15,
+     0.5
+    ]
+   },
+   "dims_status": null,
+   "modes_modeled": [
+    {
+     "kind": "niche Helmholtz, V=0.5 m^3",
+     "f_hz": 67.2,
+     "formula": "(c/2pi)*sqrt(A/(V*L_eff)), L_eff=1.46*sqrt(A/pi)",
+     "provenance": "MODELED"
+    },
+    {
+     "kind": "niche Helmholtz, V=0.15 m^3",
+     "f_hz": 122.7,
+     "formula": "(c/2pi)*sqrt(A/(V*L_eff)), L_eff=1.46*sqrt(A/pi)",
+     "provenance": "MODELED"
+    }
+   ],
+   "measured": [],
+   "mode_space": {
+    "mn": [
+     0,
+     1
+    ],
+    "bessel_zero": 2.4048,
+    "dominant_mode_f_hz": 67.0,
+    "comment": "Helmholtz/port mode = uniform pressure = (0,1) breathing",
+    "effective_R_m": 0.35,
+    "membrane_f01_at_R_hz": 372.6
+   },
+   "signature_card": {
+    "title": "Sonic Signature Card — Ħal Saflieni Hypogeum, Oracle niche ('megaphone')",
+    "location_date_material": "Paola, Malta / Neolithic / carved limestone",
+    "dims": {
+     "opening_m2": 0.39,
+     "opening_hw_m": [
+      0.65,
+      0.6
+     ],
+     "cavity_m3_range": [
+      0.15,
+      0.5
+     ]
+    },
+    "volume_m3": "not published / n/a",
+    "geometry_class": "coupled Helmholtz resonator (niche), NOT a megaphone",
+    "rt60": "not published",
+    "top_modes_modeled": [
+     {
+      "type": "niche Helmholtz, V=0.5 m^3",
+      "indices": null,
+      "f_hz": 67.2,
+      "provenance": "MODELED",
+      "note": "C2",
+      "cents": 46.8,
+      "band": "PITCH"
+     },
+     {
+      "type": "niche Helmholtz, V=0.15 m^3",
+      "indices": null,
+      "f_hz": 122.7,
+      "provenance": "MODELED",
+      "note": "B2",
+      "cents": -10.8,
+      "band": "PITCH"
+     }
+    ],
+    "measured_resonances": [],
+    "measured_unverified": [],
+    "vocal_range_overlap": {
+     "male_82_330_hz": [
+      122.7
+     ],
+     "female_165_523_hz": []
+    },
+    "sub_20hz_content": {
+     "frequencies_hz": [],
+     "label": "below pitch perception — felt as pressure/vibration, not heard"
+    },
+    "intra_chamber_beats": [
+     {
+      "f1_hz": 67.2,
+      "f2_hz": 122.7,
+      "delta_f_hz": 55.5,
+      "category": "DIFFERENCE TONE"
+     }
+    ],
+    "provenance_summary": "0 MEASURED entries, 2 MODELED values, 0 DECODED links",
+    "mode_space": {
+     "mn": [
+      0,
+      1
+     ],
+     "bessel_zero": 2.4048,
+     "dominant_mode_f_hz": 67.0,
+     "comment": "Helmholtz/port mode = uniform pressure = (0,1) breathing",
+     "effective_R_m": 0.35,
+     "membrane_f01_at_R_hz": 372.6
+    },
+    "caveats": [
+     "By reciprocity the niche both collects sound into the chamber and radiates chamber modes outward; it amplifies only near its own resonance, not broadband ('megaphone effect' misnamed, physics spec §4.2).",
+     "Physics-spec estimate f_H ≈ 50-91 Hz; our formula with L_eff=1.46*sqrt(A/pi) gives 67-123 Hz over V=0.5-0.15 m³ — V≈0.5 m³ lands at 67 Hz ≈ the measured 68-70 Hz. Either way the niche plausibly supplies the ~70 Hz resonance while the room supplies 114 Hz."
+    ]
+   }
+  },
+  {
+   "id": "newgrange_chamber",
+   "site": "Newgrange",
+   "chamber": "Cruciform chamber",
+   "n_fold": 4,
+   "key_ratio": [],
+   "geometry_class": "cruciform chamber, corbelled vault (box = flat-roof approximation)",
+   "dims": {
+    "Lx": 6.5,
+    "Ly": 5.8,
+    "Lz": 3.6
+   },
+   "dims_status": null,
+   "modes_modeled": [
+    {
+     "indices": [
+      1,
+      0,
+      0
+     ],
+     "type": "axial",
+     "f_hz": 26.38,
+     "membrane_analog": [
+      1,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      1,
+      0
+     ],
+     "type": "axial",
+     "f_hz": 29.57,
+     "membrane_analog": [
+      1,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      1,
+      1,
+      0
+     ],
+     "type": "tangential",
+     "f_hz": 39.63,
+     "membrane_analog": [
+      2,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      0,
+      1
+     ],
+     "type": "axial",
+     "f_hz": 47.64,
+     "membrane_analog": [
+      1,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      2,
+      0,
+      0
+     ],
+     "type": "axial",
+     "f_hz": 52.77,
+     "membrane_analog": [
+      1,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      1,
+      0,
+      1
+     ],
+     "type": "tangential",
+     "f_hz": 54.46,
+     "membrane_analog": [
+      2,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      1,
+      1
+     ],
+     "type": "tangential",
+     "f_hz": 56.07,
+     "membrane_analog": [
+      2,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      2,
+      0
+     ],
+     "type": "axial",
+     "f_hz": 59.14,
+     "membrane_analog": [
+      1,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      2,
+      1,
+      0
+     ],
+     "type": "tangential",
+     "f_hz": 60.49,
+     "membrane_analog": [
+      3,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      1,
+      1,
+      1
+     ],
+     "type": "oblique",
+     "f_hz": 61.97,
+     "membrane_analog": [
+      3,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      1,
+      2,
+      0
+     ],
+     "type": "tangential",
+     "f_hz": 64.76,
+     "membrane_analog": [
+      3,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+  
