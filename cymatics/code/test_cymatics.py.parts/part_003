@@ -1,0 +1,185 @@
+equency → dominant weight on that mode;
+    drive far off-peak → suppression (no dominant mode)."""
+    R, c = 0.15, 100.0
+    modes = [(n, m, cym.frequency_membrane(n, m, R, c))
+             for (n, m) in [(0, 1), (1, 1), (2, 1), (0, 2), (3, 1)]]
+    f11 = cym.frequency_membrane(1, 1, R, c)
+    # on-peak: (1,1) must dominate decisively with modest damping
+    w = cym.lorentzian_superposition(modes, f11, gamma=5.0)
+    ok = (w[0]["n"], w[0]["m"]) == (1, 1) and w[0]["weight"] > 0.99
+    ok &= abs(sum(x["weight"] for x in w) - 1.0) < 1e-12
+    # off-peak: log-midpoint between f(1,1) and f(2,1), sharp gamma →
+    # the two neighbours split the weight, nothing dominates
+    f_off = math.sqrt(f11 * cym.frequency_membrane(2, 1, R, c))
+    w_off = cym.lorentzian_superposition(modes, f_off, gamma=5.0)
+    ok &= w_off[0]["weight"] < 0.6
+    # suppression: driven far from every mode (1200 Hz, all modes < 700 Hz),
+    # no mode approaches the on-peak dominance
+    f01 = cym.frequency_membrane(0, 1, R, c)
+    w_on = cym.lorentzian_superposition(modes, f01, gamma=5.0)[0]["weight"]
+    w_far = cym.lorentzian_superposition(modes, 1200.0, gamma=5.0)[0]["weight"]
+    ok &= w_far < 0.5 * w_on
+    check("v2: Lorentzian peak sanity (on-peak dominant, off-peak suppressed)",
+          ok, f"on-peak w={w[0]['weight']:.4f}, off top={w_off[0]['weight']:.3f}")
+
+
+def test_lorentzian_edge_cases():
+    """v2: γ→0 clamp (no NaN), f=0, negative γ rejection, bad modes."""
+    ok = True
+    # gamma=0, drive exactly on a mode → weight 1.0 for it, finite, sums to 1
+    w = cym.lorentzian_superposition([(0, 1, 100.0), (1, 1, 200.0)], 100.0,
+                                     gamma=0.0)
+    ok &= (w[0]["weight"] > 1.0 - 1e-12 and (w[0]["n"], w[0]["m"]) == (0, 1)
+           and all(math.isfinite(x["weight"]) for x in w)
+           and abs(sum(x["weight"] for x in w) - 1.0) < 1e-12)
+    # two degenerate modes exactly on-peak with γ=0 → split 50/50, no NaN
+    w2 = cym.lorentzian_superposition([(0, 1, 100.0), (1, 0, 100.0)], 100.0,
+                                      gamma=0.0)
+    ok &= abs(w2[0]["weight"] - 0.5) < 1e-9
+    # drive f=0 → legal, all off-resonance, normalized, finite
+    w0 = cym.lorentzian_superposition([(0, 1, 255.2), (1, 1, 406.5)], 0.0)
+    ok &= (abs(sum(x["weight"] for x in w0) - 1.0) < 1e-12
+           and all(math.isfinite(x["weight"]) for x in w0))
+    # clean rejections
+    for fn in (lambda: cym.lorentzian_superposition([(0, 1, 100.0)], 100.0,
+                                                    gamma=-1.0),
+               lambda: cym.lorentzian_superposition([(0, 1, 100.0)], -5.0),
+               lambda: cym.lorentzian_superposition([(0, 1, 100.0)],
+                                                    float("nan")),
+               lambda: cym.lorentzian_superposition([], 100.0),
+               lambda: cym.lorentzian_superposition([(0, 1)], 100.0),
+               lambda: cym.lorentzian_superposition([(0, 1, float("nan"))],
+                                                    100.0)):
+        try:
+            fn()
+            ok = False
+        except ValueError:
+            pass
+        except Exception:
+            ok = False
+    check("v2: Lorentzian edge cases (γ→0 clamp, f=0, γ<0 rejected)", ok)
+
+
+def test_free_rim_zero_table():
+    """v2: free-rim zeros z'_{n,m} — monotonic in m, scipy-consistent,
+    A&S spot values, J'_0 = −J_1 identity."""
+    ok = True
+    tab = cym.bessel_derivative_zeros(8, 6)
+    # strict monotonicity in m for every n
+    for n in range(0, 9):
+        ok &= bool(np.all(np.diff(tab[n]) > 0))
+    # monotonic in n for n ≥ 1 at fixed m (n=0 row is the J1 row, exempt)
+    for m in range(1, 7):
+        col = [tab[n, m - 1] for n in range(1, 9)]
+        ok &= bool(np.all(np.diff(col) > 0))
+    # A&S Table 9.5 spot values (1e-8 — the printed table is rounded)
+    refs = {(0, 1): 3.8317059702, (1, 1): 1.8411837813, (2, 1): 3.0542369282,
+            (3, 1): 4.2011889412, (1, 2): 5.3314427735, (5, 3): 13.9871886301,
+            (4, 5): 19.1960288050}
+    for (n, m), v in refs.items():
+        ok &= abs(cym.bessel_derivative_zero(n, m) - v) < 1e-8
+    # identity J'_0 = −J_1 → row 0 of J' table == row 1 of J table
+    for m in range(1, 7):
+        ok &= abs(cym.bessel_derivative_zero(0, m)
+                  - cym.bessel_zero(1, m)) < 1e-12
+    # consistency with scipy.special.jnp_zeros directly across its range
+    from scipy.special import jnp_zeros
+    for n in (0, 1, 5, 33, 100):
+        for m in (1, 7, 20):
+            ok &= cym.bessel_derivative_zero(n, m) == jnp_zeros(n, m)[m - 1]
+    check("v2: free-rim zeros monotonic + A&S spots + J'₀=−J₁ identity", ok)
+
+
+def test_free_rim_frequency_scaling():
+    """v2: free-rim ratios f'_{n,m}/f'_{0,1} = z'_{n,m}/z'_{0,1} exactly;
+    f ∝ c and f ∝ 1/R preserved; guard rails."""
+    ok = True
+    for n in range(0, 6):
+        for m in range(1, 5):
+            a = cym.frequency_membrane_free(n, m, 0.15, 100.0)
+            b = cym.frequency_membrane_free(0, 1, 0.15, 100.0)
+            ok &= abs(a / b - cym.bessel_derivative_zero(n, m)
+                      / cym.bessel_derivative_zero(0, 1)) < 1e-12
+    f1 = cym.frequency_membrane_free(2, 1, R=0.15, c=100.0)
+    ok &= abs(cym.frequency_membrane_free(2, 1, R=0.075, c=100.0) / f1 - 2.0) < 1e-12
+    ok &= abs(cym.frequency_membrane_free(2, 1, R=0.15, c=200.0) / f1 - 2.0) < 1e-12
+    # free rim lowers every mode vs clamped rim (z'_{n,m} < z_{n,m} for n ≥ 1)
+    ok &= all(cym.bessel_derivative_zero(n, 1) < cym.bessel_zero(n, 1)
+              for n in range(1, 9))
+    for fn in (lambda: cym.frequency_membrane_free(0, 1, 0.0, 100.0),
+               lambda: cym.frequency_membrane_free(0, 1, 0.15, 0.0),
+               lambda: cym.frequency_membrane_free(-1, 1, 0.15, 100.0),
+               lambda: cym.bessel_derivative_zero(0, 0)):
+        try:
+            fn()
+            ok = False
+        except ValueError:
+            pass
+        except Exception:
+            ok = False
+    check("v2: free-rim frequency ratios + scaling + guard rails", ok)
+
+
+def test_extreme_modes():
+    """v2: n=100 exact (scipy), n=101 brentq fallback, huge Hz Lorentzian."""
+    from scipy.special import jn_zeros, jnp_zeros
+    ok = cym.bessel_zero(100, 20) == jn_zeros(100, 20)[19]
+    ok &= cym.bessel_derivative_zero(100, 20) == jnp_zeros(100, 20)[19]
+    # brentq fallback beyond the scipy range agrees with interlacing bounds
+    z = cym.bessel_derivative_zero(101, 1)
+    ok &= 101.0 < z < 110.0 and math.isfinite(z)
+    z21 = cym.bessel_derivative_zero(0, 21)
+    ok &= math.isfinite(z21) and z21 > cym.bessel_derivative_zero(0, 20)
+    f = cym.frequency_membrane_free(100, 1, 0.15, 100.0)
+    ok &= math.isfinite(f) and f > 0
+    # Lorentzian with extreme eigenfrequencies stays finite and normalized
+    w = cym.lorentzian_superposition([(100, 1, f), (0, 1, 255.2)], f)
+    ok &= all(math.isfinite(x["weight"]) for x in w)
+    ok &= abs(sum(x["weight"] for x in w) - 1.0) < 1e-12
+    ok &= (w[0]["n"], w[0]["m"]) == (100, 1)
+    check("v2: extreme modes n=100/101 exact + fallback, huge-Hz Lorentzian", ok)
+
+
+def test_membrane_pattern_analytic_parity():
+    """v2 parity: rendered membrane field equals the analytic J_n(z·r/R)·cos(nθ)
+    on sampled points; (0,1) is maximal at the center (J_0(0)=1)."""
+    from scipy.special import jn
+    pat = cym.membrane_pattern(3, 2, R=1.0, res=512, phase=0.17)
+    z = cym.bessel_zero(3, 2)
+    rng = np.random.default_rng(3)
+    ok = True
+    for _ in range(40):
+        i = rng.integers(0, 512)
+        j = rng.integers(0, 512)
+        x, y = pat["x"][j], pat["y"][i]
+        r = math.hypot(x, y)
+        if r > 1.0:
+            ok &= pat["u"][i, j] == 0.0
+            continue
+        ref = jn(3, z * r) * math.cos(3 * math.atan2(y, x) + 0.17)
+        ok &= abs(pat["u"][i, j] - ref) < 1e-12
+    pat01 = cym.membrane_pattern(0, 1, res=256)
+    c = 127  # y=0 row nearest the center (x=0 col on symmetric grid: 127/128)
+    center = max(pat01["amplitude"][c, c], pat01["amplitude"][c + 1, c + 1])
+    ok &= abs(center - 1.0) < 0.01  # J_0(0)=1, grid half-pixel off center
+    ok &= abs(pat01["amplitude"].max() - 1.0) < 0.01
+    check("v2: membrane pattern matches analytic J_n(z·r/R)·cos(nθ+φ)", ok)
+
+
+_JS_PARITY_DRIVER = r"""
+const path = process.argv[2];
+require(path);
+const CYM = globalThis.CYM;
+// sand determinism: same seed → identical state after 40 steps
+const f = CYM.drivenSquareField([{ n: 1, m: 1, weight: 1 }]);
+const a = CYM.createSand(256, 7), b = CYM.createSand(256, 7);
+for (let i = 0; i < 40; i++) { CYM.stepParticles(a, f, 1 / 30); CYM.stepParticles(b, f, 1 / 30); }
+let same = true;
+for (let i = 0; i < a.count; i++) {
+  if (a.x[i] !== b.x[i] || a.y[i] !== b.y[i]) same = false;
+}
+const c = CYM.createSand(256, 8);
+for (let i = 0; i < 40; i++) CYM.stepParticles(c, f, 1 / 30);
+let differs = false;
+for (let i = 0; i < a.count; i++) if (a.x[i] !== c.x[i]) differs = true;
+// Lorentzian parity vec
