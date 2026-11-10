@@ -1,0 +1,55 @@
+# ROUND 1 EVIDENCE BRIEF — Archaeoacoustics canon vs. contested claims
+Prepared for the crop-circle cymatics / ancient-monument acoustic cross-domain matching study.
+
+⚠️ **Two citation errors in the consultation prompt, corrected below:**
+- Watson & Keating 1999 is in **Antiquity 73(280): 325–336**, *not* World Archaeology 31 — and it did not measure Stonehenge; it measured a recumbent stone circle and a passage-grave **in Scotland**.
+- The 2020 Stonehenge scale-model paper is Cox, Fazenda & Greaney in **Journal of Archaeological Science 122: 105218**, *not* JASA. (Fazenda & Drumm's 2013 paper is in *Acta Acustica united with Acustica* 99(1): 110–117.)
+
+---
+
+## 1. The peer-reviewed canon — exact claims and numbers
+
+### 1.1 Devereux & Jahn 1996 — the origin of "110 Hz"
+Two linked 1996 publications by the Princeton PEAR lab team:
+
+**a) Devereux, P. & Jahn, R.G. (1996). "Preliminary investigations and cognitive considerations of the acoustical resonances of selected archaeological sites." *Antiquity* 70(269): 665–666.** DOI: 10.1017/S0003598X00083800.
+- A short (2-page) research note. Frames the hypothesis: ancient ritual structures show acoustic resonances, mostly in the 95–120 Hz band, within the low male vocal range, and this may relate to altered states of consciousness. It announces, rather than fully reports, the measurements.
+- URL: https://www.cambridge.org/core/journals/antiquity/article/preliminary-investigations-and-cognitive-considerations-of-the-acoustical-resonances-of-selected-archaeological-sites/D64ECE9DCBFEAE665001E2033D61A7D1
+
+**b) Jahn, R.G., Devereux, P. & Ibison, M. (1996). "Acoustical resonances of assorted ancient structures." *J. Acoust. Soc. Am.* 99(2): 649–658.** DOI: 10.1121/1.414642. (Underlying tech report: PEAR Technical Report 95002, March 1995.)
+- **What they measured:** swept-sine excitation (~100–110 dB source) and SPL grid-mapping of standing-wave patterns in **six UK/Irish stone chambers**: Newgrange passage tomb; Loughcrew Cairns L and I; Wayland's Smithy long barrow (E and W chambers); Chun Quoit (Cornwall); and the Iron Age fogou at Cairn Euny.
+- **What they found (exact numbers):** all six chambers showed dominant low-frequency resonances clustered **95–120 Hz**:
+  - **Newgrange: 110 Hz** chamber resonance; ~12 node/antinode pairs mapped along the 19 m passage (behaving like a stopped pipe / waveguide).
+  - **Loughcrew Cairn L: 110 Hz** dominant; sub-chamber resonances spanning ~58–120 Hz; closed node in central chamber, antinodes at sub-chamber orifices.
+  - **Loughcrew Cairn I: 110 Hz.**
+  - **Wayland's Smithy: East chamber 112 Hz (secondary 119 Hz); West chamber 95 Hz.**
+  - **Chun Quoit: 110 Hz.**
+  - **Cairn Euny fogou: 99 Hz.**
+- **What they claimed:** that the convergence on ~95–120 Hz despite very different chamber volumes "suggests" the chambers may have been shaped/tuned to produce resonance in the low male vocal register; rock art motifs compared loosely to standing-wave patterns. They did NOT claim brainwave effects, did NOT measure any EEG, and did NOT assert 110 Hz as a universal constant. Note: the ~110 Hz cluster is physically expected for human-scale (~2–3 m dimension) chambers — the paper itself flags the wavelength/geometry relationship. Provenance caveat: the Princeton PEAR lab was a parapsychology research unit; the acoustic measurements themselves are competent engineering, but the interpretive framing should be quoted carefully.
+- Full text PDF (ICRL archive): http://icrl.org/wp-content/uploads/2012/04/Acoustics-JASA.pdf
+
+### 1.2 Watson & Keating 1999 — megalith acoustics, field-based
+**Watson, A. & Keating, D. (1999). "Architecture and sound: an acoustic analysis of megalithic monuments in prehistoric Britain." *Antiquity* 73(280): 325–336.** DOI: 10.1017/S0003598X00088281. (Reprinted in Darvill & Malone (eds) 2003, *Megaliths from Antiquity*, Antiquity Papers 3: 362–376.)
+- **Sites:** two Scottish monuments — a recumbent stone circle (Easter Aquhorthies-type, Aberdeenshire) and a Neolithic passage-grave. NOT Stonehenge.
+- **Findings:** impulse/excitation measurements showed (i) the stone circle's radial geometry focuses and reflects sound toward the circle's center and recumbent setting (sound from the circle is strongly audible outside along the recumbent axis — "orchestrating" encounters), and (ii) the passage grave supports strong low-frequency resonances and enveloping standing-wave fields; sound appears to come "from all directions." Claims were about spatial choreography of sound at gatherings, not specific Hz "tuning" constants.
+- Follow-up: Watson & Keating (2000), "The architecture of sound in Neolithic Orkney," in Ritchie (ed.), *Neolithic Orkney in its European Context*, McDonald Institute, 259–263 (Maeshowe — a *calculation*, not a swept measurement; be careful citing any "110 Hz at Maeshowe" claim — it is a secondary-literature composite of the Jahn et al. 1996 numbers with Watson's Maeshowe estimate).
+- URL: https://www.cambridge.org/core/journals/antiquity/article/architecture-and-sound-an-acoustic-analysis-of-megalithic-monuments-in-prehistoric-britain/F37AF50641B26AC288BA756A1C12EA33
+
+### 1.3 Reznikoff & Dauvois 1988 — cave art placement vs. resonance
+**Reznikoff, I. & Dauvois, M. (1988). "La dimension sonore des grottes ornées." *Bulletin de la Société Préhistorique Française* 85(8): 238–246.** DOI: 10.3406/bspf.1988.9349.
+- **Method:** systematic voice-based resonance surveys (Reznikoff, a singer, vocalizing pitch-by-pitch while traversing the caves) of the painted caves **Le Portel, Niaux, Isturitz** (French Pyrenees), later Arcy-sur-Cure, Font-de-Gaume.
+- **Exact claims:** strong spatial correlation between painted/engraved figures and points of maximum vocal resonance; resonance durations of 3–4 s at specific pitches (mapped as musical notes: mi, fa, si, ré — i.e., ~E2/E3, F, B2 region for the Le Portel gallery Jammes network); red dots preferentially placed at resonant points; acoustically "dead" passages are unpainted. Correlation strengths of up to ~90% of images at acoustic "hot spots" are quoted in later summaries. Precursor note: Reznikoff (1987), *C. R. Acad. Sci.* 304 sér. II: 153–156.
+- **Assessment:** measured and repeatedly observed (Waller's echo/rock-art work in N. America provides independent conceptual replication: Waller, S.J. 1993, "Sound and rock art," *Nature* 363: 501), but the statistic is correlational, the excitation method is uncalibrated voice, and the causal/intentional inference is contested. Also note Dauvois & Boutillon's instrumental measurements of natural lithophones (e.g., Réseau Clastres, *Préhistoire Ariégeoise* 45: 175–186, 1990).
+- PDF: https://www.larevuedesressources.org/IMG/pdf/article_bspf_0249-7638_1988_num_85_8_9349.pdf
+
+### 1.4 Chavín de Huántar — Cook, Kolar, Rick, Abel (Stanford CCRMA project)
+The "Cook et al. 2010" reference resolves to an ASA meeting abstract, not a full JASA article:
+- **Cook, P.R., Abel, J.S., Kolar, M.A., Huang, P., Huopaniemi, J., Rick, J.W., Chafe, C. & Chowning, J.M. (2010). "Acoustic Analysis of the Chavín Pututus (Strombus galeatus Marine Shell Trumpets)." (Abstract) *JASA* 128(2): 359.**
+- **Abel, J.S., Rick, J.W., Huang, P.P., Kolar, M.A., Smith, J.O. & Chowning, J.M. (2008). "On the Acoustics of the Underground Galleries of Ancient Chavín de Huántar, Peru." (Abstract) *JASA* 123(3): 605** (Acoustics'08 Paris paper).
+- Full integrative study: **Kolar, M.A., with Rick, J.W., Cook, P.R. & Abel, J.S. (2012). "Ancient Pututus Contextualized: Integrative Archaeoacoustics at Chavín de Huántar, Perú." In *Flower World – Music Archaeology of the Americas* 1: 23–54. Ekho Verlag, Berlin.**
+- Key claims (measured): the 20 excavated *Strombus galeatus* pututus have playable fundamentals and strong higher harmonics; the narrow stone galleries act as acoustic filters/waveguides; a specific transmission path links the Lanzón Gallery to the Circular Plaza (the "sounding oracle" mechanism); psychoacoustic experiments documented localization/disorientation effects inside the galleries. Data: project hub https://ccrma.stanford.edu/groups/chavin/ ; lay summary https://ccrma.stanford.edu/groups/chavin/ASA2014.html ; Kolar's PhD dissertation (Stanford CCRMA, 2013) is the fullest source.
+
+### 1.5 Lubman 1998 — Chichén Itzá quetzal chirp
+**Lubman, D. (1998). "An archaeological acoustic study of chirped echo from the Mayan pyramid at Chichén Itzá." (Abstract) *JASA* 104(3): 1763** (136th ASA meeting, Norfolk VA, Oct 1998). DOI: 10.1121/1.424061.
+- **Claim:** a handclap at the base of El Castillo's staircase returns a descending **chirped echo** whose spectrogram closely matches the call of the resplendent quetzal (*Pharomachrus mocinno*). The chirp sweeps down through roughly **~1,300 Hz → ~900 Hz over ~200 ms**.
+- **Mechanism (confirmed):** periodic diffraction from the staircase treads/risers acting a

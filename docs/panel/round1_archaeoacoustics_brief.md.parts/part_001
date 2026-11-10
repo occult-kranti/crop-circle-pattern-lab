@@ -1,0 +1,47 @@
+s a reflection grating. Theoretical confirmation: **Declercq, N.F., Degrieck, J., Leroy, O. et al. (2004). "A theoretical study of special acoustic effects caused by the staircase of the El Castillo pyramid at the Maya ruins of Chichen-Itza in Mexico." *JASA* 116(6): 3328–3335.** Note Declercq later showed ANY comparable periodic staircase produces a chirp (duck-like echoes at other temples), weakening the intentionality case — the *effect* is solid physics; the *design intent* is unverifiable.
+- Related: Lubman & Kiser (2001), ASA abstract on the Great Ballcourt acoustics; the Ballcourt "whispering gallery" claim traces to Morley (1925) and is plausible waveguide physics along 8.2 m parallel walls over ~140–168 m.
+
+### 1.6 Till / Cambridge Soundscapes / Scarre & Lawson
+- The 2003 Cambridge conference "Acoustics, Space and Intentionality" produced the field's anchor volume: **Scarre, C. & Lawson, G. (eds) (2006). *Archaeoacoustics.* McDonald Institute Monographs, Cambridge.** Contributors include Watson, Devereux, Reznikoff, Waller, Till. (No "Burgess" author in the canon — likely a confusion; possibly the lead means this Cambridge "soundscapes" program.)
+- **Till, R. (2010/2009). "Songs of the Stones: An Investigation into the Acoustic Culture/History of Stonehenge." IASPM Journal 1(2)** — measurements at the Maryhill (Washington) full-size concrete replica: argued the complete circle behaved as an enclosed reverberant space, not an open ring. URL: https://iaspmjournal.net/index.php/IASPM_Journal/article/view/308
+- **Till, R., Wyatt, S., Fazenda, B., Sheaffer, J. & Scarre, C. — "Songs of the Caves" project** (Tito Bustillo cave, Asturias; impulse-response measurement of painted caves): https://songsofthecaves.wordpress.com/
+- **Till, R. (2019). "Sound archaeology: a study of the acoustics of three World Heritage sites: Spanish prehistoric painted caves, Stonehenge, and Paphos theatre." *Acoustics* (MDPI) 1(3): 661–692.** DOI: 10.3390/acoustics1030039. — calibrated ISO 3382-style room-acoustic metrics (T20/T30, EDT, C50, C80, STI) across sites.
+
+### 1.7 Stonehenge scale model (2020)
+**Cox, T.J., Fazenda, B.M. & Greaney, S.E. (2020). "Using scale modelling to assess the prehistoric acoustics of Stonehenge." *Journal of Archaeological Science* 122: 105218.** DOI: 10.1016/j.jas.2020.105218.
+- 1:12 physical scale model of the complete ~2200 BC monument in a semi-anechoic chamber (ultrasonic excitation up to 70 kHz ≙ 5.8 kHz full-scale), plus measurements at the Maryhill replica and the current ruin.
+- **Exact results: average mid-frequency reverberation time 0.64 ± 0.03 s; speech-band amplification 4.3 ± 0.9 dB** inside the circle vs. outside; bluestone reconfigurations made inaudible differences → authors explicitly conclude sound was "unlikely to be the underlying motivation" for the arrangements.
+- Precursor modeling paper: **Fazenda, B.M. & Drumm, I.C. (2013). "Recreating the sound of Stonehenge." *Acta Acustica united with Acustica* 99(1): 110–117.** DOI: 10.3813/AAA.508592.
+- URL: https://www.sciencedirect.com/science/article/pii/S0305440320301394 ; method write-up: https://acousticengineering.wordpress.com/2020/01/22/how-we-measured-the-acoustic-scale-model-of-stonehenge/
+
+---
+
+## 2. Contested claims — with the actual evidence
+
+### 2.1 Ħal Saflieni Hypogeum "110 Hz oracle room"
+- The popular claim ("the Oracle Room resonates at exactly 110 Hz, entraining the brain") rests on **Debertolis, Coimbra & Eneix (2015). "Archaeoacoustic analysis of the Ħal Saflieni Hypogeum in Malta." *Journal of Anthropology and Archaeology* 3(1): 59–79** (DOI: 10.15640/jaa.v3n1a4 — a low-rigor, minimally peer-reviewed outlet), and OTS Foundation conference proceedings (ICSA/"Archaeoacoustics" conferences, Malta 2014–2015 — NOT peer-reviewed journals).
+- **Their own measurements do NOT show 110 Hz.** Excitation by uncalibrated voice (Reznikoff singing) and drums yielded resonances at **114 Hz and 68–70 Hz** in the Oracle Room; they write: "This is a bit different from the 110/111 Hz that was initially expected, based on previous research in other Neolithic chambers (Cook et al., 2008)." i.e., the "110" was imported from the Jahn et al. UK/Irish chambers, then retrospectively applied to Malta. Full text: https://www.um.edu.mt/library/oar/bitstream/123456789/16630/1/OA%20Archaeoacoustic%20Analysis%20of%20the%20%C4%A6al%20Saflieni%20Hypogeum%20in%20Malta.pdf
+- **The calibrated replication contradicts it again:** **Till, R. (2017). "An archaeoacoustic study of the Ħal Saflieni Hypogeum on Malta." *Antiquity* 91(355): 74–89.** DOI: 10.15184/aqy.2016.258. Using ISO 3382-1 methodology (swept sine, impulse responses, T20/T30/EDT/C50/C80/STI/ALcons), Till found the Oracle Chamber's primary resonances at **41, 72 and 76 Hz** — neither 110 nor 114 Hz. Reverberation is powerful (multi-second), speech clarity inside the Oracle Chamber is poor (ALcons up to 33.7%), and a cantor there is *heard but not understood* throughout the complex. Author copy: https://eprints.hud.ac.uk/30678/
+- Further: **Wolfe, K., Swanson, D. & Till, R. (2020). "The frequency spectrum and geometry of the Ħal Saflieni Hypogeum appear tuned." arXiv:2010.13697** — a modelling paper arguing geometric tuning; preprint, interpret with care. https://arxiv.org/abs/2010.13697
+- **Methodological criticisms to cite:** uncalibrated voice/drum excitation (Debertolis), no calibrated source or spatial grid, no control comparisons, confirmation bias toward an expected 110/111 Hz, and a journal without meaningful acoustics peer review. Till 2017 is the defensible ground truth for this site.
+
+### 2.2 "Brainwave entrainment" / 110 Hz neuroscience claims
+- The only experimental neuroscience paper: **Cook, I.A., Pajot, S.K. & Leuchter, A.F. (2008). "Ancient architectural acoustic resonance patterns and regional brain activity." *Time and Mind* 1(1): 95–104.** DOI: 10.2752/175169608783489099. EEG/QEEG during 110 Hz tones vs. 90/130 Hz controls; reported left-temporal (BA22) deactivation and right-prefrontal relative activation at 110 Hz. **Caveats: tiny sample (n≈5), no replicated follow-up, published in a fringe-adjacent archaeology-of-consciousness journal, and it says nothing about chambers "entraining" anyone in situ.**
+- **"Theta 4–8 Hz chamber resonance" has NO physical or measurement basis.** A 4–8 Hz acoustic mode would require a cavity dimension of c/2f ≈ 21–43 m (c=343 m/s) — larger than any known chamber, and below the 20 Hz hearing limit (infrasound). This claim conflates (i) chamber acoustic resonances (95–120 Hz), with (ii) auditory driving of EEG by rhythmic drumming at 4–8 Hz beat rates — the *tempo*, not a resonance: the classic sources are Neher, A. (1961) *EEG Clin. Neurophysiol.* 13: 449–451 and Neher (1962) *Human Biology* 34: 151–160. Frequency-following response ≠ resonance; the two claims are routinely glued together in fringe literature.
+- Also relevant: infrasound/"ghost" claims (Tandy & Lawrence 1998, *J. Soc. Psychical Research* 62: 360–364, 18.9 Hz fan-blade standing wave) — real physics, but unrelated to Neolithic monuments and not replicated at any archaeological site.
+
+### 2.3 Newgrange
+- Ground truth: **110 Hz chamber resonance** measured by Jahn, Devereux & Ibison 1996 (JASA 99: 649–658), with ~12 standing-wave node/antinode pairs mapped along the 19 m passage — the single best-documented passage-tomb measurement in the canon.
+- Watson's later work (Watson 2001, in Price (ed.), *The Archaeology of Shamanism*, Routledge: 178–192) reports Newgrange acoustic behavior including a low-frequency null consistent with a Helmholtz-type response of chamber + passage.
+- Fringe accretions to reject: "Newgrange infrasound at 2–4 Hz," "stones conduct drumming vibrations," solstice-beam/acoustic coupling claims — none have published calibrated measurements behind them. The winter-solstice roof-box illumination is archaeologically secure; its linkage to acoustics is speculation.
+
+---
+
+## 3. Ranked table — status of monument-acoustic claims
+
+| Rank | Claim | Key source(s) | Status |
+|---|---|---|---|
+| **(a) Well-measured & replicated** | El Castillo chirped echo (handclap → descending chirp ~1.3→0.9 kHz, ~200 ms) | Lubman 1998 (JASA 104:1763); Declercq et al. 2004 (JASA 116:3328) | Effect replicated + physically explained; intentionality unverifiable |
+| **(a)** | Stonehenge interior RT60 0.64±0.03 s, +4.3±0.9 dB speech (complete monument, model) | Cox, Fazenda & Greaney 2020 (JAS 122:105218) | Rigorous scale-model metrology; authors explicitly anti-overclaim |
+| **(a)** | Megalithic chambers resonate at low-freq modes (95–120 Hz cluster); standing waves mapped | Jahn, Devereux & Ibison 1996 (JASA 99:649); Watson & Keating 1999 | Physically expected for ~2–3 m cavities; measurement sound |
+| **(a)** | Chavín gallery acoustics, pututu spectra, Lanzón→Circular Plaza transmission path | Abel et 
