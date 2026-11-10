@@ -1,4 +1,4 @@
-  /* exp(−t²/2σ²) around the zero set.                                       */
+  /* exp(−t²/2σ²) around the zero set.                                         */
   /* ------------------------------------------------------------------------ */
 
   CYM.MAX_DRAW_PARTICLES = 40000;
