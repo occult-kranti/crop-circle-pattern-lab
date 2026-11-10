@@ -1,0 +1,16 @@
+-----------------------------------------------------------------
+
+#: Interior nodal-circle radii fingerprint: r_j/R = z_{n,j}/z_{n,m}, j = 1..m−1
+#: (physics spec §3.7 — far more discriminating than ring count alone).
+def nodal_circle_radii(n, m):
+    """Interior nodal-circle radii r_j/R for mode (n,m), j = 1..m−1."""
+    n, m = _validate_nm(n, m)
+    if m < 2:
+        return np.array([])
+    return np.array([bessel_zero(n, j) / bessel_zero(n, m)
+                     for j in range(1, m)])
+
+
+def frequency_ratio_membrane(n, m, n_ref=0, m_ref=1):
+    """Dimensionless ratio z_{n,m}/z_{n_ref,m_ref} (the PRIMARY output)."""
+    return bessel_zero(n, m) / bessel_zero(n_ref, m_ref)

@@ -1,0 +1,210 @@
+"""monuments.py — Monument acoustics analysis engine for the crop-circle project.
+
+Implements the monument-side machinery specified by the Round-1 consultation docs:
+  - Physics spec:  round1_monument_acoustics_spec.md (room modes, Helmholtz, chirp comb,
+                   mode-space mapping convention, caveats). c = 343 m/s throughout.
+  - Archaeoacoustics brief: round1_archaeoacoustics_brief.md (measured ground-truth
+                   table §4, tier ranking, 110 Hz adjudication).
+  - Geometry spec: sacred_geometry_round1.md (n-fold / key-ratio table).
+  - Sound spec:    monument_sonic_spec_round1.md (provenance tags MEASURED / MODELED /
+                   DECODED on every Hz; Sonic Signature Card §4).
+
+Contents
+--------
+1. Physics calculators: room_modes(), helmholtz(), quarter_wave_open(), chirp_comb().
+2. MONUMENTS: database of 10 monument sites (13 resonator entries — the King's
+   Chamber + its sarcophagus, the Hypogeum Oracle Room + its niche, and the Newgrange
+   chamber + its passage are separate resonators of 3 sites, per the physics spec).
+3. Sonic signature cards (sound spec §4) with provenance tags on every Hz value.
+4. Mode-space mapping of monument modes into circular-membrane (m, n) space per the
+   physics spec §3 heuristic convention.
+5. main(): writes /mnt/agents/output/cymatics/results/monuments.json.
+
+This module never fabricates measurements: MODELED values are computed from stated
+dimensions and formulas; MEASURED values carry source + tier; DECODED is not used
+here (that provenance belongs to the cymatics engine).
+"""
+
+import json
+import math
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import cymatics  # noqa: E402  (bessel zero tables, membrane frequency)
+import notes     # noqa: E402  (freq_to_note, beat_category)
+
+C_AIR = 343.0  # m/s, per physics spec header
+RESULTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "results")
+RESULTS_DIR = os.path.normpath(RESULTS_DIR)
+
+# Clamped circular membrane zeros z_{m,n} (physics spec §3 reference table).
+BESSEL_TABLE = cymatics.bessel_zeros(n_max=8, m_max=6)  # indexed [m][n-1]
+
+# Vocal ranges per sound spec §2a / card template §4.
+MALE_RANGE = (82.0, 330.0)
+FEMALE_RANGE = (165.0, 523.0)
+
+# Measurement tiers (archaeoacoustics brief §3 ranking):
+#   1 = calibrated swept-sine / ISO / replicated physics
+#   2 = measured, contested interpretation
+#   3 = low-rigor / uncalibrated / anecdotal (flag, never use as sole ground truth)
+TIER_LABELS = {1: "calibrated/replicated", 2: "measured-contested", 3: "low-rigor"}
+
+
+# ---------------------------------------------------------------------------
+# 1. Physics calculators
+# ---------------------------------------------------------------------------
+
+def room_mode_freq(nx, ny, nz, Lx, Ly, Lz, c=C_AIR):
+    """Rigid rectangular box mode (physics spec §0): f=(c/2)*sqrt((nx/Lx)^2+...)."""
+    return (c / 2.0) * math.sqrt((nx / Lx) ** 2 + (ny / Ly) ** 2 + (nz / Lz) ** 2)
+
+
+def room_modes(Lx, Ly, Lz, n_max=10, f_max=400.0, c=C_AIR):
+    """All box modes with indices <= n_max and f <= f_max, sorted by frequency.
+
+    Returns list of dicts: indices, type (axial/tangential/oblique), f_hz,
+    membrane analog (physics spec §3 convention).
+    """
+    out = []
+    for nx in range(0, n_max + 1):
+        for ny in range(0, n_max + 1):
+            for nz in range(0, n_max + 1):
+                if nx == ny == nz == 0:
+                    continue
+                f = room_mode_freq(nx, ny, nz, Lx, Ly, Lz, c)
+                if f > f_max:
+                    continue
+                k = sum(1 for v in (nx, ny, nz) if v > 0)
+                mtype = {1: "axial", 2: "tangential", 3: "oblique"}[k]
+                out.append({
+                    "indices": [nx, ny, nz],
+                    "type": mtype,
+                    "f_hz": round(f, 2),
+                    "membrane_analog": membrane_analog(nx, ny, nz),
+                    "provenance": "MODELED",
+                    "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)",
+                })
+    out.sort(key=lambda d: (d["f_hz"], d["indices"]))
+    return out
+
+
+def membrane_analog(nx, ny, nz):
+    """Box mode -> leading circular-membrane harmonic (physics spec §3 convention).
+
+    Heuristic by symmetry class, NOT an isomorphism: a box mode is a superposition
+    of circular harmonics; this returns the leading component. Returns (m, n) with
+    m = azimuthal order, n = radial order, or a string flag for mixed classes.
+    """
+    idx = (nx, ny, nz)
+    nonzero = sorted((v for v in idx if v > 0), reverse=True)
+    n_nonzero = len(nonzero)
+    if n_nonzero == 1:                      # axial (n,0,0)
+        n = nonzero[0]
+        if n == 1:
+            return [1, 1]                   # dipole
+        if n in (2, 3):
+            return [1, 2]
+        if n in (4, 5):
+            return [1, 3]
+        return [1, max(2, math.ceil(n / 2))]  # spec: (1, ceil(n/2)+...) extrapolation
+    if n_nonzero == 2:                      # tangential
+        a, b = nonzero
+        if (a, b) == (1, 1):
+            return [2, 1]                   # quadrupole
+        if (a, b) == (2, 1):
+            return [3, 1]
+        if (a, b) == (2, 2):
+            return "mixed (0,2)+(4,1)"
+        return [max(a, b), min(a, b)]       # fallback: crossed-plane grid
+    # oblique
+    if tuple(sorted(idx)) == (1, 1, 1):
+        return [3, 1]                       # octupole class
+    return "mixed oblique"
+
+
+def helmholtz(A_mouth, V_cavity, L_eff=None, c=C_AIR):
+    """Helmholtz resonator f = (c/2pi)*sqrt(A/(V*L_eff)).
+
+    If L_eff is None, uses the physics-spec §1b end-corrected estimate
+    L_eff = 1.46*sqrt(A/pi) (mouth treated as unflanged circular opening).
+    """
+    if L_eff is None:
+        L_eff = 1.46 * math.sqrt(A_mouth / math.pi)
+    return (c / (2.0 * math.pi)) * math.sqrt(A_mouth / (V_cavity * L_eff))
+
+
+def quarter_wave_open(depth, end_correction=True, A_open=None, c=C_AIR):
+    """Open-top quarter-wave resonance (physics spec §1b sarcophagus vertical mode).
+
+    f = c / (4*(D + 0.61*sqrt(A/pi))) with flanged-pipe end correction;
+    raw c/(4D) if end_correction=False.
+    """
+    if end_correction and A_open:
+        return c / (4.0 * (depth + 0.61 * math.sqrt(A_open / math.pi)))
+    return c / (4.0 * depth)
+
+
+def chirp_comb(tread, riser, theta_deg=45.0, c=C_AIR):
+    """Reflection-grating comb for a periodic staircase (physics spec §1f).
+
+    tau = (tread*cos(theta) + riser*sin(theta))/c ; comb peaks at f = 1/tau.
+    Returns (tau_ms, f_hz).
+    """
+    th = math.radians(theta_deg)
+    tau = (tread * math.cos(th) + riser * math.sin(th)) / c
+    return tau * 1e3, 1.0 / tau
+
+
+def comb_scale(spacing, c=C_AIR):
+    """First Bragg/stop-band scale of a periodic scatterer array: f ~ c/(2d)."""
+    return c / (2.0 * spacing)
+
+
+def effective_radius(A_floor):
+    """Effective membrane radius R = sqrt(A_floor/pi) (physics spec §3 table)."""
+    return math.sqrt(A_floor / math.pi)
+
+
+def membrane_f01(R, c=C_AIR):
+    """Fundamental of a clamped circular membrane of radius R: f01 = z01*c/(2*pi*R)."""
+    return BESSEL_TABLE[0][0] * c / (2.0 * math.pi * R)
+
+
+def schroeder_freq(rt60, volume):
+    """Schroeder frequency f_s ~ 2000*sqrt(RT60/V) (physics spec §0)."""
+    return 2000.0 * math.sqrt(rt60 / volume)
+
+
+def _note(f_hz):
+    """freq_to_note wrapper returning compact {label, cents, band}."""
+    n = notes.freq_to_note(f_hz)
+    return {"note": n["label"], "cents": round(n["cents"], 1), "band": n["band"]}
+
+
+# ---------------------------------------------------------------------------
+# 2. MONUMENTS database
+# ---------------------------------------------------------------------------
+# Provenance discipline (sound spec §1): every Hz below is tagged at use time;
+# entries under "measured" carry source + tier; entries under "modes" are computed
+# by room_modes()/helmholtz()/etc. from the dims stated here and are MODELED.
+
+MONUMENTS = [
+    {
+        "id": "kings_chamber",
+        "site": "Great Pyramid of Khufu",
+        "chamber": "King's Chamber",
+        "location": "Giza, Egypt",
+        "date": "c. 2560 BCE",
+        "material": "granite chamber inside limestone pyramid",
+        "dims_m": {"Lx": 10.47, "Ly": 5.234, "Lz": 5.84},   # physics spec §1a (Petrie; height 5.84 ± 0.1)
+        "geometry_class": "rectangular (2:1 plan by design)",
+        "n_fold": 4,                # pyramid plan (sacred-geometry spec §2)
+        "key_ratio": [2.0],         # chamber plan Lx:Ly = 2:1 (creates 32.8 Hz doublet)
+        "rt60_modeled_s": "5-12 (Sabine, alpha_granite 0.01-0.03, open doorway dominates)",
+        "measured": [],             # no peer-reviewed modal survey exists (brief §3 rank c)
+        "measured_unverified": [
+            {"f_hz": 95.0, "note": "popular sarcophagus-resonance claim; weak documentation",
+             "tier": 3, "provenance": "MEASURED (unverified)", "source": "popular literature (Dunn 1998 era)"},
+      
