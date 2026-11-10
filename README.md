@@ -6,9 +6,9 @@ A data-driven investigation of the crop-circle phenomenon — dataset, statistic
 
 | Path | What |
 |---|---|
-| `website/` | Self-contained static site (no CDNs). Serve with `python -m http.server` → `localhost:8000`. Pages: Overview, Timeline, Dataset, Analysis, Hypotheses & Experiments, Research Papers, Cymatics Lab, DMT × Sacred Geometry. |
+| `website/` | Self-contained static site (no CDNs). Serve with `python -m http.server` → `localhost:8000`. Pages: Overview, Timeline, Dataset, Analysis, Hypotheses & Experiments (incl. expert panel round 2), Research Papers, Cymatics Lab (v2 live simulator, engine adapted from Open Sync — MIT), DMT × Sacred Geometry, Case: Carbon-12, Monuments (archaeoacoustics), Crossmatch (brute-force similarity engine with FWER null result). |
 | `data/` | Canonical dataset: `crop_circles.csv` (60 curated major formations, 21 fields), `papers.csv` (19 research works), `annual_counts.csv` (16 sourced counts), `symmetry_orders.csv`, `motif_mapping.csv`, `cropcircles.sqlite` (all tables). |
-| `cymatics/` | Reverse cymatic decoder: forward Chladni/membrane simulator, pattern→mode decoder, frequency/note/beat engine. `code/test_cymatics.py` → 31/31 passing. `results/` → decoded frequencies, 45-pair difference-vibration table, 13 rendered figures. `SPEC.md`, `report.md`. |
+| `cymatics/` | Reverse cymatic decoder + monuments.py (monuments as resonators) + crossmatch.py (brute-force similarity engine, Westfall–Young FWER): forward Chladni/membrane simulator, pattern→mode decoder, frequency/note/beat engine. `code/test_cymatics.py` → 31/31 passing. `results/` → decoded frequencies, 45-pair difference-vibration table, 13 rendered figures. `SPEC.md`, `report.md`. |
 | `casestudies/` | Claim adjudications: `carbon12_report.md` (the "2000 series / three-alpha lock" video, nine sub-claims classified against the published record). |
 | `compare/` | DMT × sacred geometry × crop circles comparison: `motif_mapping.csv`, `comparison_data.json`, `report.md`. |
 | `docs/` | Design & process documents: consultant specs (physics / math / sound-engineering), `plan.md`, ops manifests. |
