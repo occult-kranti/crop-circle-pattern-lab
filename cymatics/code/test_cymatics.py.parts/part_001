@@ -1,0 +1,192 @@
+isses = []
+    for n in range(1, 9):
+        for m in range(1, 4):
+            cands = dec.decode_image(_sign_image(n, m))
+            got = [(c.n, c.m) for c in cands]
+            top1 += got[0] == (n, m)
+            top3 += (n, m) in got
+            if (n, m) not in got:
+                misses.append(((n, m), got))
+    check("decode: clean round-trip sweep n=1..8,m=1..3 (top-1≥23, top-3=24)",
+          top1 >= 23 and top3 == 24, f"top1={top1} top3={top3} {misses}")
+
+
+def test_rotation_invariance():
+    """§4.6: (3,1) at φ=0 and φ=π/7 decode identically (φ is unobservable)."""
+    a = dec.decode_image(_sign_image(3, 1, phase=0.0))
+    b = dec.decode_image(_sign_image(3, 1, phase=np.pi / 7))
+    ok = (a[0].n, a[0].m) == (b[0].n, b[0].m) == (3, 1)
+    check("decode: rotation invariance (3,1) φ=0 vs π/7", ok,
+          f"{(a[0].n,a[0].m)} vs {(b[0].n,b[0].m)}")
+
+
+def test_noisy_round_trip():
+    """V4: (6,2) + Gaussian noise σ=0.5·max — (6,2) in top-3, n̂ exact."""
+    rng = np.random.default_rng(42)
+    pat = cym.membrane_pattern(6, 2, res=384)
+    noisy = (pat["u"] + rng.normal(0, 0.5 * pat["amplitude"].max(),
+                                   pat["u"].shape)) * pat["inside"]
+    cands, diag = dec.decode_image(noisy, return_diagnostics=True)
+    got = [(c.n, c.m) for c in cands]
+    check("decode: noisy round trip (6,2), σ=0.5·max",
+          (6, 2) in got and diag["n_hat"] == 6, f"got {got}")
+
+
+def test_ring_modes():
+    """§1.6: (0,m) sign maps decode to (0,m) top-1 with Bessel spacing."""
+    ok = True
+    detail = []
+    for m in (1, 2, 3):
+        cands = dec.decode_image(_sign_image(0, m))
+        ok &= (cands[0].n, cands[0].m) == (0, m)
+        detail.append((cands[0].n, cands[0].m, cands[0].confidence,
+                       cands[0].evidence.get("eps_node")))
+    check("decode: ring modes (0,1),(0,2),(0,3) top-1", ok, str(detail))
+
+
+def _grid_image(cols, rows, cell=6, seed=0):
+    rng = np.random.default_rng(seed)
+    bits = rng.integers(0, 2, size=(rows, cols))
+    return np.kron(bits, np.ones((cell, cell))).astype(float)
+
+
+def test_grid_pitch_recovery():
+    """V8: 23×73 random-bit grid, 6 px cells → (23,73) square-plate top-1."""
+    img = _grid_image(23, 73, cell=6)
+    cands, diag = dec.decode_image(img, return_diagnostics=True)
+    top = cands[0]
+    ok = (top.n, top.m) == (23, 73) and top.model == "square" \
+        and diag["route"] == "GRID"
+    pitch = top.evidence.get("cell_pitch_px")
+    ok &= abs(pitch[0] - 6.0) < 0.3 and abs(pitch[1] - 6.0) < 0.3
+    check("decode: grid pitch recovery 23×73 (pitch 6 px)", ok,
+          f"top={(top.n, top.m)} pitch={pitch} route={diag['route']}")
+
+
+def _spiral_image(arms, b, chirality, beads=24, res=384):
+    """Beads on logarithmic spiral arms, generator θ = χ·ln(r/r0)/b (§7 n.3)."""
+    img = np.zeros((res, res))
+    yy, xx = np.mgrid[0:res, 0:res]
+    c = (res - 1) / 2.0
+    R = c * 0.97
+    r0 = 0.08 * R
+    t_max = np.log(R / r0) / b
+    for a in range(arms):
+        for t in np.linspace(0, t_max, beads):
+            rr = r0 * np.exp(b * t)
+            th = chirality * t + 2 * np.pi * a / arms
+            img += np.exp(-(((xx - (c + rr * np.cos(th))) ** 2
+                             + (yy - (c + rr * np.sin(th))) ** 2)
+                            / (2 * 4.6 ** 2)))
+    return img
+
+
+def test_spiral_chirality():
+    """V5: 3-arm log spiral, both chiralities → n̂=3, χ correct & opposite,
+    C < C_lo; standing (3,1) has C ≈ 1 and is NOT a spiral (§4.3)."""
+    ok = True
+    chis = []
+    for chir in (+1, -1):
+        cands, diag = dec.decode_image(_spiral_image(3, 0.4, chir),
+                                       return_diagnostics=True)
+        ok &= diag["route"] == "SPIRAL"
+        ok &= diag["n_hat"] == 3
+        ok &= diag["coherence_C"] < dec.C_LO
+        chis.append(cands[0].evidence.get("chirality"))
+    ok &= chis[0] == +1 and chis[1] == -1     # convention §7 note 3
+    # standing mode must not be flagged spiral
+    cands, diag = dec.decode_image(_sign_image(3, 1), return_diagnostics=True)
+    ok &= diag["route"] == "DISK" and diag["coherence_C"] >= dec.C_LO
+    # rings with 3-fold amplitude wobble: same A(n), must not be spiral (V6)
+    res = 384
+    yy, xx = np.mgrid[0:res, 0:res]
+    c = (res - 1) / 2.0
+    rr = np.hypot(xx - c, yy - c) / (c * 0.97)
+    th = np.arctan2(yy - c, xx - c)
+    wob = sum((1 + 0.6 * np.cos(3 * th))
+              * np.exp(-((rr - rho) ** 2) / (2 * 0.012 ** 2))
+              for rho in (0.35, 0.6, 0.85))
+    _, diag = dec.decode_image(wob, return_diagnostics=True)
+    ok &= diag["route"] != "SPIRAL" and diag.get("coherence_C", 0) > dec.C_LO
+    check("decode: spiral chirality (V5) + ring/spiral conflation guard (V6)", ok,
+          f"chis={chis}")
+
+
+def test_superposition_humility():
+    """V12: 0.7ψ_{1,1}+0.7ψ_{2,2} → multiple candidates, no fabricated
+    single dominant mode; both components represented in top-3."""
+    sup = cym.membrane_superposition([(1, 1, 0.7, 0.0), (2, 2, 0.7, 0.0)],
+                                     res=384)
+    cands = dec.decode_image(np.sign(sup["u"]))
+    ns = {c.n for c in cands}
+    ok = len(cands) >= 2 and 1 in ns and 2 in ns and cands[0].score < 0.6
+    check("decode: superposition returns ≥2 candidates, no dominant fabrication",
+          ok, f"{[(c.n, c.m, round(c.score,2)) for c in cands]}")
+
+
+def test_divisor_trap():
+    """V15: clean (12,1) → top-1 (12,1); divisor aliases listed lower."""
+    cands = dec.decode_image(_sign_image(12, 1))
+    aliases = cands[0].evidence.get("aliases", {}).get("divisor_aliases", [])
+    ok = ((cands[0].n, cands[0].m) == (12, 1)
+          and {(1, 1), (2, 1), (3, 1), (4, 1), (6, 1)} <= set(aliases))
+    check("decode: divisor trap (12,1) top-1 + aliases listed", ok)
+
+
+def test_bessel_coincidence_grouping():
+    """§3.2.6: (5,1) z=8.7715 clusters with (0,3) z=8.6537 (1.4% apart)."""
+    cands = dec.decode_image(_sign_image(5, 1))
+    ok = (0, 3) in cands[0].evidence.get("bessel_coincidences", [])
+    check("decode: Bessel near-coincidence grouping (5,1)≈(0,3)", ok)
+
+
+def test_structural_rules():
+    """§2 R1–R11 spot checks on the SPEC's canonical patterns."""
+    ok = True
+    gal = dec.decode_structural(dict(kind="spiral", arms=6, components=409,
+                                     boundary="circle"))
+    ok &= (gal[0].n, gal[0].m) == (6, 68) and gal[0].confidence == "LOW"
+    ok &= any(c.m <= 6 and c.confidence == "MEDIUM" for c in gal)
+    grid = dec.decode_structural(dict(kind="grid", components=(23, 73),
+                                      boundary="square"))
+    ok &= (grid[0].n, grid[0].m, grid[0].model) == (23, 73, "square")
+    ok &= "prime" in str(grid[0].evidence.get("subharmonic", ""))
+    dumb = dec.decode_structural(dict(kind="composite", boundary="circle",
+                                      notes="dumbbell: two lobes on an axis"))
+    ok &= {(c.n, c.m) for c in dumb} == {(1, 1), (2, 1)}
+    rat = dec.decode_structural(dict(kind="radial", azimuthal_order=10,
+                                     radial_nodes=1, boundary="circle",
+                                     notes="10-segment ratchet wheel, chiral"))
+    ok &= rat[0].n == 10 and "R6" in str(rat[0].evidence.get("rule"))
+    koch = dec.decode_structural(dict(kind="radial", azimuthal_order=6,
+                                      boundary="circle",
+                                      notes="Koch snowflake fractal"))
+    ok &= {c.n for c in koch} == {6, 3} and all(
+        c.confidence == "LOW" for c in koch)
+    tet = dec.decode_structural(dict(kind="radial", azimuthal_order=3,
+                                     radial_nodes=2, boundary="circle",
+                                     notes="tetrahedral 3-fold pictogram"))
+    ok &= tet[0].n == 3 and tet[0].m in (1, 2)
+    rings = dec.decode_structural(dict(kind="rings", radial_nodes=2,
+                                       boundary="circle"))
+    ok &= (rings[0].n, rings[0].m) == (0, 3)
+    quint = dec.decode_structural(dict(kind="cluster", components=5, arms=4,
+                                       radial_nodes=1, boundary="circle"))
+    ok &= (quint[0].n, quint[0].m) == (4, 1)
+    check("decode: structural rules R1–R11 spot checks", ok)
+
+
+# ==========================================================================
+# Presentation spec §1/§2/§5
+# ==========================================================================
+
+def test_verified_note_rows():
+    """§1.3 verified example rows (A4=440, cents in [−50,+50))."""
+    rows = [(440.0, "A4", 0.0, "PITCH"), (261.626, "C4", 0.0, "PITCH"),
+            (110.0, "A2", 0.0, "PITCH"), (432.0, "A4", -31.8, "PITCH"),
+            (100.0, "G2", 35.0, "PITCH"), (8.0, "C-1", -37.6, "INFRASONIC"),
+            (7.83, "B-2", 25.2, "INFRASONIC"), (5.5, "F-2", 13.7, "INFRASONIC"),
+            (17600.0, "C#10", -13.7, "ULTRASONIC (borderline)"),
+            (22000.0, "F10", -27.4, "ULTRASONIC")]
+    ok = True
+    for f, label, cents, band in rows
