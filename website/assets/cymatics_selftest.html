@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cymatics Engine v2 — self-test</title>
+<style>
+  body { background:#ece4d9; color:#332e26; font:14px/1.5 ui-monospace, monospace; margin:2em; }
+  h1 { font-size:1.2em; } h1 small { color:#8a7d6b; font-weight:normal; }
+  .pass { color:#1a7a3c; } .fail { color:#c22; font-weight:bold; }
+  #summary { font-size:1.3em; margin:1em 0; padding:.5em; border:2px solid #332e26; display:inline-block; }
+  canvas { border:1px solid #ddd2c0; margin:4px; vertical-align:top; }
+</style>
+</head>
+<body>
+<h1>Cymatics Engine v2 self-test <small>— engine adapted from Open Sync (brainwave_opensync), MIT</small></h1>
+<div id="summary">running…</div>
+<ol id="results"></ol>
+<div id="canvases"></div>
+<script src="cymatics_engine.js"></script>
+<script>
+(function () {
+  var results = [];
+  var ol = document.getElementById('results');
+  function check(name, ok, detail) {
+    ok = !!ok;
+    results.push(ok);
+    var li = document.createElement('li');
+    li.className = ok ? 'pass' : 'fail';
+    li.textContent = (ok ? 'PASS  ' : 'FAIL  ') + name +
+      (detail ? '  [' + detail + ']' : '');
+    ol.appendChild(li);
+  }
+  function mkCanvas(res) {
+    var c = document.createElement('canvas');
+    c.width = res; c.height = res;
+    document.getElementById('canvases').appendChild(c);
+    return c;
+  }
+  function pixels(c) {
+    return c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+  }
+  function distinctColors(c) {
+    var d = pixels(c), set = {};
+    for (var i = 0; i < d.length; i += 4) set[d[i] + ',' + d[i+1] + ',' + d[i+2]] = 1;
+    return Object.keys(set).length;
+  }
+  function hasNaN(c) {
+    var d = pixels(c);
+    for (var i = 0; i < d.length; i++) if (Number.isNaN(d[i])) return true;
+    return false;
+  }
+  function buffersEqual(a, b) {
+    if (a.length !== b.length) return false;
+    for (var i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+    return true;
+  }
+  function hasColor(c, rgb) {
+    var d = pixels(c);
+    for (var i = 0; i < d.length; i += 4)
+      if (d[i] === rgb[0] && d[i+1] === rgb[1] && d[i+2] === rgb[2]) return true;
+    return false;
+  }
+
+  try {
+    // 1. engine loaded
+    check('CYM global present, v2', !!window.CYM && CYM.VERSION === '2.0.0', CYM && CYM.VERSION);
+
+    // 2. power-series besselJ vanishes at the tabulated zeros
+    check('besselJ zero at z01 and z32 (<1e-9)',
+      Math.abs(CYM.besselJ(0, 2.4048255577)) < 1e-9 &&
+      Math.abs(CYM.besselJ(3, 13.0152007217)) < 1e-9);
+
+    // 3. free-rim zeros + J'0 = -J1 identity
+    check('free-rim zeros: z\'11=1.8411837813, z\'01 == clamped z(1,1)',
+      Math.abs(CYM.circularWaveNumber(1, 1, 'free') - 1.8411837813) < 1e-10 &&
+      CYM.circularWaveNumber(0, 1, 'free') === CYM.circularWaveNumber(1, 1, 'clamped'));
+
+    // 4. lab-paper colormap endpoints + NaN safety
+    var c0 = CYM.sampleColormap('lab-paper', 0), c1 = CYM.sampleColormap('lab-paper', 1),
+        cn = CYM.sampleColormap('lab-paper', NaN);
+    check('lab-paper colormap: t=0 → #ece4d9, t=1 → #332e26, NaN-safe',
+      c0.join() === '236,228,217' && c1.join() === '51,46,38' && cn.join() === '236,228,217',
+      c0 + ' / ' + c1);
+
+    // 5. square cos-form single mode renders non-blank
+    var cv1 = mkCanvas(160);
+    CYM.renderSquare(cv1, { p: 2, q: 3, sign: 1 });
+    check('renderSquare (2,3) cos-form: non-blank, NaN-free',
+      distinctColors(cv1) > 10 && !hasNaN(cv1), distinctColors(cv1) + ' colors');
+
+    // 6. square fractional sin-mix (art mode) renders non-blank
+    var cv2 = mkCanvas(160);
+    CYM.renderSquare(cv2, { p: 2.5, q: 1.3, mixA: 1, mixB: -0.6 });
+    check('renderSquare fractional mix (2.5,1.3): non-blank', distinctColors(cv2) > 10);
+
+    // 7. driven Lorentzian square: freq on a ladder rung → that mode dominates
+    var cv3 = mkCanvas(160);
+    var info = CYM.renderSquare(cv3, { freq: 180, gamma: 8, plate: 'steel-square-30', mode: 'lines' });
+    var top = info.modes[0];
+    check('renderSquare driven 180 Hz: top mode (0,1)/(1,0) @180 Hz, w>0.4',
+      info.kind === 'driven' && top.hz === 180 && top.weight > 0.4 &&
+      ((top.n === 0 && top.m === 1) || (top.n === 1 && top.m === 0)),
+      JSON.stringify(top));
+
+    // 8. clamped vs free disc differ; both non-blank
+    var cv4 = mkCanvas(160), cv5 = mkCanvas(160);
+    CYM.renderDisc(cv4, { n: 3, m: 1, rim: 'clamped' });
+    CYM.renderDisc(cv5, { n: 3, m: 1, rim: 'free' });
+    check('renderDisc clamped vs free rim → different, non-blank patterns',
+      distinctColors(cv4) > 10 && distinctColors(cv5) > 10 &&
+      !buffersEqual(pixels(cv4), pixels(cv5)));
+
+    // 9. sand determinism: same seed → identical pixels; different seed differs
+    var cv6 = mkCanvas(160), cv7 = mkCanvas(160), cv8 = mkCanvas(160);
+    var sandOpts = { modes: [{ n: 2, m: 1, w: 1 }, { n: 0, m: 2, w: 0.4 }],
+                     rim: 'clamped', count: 1500, seed: 42, steps: 90 };
+    CYM.renderSand(cv6, sandOpts);
+    CYM.renderSand(cv7, sandOpts);
+    var o2 = {}; for (var k in sandOpts) o2[k] = sandOpts[k]; o2.seed = 43;
+    CYM.renderSand(cv8, o2);
+    check('renderSand determinism: same seed → identical frame, seed 43 differs',
+      buffersEqual(pixels(cv6), pixels(cv7)) && !buffersEqual(pixels(cv6), pixels(cv8)));
+
+    // 10. sand grains drawn in accent #f54001 on lab-paper
+    check('renderSand grains in accent #f54001', hasColor(cv6, CYM.PALETTE.accent));
+
+    // 11. plateLadder: exact rungs at 0 cents; detune reported for off-ladder Hz
+    var l180 = CYM.plateLadder('steel-square-30', 180).modes[0];
+    var l360 = CYM.plateLadder('steel-square-30', 360).modes[0];
+    var l333 = CYM.plateLadder('steel-square-30', 333).modes[0];
+    check('plateLadder: 180→(0,1) 0¢, 360→(1,1) 0¢, 333→|¢|>0',
+      Math.abs(l180.cents) < 1e-6 && l360.n === 1 && l360.m === 1 &&
+      Math.abs(l360.cents) < 1e-6 && Math.abs(l333.cents) > 1,
+      '333 Hz detune ' + l333.cents.toFixed(1) + ' ¢');
+
+    // 12. disc ladder: 110 Hz → free-rim (0,1) on the steel disc
+    var ld = CYM.plateLadder('steel-disc-17', 110).modes[0];
+    check('plateLadder steel-disc-17: 110 Hz → free-rim (0,1) @0¢',
+      ld.kind === 'circular' && ld.m === 0 && ld.s === 1 && Math.abs(ld.cents) < 1e-6);
+
+    // 13. Lorentzian edge: gamma=0 no NaN; hz≤0 → empty
+    var w0 = CYM.drivenSquareModes(180, CYM.virtualPlateById('steel-square-30'), 0);
+    var wsum = w0.reduce(function (s, x) { return s + x.weight; }, 0);
+    check('drivenSquareModes gamma=0 finite (Σw=1); hz=0 → []',
+      w0.every(function (x) { return Number.isFinite(x.weight); }) &&
+      Math.abs(wsum - 1) < 1e-9 &&
+      CYM.drivenSquareModes(0, CYM.virtualPlateById('steel-square-30')).length === 0);
+
+    // 14. raw sand-sim state determinism (same seed → same state)
+    var field = CYM.drivenSquareField([{ n: 1, m: 1, weight: 1 }]);
+    var sa = CYM.createSand(256, 7), sb = CYM.createSand(256, 7);
+    for (var i = 0; i < 40; i++) { CYM.stepParticles(sa, field, 1/30); CYM.stepParticles(sb, field, 1/30); }
+    var same = true;
+    for (i = 0; i < sa.count; i++) if (sa.x[i] !== sb.x[i] || sa.y[i] !== sb.y[i]) same = false;
+    check('stepParticles: same seed → identical state after 40 steps', same);
+
+    // 15. degenerate inputs never produce NaN/blank-throw
+    var buf = CYM.renderToBuffer(0, 0, { field: function () { return NaN; }, circular: false, mode: 'lines' });
+    var buf2 = CYM.renderToBuffer(32, 32, { field: function () { return NaN; }, circular: true, mode: 'sand', particles: null });
+    var okBuf = buf.length === 0;
+    for (i = 0; i < buf2.length; i++) if (Number.isNaN(buf2[i])) okBuf = false;
+    check('renderToBuffer: 0×0 and NaN field → NaN-free output', okBuf);
+  } catch (e) {
+    check('harness completed without exception', false, String(e && e.stack || e));
+  }
+
+  var nFail = results.filter(function (x) { return !x; }).length;
+  var el = document.getElementById('summary');
+  el.textContent = (results.length - nFail) + '/' + results.length +
+    (nFail ? ' FAILED' : ' — ALL PASS');
+  el.className = nFail ? 'fail' : 'pass';
+})();
+</script>
+</body>
+</html>
