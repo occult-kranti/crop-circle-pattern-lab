@@ -1,0 +1,54 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monuments as Resonators — Crop Circles</title>
+<link rel="stylesheet" href="assets/style.css"></head><body>
+<div class="masthead"><div class="wrap"><span>Field Notes on Flattened Wheat</span><span>Special Report · September 2026</span></div></div>
+<header class="top"><div class="wrap">
+<div class="brand">Crop<span>Circles</span> · Data & Patterns</div>
+<nav>
+<a href="index.html">Overview</a><a href="timeline.html">Timeline</a>
+<a href="dataset.html">Dataset</a><a href="analysis.html">Analysis</a>
+<a href="experiments.html">Hypotheses & Experiments</a><a href="papers.html">Research Papers</a>
+<a href="cymatics.html">Cymatics Lab</a><a href="compare.html">DMT × Sacred Geometry</a>
+<a href="carbon12.html">Case: Carbon-12</a><a href="monuments.html" class="active">Monuments</a>
+<a href="crossmatch.html">Crossmatch</a>
+</nav></div></header>
+
+<div class="hero"><div class="wrap">
+<div class="kicker">Archaeoacoustics · forward modeling</div>
+<h1>Temples, pyramids and monuments as resonators.</h1>
+<p>Every monument below is modeled with room-mode physics (f = c/2·√Σ(nᵢ/Lᵢ)²), Helmholtz and diffraction-comb
+estimators, then annotated with the published in-situ measurements where they exist. Every frequency carries a
+provenance tag: <span class="tag art">MEASURED</span> in-situ literature value ·
+<span class="tag unexplained">MODELED</span> computed from dimensions ·
+<span class="tag hoax">CONTESTED</span> measured but challenged.</p></div></div>
+
+<section><div class="wrap">
+<div class="panel"><p class="chart-title">The "110 Hz canon" — adjudicated</p>
+<div id="adj110" class="note"></div></div>
+<div class="panel"><p class="chart-title">Modeled chamber fundamentals (first axial modes)</p>
+<div id="ch_modes"></div>
+<p class="note">All small stone chambers cluster at 15–60 Hz fundamentals with upper modes spanning 95–120 Hz —
+dimensionally inevitable for 1.5–12 m rooms, so bare frequency matching is not evidence of design intent.
+What distinguishes sites is mode order, degeneracy structure, and decay times.</p></div>
+<div id="cards"></div>
+</div></section>
+
+<footer><div class="wrap"><div>Ground truth: Jahn, Devereux &amp; Ibison 1996 (JASA 99:649) · Till 2017 (Antiquity 91:74) · Lubman 1998 (JASA 104:1763) · Cox, Fazenda &amp; Greaney 2020 (J. Arch. Sci. 122:105218) · Cook et al. 2008/2010 (Chavín). Modeling spec: panel physics consultation (rigid-box modes, Helmholtz, combs). Full data: website assets load monuments.json.</div><div class="fmeta">Special Report<br>Archaeoacoustics</div></div></footer>
+<script src="assets/charts.js"></script><script src="assets/monuments_data.js"></script>
+<script>
+document.getElementById('adj110').innerHTML = (typeof ADJ110==='string'?ADJ110:
+ '<b>The 110 Hz claim:</b> real swept-sine measurements (Jahn/Devereux/Ibison 1996) found 95–120 Hz modes in six British/Irish stone chambers (Newgrange 110, Loughcrew 110, Wayland\'s 95/112/119, Chun Quoit 110, Cairn Euny 99). The Hypogeum "110 Hz oracle room" is a meme: uncalibrated 2015 measurements found 70 + 114 Hz, and the ISO-calibrated study (Till 2017) found 41/72/76 Hz. The 95–120 Hz cluster is dimensionally inevitable — and 110 Hz = A2 sits in the baritone chant range, which is the defensible ritual link.');
+const res = MONUMENTS.filter(m=>m.top_modes.length && typeof m.top_modes[0].f==='number');
+barChart('ch_modes', res.map(m=>m.chamber.split('(')[0].slice(0,22)), res.map(m=>m.top_modes[0].f), {color:PAL.sage, h:280});
+document.getElementById('cards').innerHTML = MONUMENTS.map(m=>{
+ const dims = m.dims? Object.entries(m.dims).map(([k,v])=>k+'='+v+' m').join(' × '):'—';
+ const modes = m.top_modes.map(x=>`<span class="tag unexplained">${typeof x.f==='number'?x.f+' Hz':x.f}</span>`).join(' ');
+ const meas = (m.measured||[]).filter(x=>x && x.f).map(x=>`<span class="tag ${x.tier>=3?'hoax':'art'}">${x.f} Hz</span> <span class="note">${x.source||''}</span>`).join('<br>');
+ return `<div class="panel"><p class="chart-title">${m.site} — ${m.chamber}</p>
+ <p class="note">${m.geometry_class} · dims: ${dims} · n-fold: ${m.n_fold??'—'} · key ratio: ${(m.key_ratio||[]).join(', ')||'—'}</p>
+ <p class="note" style="margin-top:8px">Modeled modes: ${modes||'— (not a resonator)'}</p>
+ ${meas?`<p class="note" style="margin-top:6px">Measured: ${meas}</p>`:''}
+ </div>`;}).join('');
+</script>
+</body></html>
