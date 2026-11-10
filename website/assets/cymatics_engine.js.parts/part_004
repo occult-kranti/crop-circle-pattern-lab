@@ -1,0 +1,145 @@
+'sand') {
+      params.particles = opts.particles || stepSand(
+        createSand(opts.count !== undefined ? opts.count : 3000,
+                   opts.seed !== undefined ? opts.seed : 1, false),
+        built.field, opts.sandSteps, opts.dt);
+    }
+    var ctx = canvas.getContext && canvas.getContext('2d');
+    renderFrame(ctx, size.w, size.h, params);
+    return built;
+  }
+
+  /**
+   * Render a circular plate mode.
+   * opts: {n (azimuthal), m (radial), rim='clamped'|'free', res, mode,
+   *        colormap, ...}. Also {freq, gamma, plate} → driven circular
+   *        superposition on the plate's ladder (respects its rim boundary).
+   */
+  function renderDisc(canvas, opts) {
+    opts = opts || {};
+    var size = canvasSize(canvas, opts.res);
+    var built;
+    if (Number.isFinite(opts.freq) && opts.freq > 0) {
+      var plate = typeof opts.plate === 'string' ? virtualPlateById(opts.plate)
+        : (opts.plate || virtualPlateById('steel-disc-17'));
+      var modes = drivenCircularModes(opts.freq, plate, opts.gamma,
+        opts.maxOrder, opts.limit);
+      built = { field: drivenCircularField(modes, plate.boundary), kind: 'driven', modes: modes, plate: plate };
+    } else {
+      built = circularFieldFromOpts(opts);
+      built.kind = 'single';
+    }
+    var params = {
+      field: built.field, circular: true,
+      mode: opts.mode || 'lines',
+      colormap: opts.colormap || 'lab-paper',
+      threshold: opts.threshold, contrast: opts.contrast, energy: opts.energy,
+    };
+    if (params.mode === 'sand') {
+      params.particles = opts.particles || stepSand(
+        createSand(opts.count !== undefined ? opts.count : 3000,
+                   opts.seed !== undefined ? opts.seed : 1, true),
+        built.field, opts.sandSteps, opts.dt);
+    }
+    var ctx = canvas.getContext && canvas.getContext('2d');
+    renderFrame(ctx, size.w, size.h, params);
+    return built;
+  }
+
+  /** Run `steps` (default 120) sand iterations of dt (default 1/30). */
+  function stepSand(state, field, steps, dt) {
+    var n = steps !== undefined ? steps : 120;
+    var d = dt !== undefined ? dt : 1 / 30;
+    for (var i = 0; i < n; i++) stepParticles(state, field, d);
+    return state;
+  }
+
+  CYM.stepSand = stepSand;
+
+  /**
+   * Deterministic seeded sand simulation rendered to canvas.
+   * opts: {modes=[{n,m,w}] (n azimuthal, m radial), rim='clamped'|'free',
+   *        shape='circular'|'square', count=3000, seed=1, steps=120, dt=1/30,
+   *        res, colormap='lab-paper', state (existing SandState to reuse)}.
+   * Square shape: modes are {p,q,w} sin-form (or {n,m,w} aliased).
+   * Same (seed, modes, count, steps) → identical pixel output.
+   * Returns {state, meanAbs}.
+   */
+  function renderSand(canvas, opts) {
+    opts = opts || {};
+    var size = canvasSize(canvas, opts.res);
+    var shape = opts.shape || 'circular';
+    var rim = opts.rim || 'clamped';
+    var field;
+    if (shape === 'square') {
+      var terms = (opts.modes || [{ n: 1, m: 1, w: 1 }]).map(function (md) {
+        return {
+          w: md.w !== undefined ? md.w : 1,
+          p: md.p !== undefined ? md.p : md.n,
+          q: md.q !== undefined ? md.q : md.m,
+        };
+      });
+      field = function (x, y) {
+        var v = 0;
+        for (var i = 0; i < terms.length; i++) {
+          var t = terms[i];
+          v += t.w * Math.sin(t.p * PI * x) * Math.sin(t.q * PI * y);
+        }
+        return v;
+      };
+    } else {
+      field = circularSuperpositionField(opts.modes || [{ n: 0, m: 1, w: 1 }], rim);
+    }
+    var state = opts.state ||
+      createSand(opts.count !== undefined ? opts.count : 3000,
+                 opts.seed !== undefined ? opts.seed : 1, shape === 'circular');
+    stepSand(state, field, opts.steps, opts.dt);
+    var params = {
+      field: field, circular: shape === 'circular',
+      mode: 'sand', colormap: opts.colormap || 'lab-paper',
+      threshold: opts.threshold, contrast: opts.contrast,
+      energy: opts.energy, particles: state, grainColor: opts.grainColor,
+    };
+    var ctx = canvas.getContext && canvas.getContext('2d');
+    renderFrame(ctx, size.w, size.h, params);
+    return { state: state, meanAbs: meanParticleAbs(state, field) };
+  }
+
+  /**
+   * Nearest eigenmodes of a virtual plate to fHz, with detune in cents.
+   * `plate` is an id string or VirtualPlate object. Always returns the
+   * nearest modes (no tolerance cutoff); each entry gains `cents` =
+   * 1200·log2(f_mode/fHz). Returns {plate, hz, modes}.
+   */
+  function plateLadder(plate, fHz, opts) {
+    opts = opts || {};
+    var p = typeof plate === 'string' ? virtualPlateById(plate) : (plate || VIRTUAL_PLATES[0]);
+    var result = { plate: p, hz: fHz, modes: [] };
+    if (!Number.isFinite(fHz) || fHz <= 0) return result;
+    var cands = frequencyToModes(fHz, p.shape, {
+      fundamentalHz: p.fundamentalHz,
+      maxOrder: opts.maxOrder !== undefined ? opts.maxOrder : 6,
+      tolerance: Infinity,
+      boundary: p.boundary,
+      scaling: p.scaling,
+      limit: opts.limit !== undefined ? opts.limit : 8,
+    });
+    result.modes = cands.map(function (c) {
+      var out = {};
+      for (var key in c) out[key] = c[key];
+      out.cents = 1200 * Math.log2(c.hz / fHz);
+      return out;
+    });
+    return result;
+  }
+
+  CYM.renderSquare = renderSquare;
+  CYM.renderDisc = renderDisc;
+  CYM.renderSand = renderSand;
+  CYM.plateLadder = plateLadder;
+
+  CYM.VERSION = '2.0.0';
+  CYM.CREDIT = 'Engine adapted from Open Sync (brainwave_opensync), MIT License.';
+
+  global.CYM = CYM;
+})(typeof window !== 'undefined' ? window : globalThis);
