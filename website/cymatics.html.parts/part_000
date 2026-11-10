@@ -66,8 +66,10 @@ f(n,m) = z<sub>n,m</sub>·c/(2πR) — circular membrane · f(p,q) = (c/2L)√(p
 </div></section>
 
 <footer><div class="wrap"><div>Simulator + data: see the downloads on the Overview page and the code/ + results/ folders in the project bundle. 12-TET, A4 = 440 Hz.</div><div class="fmeta">Vol. I — The Pattern Years<br>1678–2025</div></div></footer>
-<script src="assets/cymatics_engine.js"></script>
+<script src="assets/boot.js"></script>
+<script>BOOT.load(['assets/cymatics_engine.js']);</script>
 <script>
+BOOT.ready(function(){
 function renderSim(){
   const cv=document.getElementById('cymcanvas');
   const n=+document.getElementById('sm_n').value, m=Math.max(1,+document.getElementById('sm_m').value),
@@ -88,6 +90,7 @@ document.getElementById('sm_sand').addEventListener('click',()=>{
   try{CYM.renderSand(cv,{modes:[{n,m,w:1}],rim,count:4000});}catch(e){document.getElementById('sm_info').textContent='sand error: '+e.message;}
 });
 renderSim();
+});
 </script>
 <script src="assets/cymatics_data.js"></script>
 <script>
@@ -105,4 +108,4 @@ function renderDif(){
    return !q || (d.a+d.b).toLowerCase().includes(q);});
  document.getElementById('difb').innerHTML=rows.map(d=>`<tr>
   <td>${d.a}</td><td>${d.b}</td><td>${d.delta_f_hz}</td><td>${d.delta_f_note||'—'}</td>
-  <td>${d.beat_category}</td><td>${d.ratio}</td><td>${d.ji_interval||'—'}$
+ 
