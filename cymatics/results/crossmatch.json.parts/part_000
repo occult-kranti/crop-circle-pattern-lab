@@ -1,0 +1,388 @@
+{
+ "title": "Cross-Pattern Similarity Engine — results",
+ "spec": "similarity_engine_design.md (faithful implementation; deviations noted)",
+ "preregistration": {
+  "seed": 20240601,
+  "B_permutations": 100000,
+  "tau_interesting": 0.25,
+  "fwer_alpha": 0.05,
+  "fdr_q": 0.1,
+  "group_agree_tol": 0.35,
+  "robust_z_min": 2.0,
+  "T_bessel": 0.05,
+  "weights": {
+   "n_fold": 0.2,
+   "mode": 0.2,
+   "ratio": 0.15,
+   "fd": 0.15,
+   "is_spiral": 0.05,
+   "is_grid": 0.05,
+   "is_concentric": 0.05,
+   "chiral": 0.05,
+   "log_size": 0.05
+  },
+  "canon_ratios": [
+   1.618,
+   1.414,
+   1.732,
+   2.0,
+   3.0,
+   3.141592653589793
+  ],
+  "sigma_ratio": 0.02,
+  "log_size_scaler_range": 1.935763304569571
+ },
+ "population": {
+  "N": 85,
+  "domain_sizes": {
+   "crop": 60,
+   "kluver": 4,
+   "motif": 8,
+   "monument": 13
+  },
+  "deviation_from_spec_header": "spec header said N=80/8 monuments; lead's round-2 tasking says 10 monument sites; monuments.py models 3 sites as resonator pairs -> 13 monument entries, N=85. Counts computed, not hard-coded.",
+  "n_pairs": 3570,
+  "n_cross_domain": 1688,
+  "n_cross_tested": 139,
+  "n_cross_excluded_min_coverage": 1549,
+  "exclusion_note": "§6.7: pairs with <3 jointly observed major feature groups (symmetry/mode/ratio/FD) are NaN-excluded. Kluver constants carry no size/mode/ratios, so nearly all Kluver pairs are excluded by design — Kluver matches are exploratory regardless (§3.2)."
+ },
+ "matrix_summary": {
+  "median_cross_D": 0.4918960316208518,
+  "mad_cross": 0.1384449844251886,
+  "min_cross_D_T_obs": 0.0,
+  "fwer_alpha_cut_quantile05": 0.0,
+  "null_min_statistic_quantiles": {
+   "0.001": 0.0,
+   "0.01": 0.0,
+   "0.05": 0.0,
+   "0.5": 0.0
+  },
+  "count_statistic_enrichment_test": {
+   "C_obs_pairs_below_tau": 13,
+   "C_null_median": 13.0,
+   "C_null_q95": 19.0,
+   "p_enrichment": 0.5499145008549915
+  },
+  "bonferroni_alpha": 0.00035971223021582735,
+  "n_bonferroni_pass": 0,
+  "n_wy_fwer_pass": 0,
+  "n_bh_fdr_pass": 0
+ },
+ "n_interesting": 0,
+ "interesting": [],
+ "candidates_fdr_only": [],
+ "top_matches_per_item": {
+  "Mowing-Devil pamphlet": [],
+  "Capron's circular spots": [],
+  "Stoughton Down rings": [],
+  "Charlton 'crater' circles": [],
+  "Tully 'saucer nest'": [],
+  "Duhamel circles": [],
+  "Bower & Chorley's first circle": [],
+  "Bratton 'Mystery Circles'": [],
+  "Cheesefoot Head triplet": [],
+  "Punchbowl quintuplet": [
+   {
+    "partner": "Newgrange — Cruciform chamber",
+    "partner_domain": "monument",
+    "D": 0.2481,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.625,
+     "fd": 0.4072,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Newgrange — Passage (19 m waveguide/neck)",
+    "partner_domain": "monument",
+    "D": 0.3451,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.75,
+     "fd": 0.7254,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Great Pyramid of Khufu — King's Chamber",
+    "partner_domain": "monument",
+    "D": 0.3624,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.625,
+     "fd": 0.9786,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Chavín de Huántar — Underground galleries (Lanzón Gallery network)",
+    "partner_domain": "monument",
+    "D": 0.3667,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.625,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Wayland's Smithy — East + West chambers (transepted gallery grave)",
+    "partner_domain": "monument",
+    "D": 0.3667,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.625,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   }
+  ],
+  "Silbury Hill quintuplets": [],
+  "Cheesefoot Head first pictogram": [
+   {
+    "partner": "Chavín de Huántar — Underground galleries (Lanzón Gallery network)",
+    "partner_domain": "monument",
+    "D": 0.0,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.0,
+     "fd": 0.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Wayland's Smithy — East + West chambers (transepted gallery grave)",
+    "partner_domain": "monument",
+    "D": 0.0,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.0,
+     "fd": 0.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Great Pyramid of Khufu — King's Chamber",
+    "partner_domain": "monument",
+    "D": 0.0356,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.0,
+     "fd": 0.1779,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Newgrange — Cruciform chamber",
+    "partner_domain": "monument",
+    "D": 0.1515,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.0,
+     "fd": 0.7574,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Great Pyramid of Khufu — King's Chamber sarcophagus (coffer)",
+    "partner_domain": "monument",
+    "D": 0.2475,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.75,
+     "fd": 0.2373,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   }
+  ],
+  "East Field double pictogram ('Led Zeppelin')": [],
+  "Operation Blackbird hoax": [],
+  "Etchilhampton formation": [],
+  "Barbury Castle tetrahedron": [
+   {
+    "partner": "Chavín de Huántar — Underground galleries (Lanzón Gallery network)",
+    "partner_domain": "monument",
+    "D": 0.4293,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "mode": 0.5833,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Wayland's Smithy — East + West chambers (transepted gallery grave)",
+    "partner_domain": "monument",
+    "D": 0.4293,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "mode": 0.5833,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Great Pyramid of Khufu — King's Chamber",
+    "partner_domain": "monument",
+    "D": 0.4341,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "mode": 0.5833,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0,
+     "log_size": 0.5063
+    }
+   },
+   {
+    "partner": "Newgrange — Cruciform chamber",
+    "partner_domain": "monument",
+    "D": 0.4408,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "mode": 0.5833,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0,
+     "log_size": 0.6132
+    }
+   },
+   {
+    "partner": "Newgrange — Passage (19 m waveguide/neck)",
+    "partner_domain": "monument",
+    "D": 0.4675,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "mode": 0.75,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0,
+     "log_size": 0.3726
+    }
+   }
+  ],
+  "Ickleton Mandelbrot": [],
+  "Székesfehérvár teen circle": [],
+  "Berkshire circle-making competition": [],
+  "East Field 'DNA' double helix": [],
+  "Stonehenge Julia Set": [
+   {
+    "partner": "Chavín de Huántar — Underground galleries (Lanzón Gallery network)",
+    "partner_domain": "monument",
+    "D": 0.5329,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.7483,
+     "fd": 1.0,
+     "is_spiral": 1,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 1
+    }
+   },
+   {
+    "partner": "Wayland's Smithy — East + West chambers (transepted gallery grave)",
+    "partner_domain": "monument",
+    "D": 0.5329,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.7483,
+     "fd": 1.0,
+     "is_spiral": 1,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 1
+    }
+   },
+   {
+    "partner": "Newgrange — Passage (19 m waveguide/neck)",
+    "partner_domain": "monument",
+    "D": 0.5998,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.9983,
+     "fd": 1.0,
+     "is_spiral": 1,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 1,
+     "log_size": 0.6036
+    }
+   },
+   {
+    "partner": "Great Pyramid of Khufu — King's Chamber sarcophagus (coffer)",
+    "partner_domain": "monument",
+    "D": 0.6314,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.9983,
+     "fd": 1.0,
+     "is_spiral": 1,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 1,
+     "log_size": 1.1091
+    }
+   },
+   {
+    "partner": "Great Pyramid of Khufu — King's Chamber",
+    "partner_domain": "monument",
+    "D": 0.7123,
+    "breakdown": {
+     "n_fold": 0.6667,
+     "mode": 0.7483,
+     "fd": 1.0,
+     "is_spiral": 1,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 1,
+     "log_size": 0.7373
+    }
+   }
+  ],
+  "Windmill Hill Triple Julia": [],
+  "Silbury Hill 
