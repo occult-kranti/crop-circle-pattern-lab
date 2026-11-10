@@ -1,0 +1,205 @@
+_concentric=1),
+                  "borobudur": dict(is_grid=1, is_concentric=1)}
+    items = []
+    for m in mon:
+        mid = m["id"]
+        ms = m["mode_space"]
+        nm = tuple(ms["mn"]) if ms.get("mn") else None
+        mode = None
+        if nm is not None or ms.get("dominant_mode_f_hz"):
+            mode = {"nm": nm, "model": "membrane",
+                    "hz": ms.get("dominant_mode_f_hz"), "provenance": "MODELED/MEASURED"}
+        size = size_by_id.get(mid)
+        fl = dict(is_spiral=0, is_grid=0, is_concentric=0, chiral=0)
+        fl.update(flag_by_id.get(mid, {}))
+        items.append({
+            "domain": "monument", "id": mid,
+            "name": f"{m['site']} — {m['chamber']}", "n_fold": m["n_fold"],
+            "flags": fl,
+            "log_size": math.log10(size) if size else np.nan,
+            "mode": mode, "ratios": list(m.get("key_ratio") or []),
+            "grid_aspect": None,
+            "rect_aspect": aspect_by_id.get(mid) if nm is not None or mid in aspect_by_id else None,
+        })
+    return items
+
+
+def finalize_items(items):
+    """Attach ratio signatures and Fourier descriptors; assign indices."""
+    for k, it in enumerate(items):
+        it["idx"] = k
+        it["ratio_sig"] = encode_ratio_sig(it["ratios"]) if it["ratios"] else None
+        glyph = choose_glyph(it["n_fold"], it["flags"]["is_grid"],
+                             it["grid_aspect"], it["rect_aspect"])
+        it["glyph"] = glyph
+        it["fd"] = fourier_desc(glyph)
+    return items
+
+
+def fit_size_range(items):
+    """Robust log_size scaler: 5th-95th percentile range within each domain,
+    averaged across domains (§1.3). Fit once, frozen before permutations (§6.11)."""
+    ranges = []
+    for dom in sorted({it["domain"] for it in items}):
+        vals = np.array([it["log_size"] for it in items
+                         if it["domain"] == dom and not np.isnan(it["log_size"])])
+        if len(vals) >= 3:
+            lo, hi = np.percentile(vals, [5, 95])
+            if hi > lo:
+                ranges.append(hi - lo)
+    return float(np.mean(ranges)) if ranges else 1.0
+
+
+# ---------------------------------------------------------------------------
+# Engine
+# ---------------------------------------------------------------------------
+
+def run_engine(seed=PREREGISTERED_SEED, B=B_PERM, verbose=False):
+    items = finalize_items(load_crop_items() + kluver_items() + motif_items()
+                           + monument_items())
+    N = len(items)
+    domains = [it["domain"] for it in items]
+    size_range = fit_size_range(items)
+
+    # all-pairs matrix (§3: brute force is the point)
+    pairs = list(itertools.combinations(range(N), 2))
+    ii = np.array([p[0] for p in pairs])
+    jj = np.array([p[1] for p in pairs])
+    D = np.full(len(pairs), np.nan)
+    breakdowns = {}
+    n_major = np.zeros(len(pairs), dtype=int)
+    for k, (i, j) in enumerate(pairs):
+        d, bd, nmj = pair_dist(items[i], items[j], size_range)
+        # §6.7 minimum-coverage rule
+        if nmj < MIN_MAJOR_GROUPS:
+            d = np.nan
+        D[k] = d
+        breakdowns[(i, j)] = bd
+        n_major[k] = nmj
+
+    cross = np.array([domains[i] != domains[j] for i, j in pairs])
+    valid = ~np.isnan(D)
+    cross_valid = cross & valid
+    Dcross = D[cross_valid]
+    med = float(np.median(Dcross))
+    mad = float(median_abs_deviation(Dcross))          # scipy default (normal-scaled), per §5
+    T_obs = float(np.min(Dcross))
+
+    # ---- Westfall-Young min-statistic permutation FWER (§3.1, §6.9) ----
+    rng = np.random.default_rng(seed)
+    dom_list = sorted(set(domains))
+    lab = np.array([dom_list.index(d) for d in domains])
+    Dv = D.copy(); Dv[~valid] = np.inf                 # excluded pairs never win the min
+    T_null = np.empty(B)
+    C_null = np.empty(B, dtype=int)                    # secondary: count statistic (§3.1 alt.)
+    below_tau = Dv < TAU_INTERESTING
+    C_obs = int((below_tau & cross_valid).sum())
+    for b in range(B):
+        perm = rng.permutation(N)
+        lp = lab[perm]
+        cmask = lp[ii] != lp[jj]
+        T_null[b] = Dv[cmask].min()
+        C_null[b] = int((below_tau & cmask).sum())
+    alpha_cut = float(np.quantile(T_null, FWER_ALPHA))
+    p_enrichment = float((1 + (C_null >= C_obs).sum()) / (B + 1))
+    p_pair = (1.0 + (T_null[None, :] <= Dv[cross_valid, None]).sum(axis=1)) / (B + 1)
+
+    # ---- BH-FDR on cross-domain per-pair p-values (§4.2) ----
+    order = np.argsort(p_pair)
+    m = len(p_pair)
+    ranks = np.empty(m); ranks[order] = np.arange(1, m + 1)
+    q_vals = np.empty(m)
+    prev = 1.0
+    for k in range(m - 1, -1, -1):                     # step-up: enforce monotonicity
+        idx = order[k]
+        prev = min(prev, p_pair[idx] * m / ranks[idx])
+        q_vals[idx] = prev
+    fdr_pass = q_vals <= FDR_Q
+
+    # Bonferroni floor (§4.6): WY must reject a superset
+    bonf_alpha = FWER_ALPHA / m
+    bonf_pass = p_pair <= bonf_alpha
+    wy_pass = p_pair <= FWER_ALPHA
+
+    # ---- pre-registered "interesting" criterion (§4.3) ----
+    cv_idx = np.where(cross_valid)[0]
+    interesting, candidates = [], []
+    for row, k in enumerate(cv_idx):
+        i, j = pairs[k]
+        bd = breakdowns[(i, j)]
+        z = (med - D[k]) / mad if mad > 0 else np.inf
+        n_agree = sum(1 for g in MAJOR_GROUPS if bd.get(g, 1.0) <= GROUP_AGREE_TOL)
+        rec = {"i": int(i), "j": int(j), "a": items[i]["name"], "b": items[j]["name"],
+               "domains": [items[i]["domain"], items[j]["domain"]],
+               "D": round(float(D[k]), 4), "p_fwer": float(p_pair[row]),
+               "q_fdr": float(q_vals[row]), "robust_z": round(float(z), 2),
+               "n_groups_agree": n_agree, "breakdown": bd}
+        if (D[k] <= TAU_INTERESTING and p_pair[row] <= FWER_ALPHA
+                and n_agree >= 2 and z >= ROBUST_Z_MIN):
+            interesting.append(rec)
+        elif fdr_pass[row] and not wy_pass[row]:
+            candidates.append(rec)
+    interesting.sort(key=lambda r: r["D"])
+    candidates.sort(key=lambda r: r["D"])
+
+    # ---- top-match tables (§3.2) ----
+    top5 = {}
+    for i in range(N):
+        opts = [(k, D[k]) for k in range(len(pairs))
+                if (pairs[k][0] == i or pairs[k][1] == i) and cross_valid[k]]
+        opts.sort(key=lambda t: (t[1], t[0]))          # §6.8 deterministic tie-break
+        top5[items[i]["name"]] = [
+            {"partner": items[pairs[k][1] if pairs[k][0] == i else pairs[k][0]]["name"],
+             "partner_domain": domains[pairs[k][1] if pairs[k][0] == i else pairs[k][0]],
+             "D": round(float(d), 4),
+             "breakdown": breakdowns[pairs[k]]}
+            for k, d in opts[:5]]
+    gv = [(k, D[k]) for k in cv_idx]
+    gv.sort(key=lambda t: (t[1], t[0]))
+    prow = {int(k): r for r, k in enumerate(cv_idx)}
+    global_top = [
+        {"a": items[pairs[k][0]]["name"], "b": items[pairs[k][1]]["name"],
+         "domains": [domains[pairs[k][0]], domains[pairs[k][1]]],
+         "D": round(float(d), 4),
+         "p_fwer": float(p_pair[prow[k]]), "q_fdr": float(q_vals[prow[k]]),
+         "robust_z": round(float((med - d) / mad), 2),
+         "breakdown": breakdowns[pairs[k]]}
+        for k, d in gv[:50]]
+
+    return {
+        "items": items, "pairs": pairs, "D": D, "breakdowns": breakdowns,
+        "domains": domains, "size_range": size_range,
+        "n_pairs": len(pairs),
+        "n_cross": int(cross.sum()), "n_cross_valid": int(cross_valid.sum()),
+        "n_excluded_cross": int((cross & ~valid).sum()),
+        "n_excluded_total": int((~valid).sum()),
+        "median_cross": med, "mad_cross": mad, "T_obs": T_obs,
+        "alpha_cut": alpha_cut,
+        "count_statistic": {"C_obs_pairs_below_tau": C_obs,
+                            "C_null_median": float(np.median(C_null)),
+                            "C_null_q95": float(np.quantile(C_null, 0.95)),
+                            "p_enrichment": p_enrichment},
+        "null_quantiles": {str(q): float(np.quantile(T_null, q))
+                           for q in (0.001, 0.01, 0.05, 0.5)},
+        "bonferroni_alpha": bonf_alpha,
+        "n_bonferroni_pass": int(bonf_pass.sum()), "n_wy_pass": int(wy_pass.sum()),
+        "wy_superset_bonferroni": bool(set(np.where(bonf_pass)[0]) <= set(np.where(wy_pass)[0])),
+        "n_fdr_pass": int(fdr_pass.sum()),
+        "interesting": interesting, "candidates": candidates,
+        "top5": top5, "global_top50": global_top,
+        "T_null_first8": T_null[:8].tolist(),          # determinism fingerprint
+    }
+
+
+# ---------------------------------------------------------------------------
+# Unit checks + main
+# ---------------------------------------------------------------------------
+
+def unit_checks(res1, res2):
+    checks = []
+
+    # U1 determinism: two full runs bit-identical
+    det = (np.array_equal(np.nan_to_num(res1["D"], nan=-1),
+                          np.nan_to_num(res2["D"], nan=-1))
+           and res1["T_null_first8"] == res2["T_null_first8"]
+           and [r["D"] for r in res1["int

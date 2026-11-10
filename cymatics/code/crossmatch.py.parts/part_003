@@ -1,0 +1,136 @@
+eresting"]] == [r["D"] for r in res2["interesting"]])
+    checks.append(("U1 determinism (run twice, identical matrix + null + verdicts)", det))
+
+    # U2 symmetry-space sanity (task spec): 6 vs 12 ~ small (octave equivalent),
+    # 6 vs 24 clearly larger
+    d612 = d_sym(6, 12)
+    d624 = d_sym(6, 24)
+    checks.append((f"U2 d_sym octave sanity: d(6,12)={d612:.4f} ~ 0 < d(6,24)={d624:.4f}",
+                   d612 < 0.05 and d624 > d612 + 0.3))
+
+    # U3 Bonferroni floor: WY rejections must be a superset (§4.6)
+    checks.append((f"U3 WY superset of Bonferroni "
+                   f"(Bonf {res1['n_bonferroni_pass']} <= WY {res1['n_wy_pass']})",
+                   res1["wy_superset_bonferroni"]))
+
+    # U4 within-domain known-similar pilot pair: Koch I vs Koch II snowflakes
+    items, pairs = res1["items"], res1["pairs"]
+    idx = {it["id"]: it["idx"] for it in items}
+    k = pairs.index((min(idx["crop_23"], idx["crop_24"]), max(idx["crop_23"], idx["crop_24"])))
+    d_koch = res1["D"][k]
+    checks.append((f"U4 within-domain pilot: D(Koch I, Koch II) = {d_koch:.4f} <= 0.2",
+                   d_koch <= 0.2))
+    return checks
+
+
+def verdicts_list(res):
+    """Short human-readable verdicts: interesting (confirmatory) then candidates."""
+    out = []
+    for r in res["interesting"]:
+        out.append(f"INTERESTING  D={r['D']:.3f}  p={r['p_fwer']:.2e}  q={r['q_fdr']:.3f}  "
+                   f"z={r['robust_z']:.1f}  groups={r['n_groups_agree']}/4  "
+                   f"{r['a']} <-> {r['b']}  [{r['domains'][0]}x{r['domains'][1]}]")
+    for r in res["candidates"][:20]:
+        out.append(f"candidate    D={r['D']:.3f}  p={r['p_fwer']:.2e}  q={r['q_fdr']:.3f}  "
+                   f"(FDR only, exploratory)  {r['a']} <-> {r['b']}")
+    if not out:
+        out.append("No cross-domain pair passes the pre-registered interesting criterion.")
+    return out
+
+
+def main(run_checks=True):
+    res = run_engine()
+    items = res["items"]
+    dom_sizes = {d: sum(1 for it in items if it["domain"] == d) for d in
+                 ("crop", "kluver", "motif", "monument")}
+
+    checks = []
+    if run_checks:
+        res2 = run_engine()          # second full run for U1 determinism
+        checks = unit_checks(res, res2)
+
+    out = {
+        "title": "Cross-Pattern Similarity Engine — results",
+        "spec": "similarity_engine_design.md (faithful implementation; deviations noted)",
+        "preregistration": {
+            "seed": PREREGISTERED_SEED, "B_permutations": B_PERM,
+            "tau_interesting": TAU_INTERESTING, "fwer_alpha": FWER_ALPHA,
+            "fdr_q": FDR_Q, "group_agree_tol": GROUP_AGREE_TOL,
+            "robust_z_min": ROBUST_Z_MIN, "T_bessel": T_BESSEL,
+            "weights": WEIGHTS, "canon_ratios": CANON.tolist(),
+            "sigma_ratio": SIGMA_RATIO,
+            "log_size_scaler_range": res["size_range"],
+        },
+        "population": {
+            "N": len(items), "domain_sizes": dom_sizes,
+            "deviation_from_spec_header": "spec header said N=80/8 monuments; lead's "
+                "round-2 tasking says 10 monument sites; monuments.py models 3 sites as "
+                "resonator pairs -> 13 monument entries, N=85. Counts computed, not hard-coded.",
+            "n_pairs": res["n_pairs"], "n_cross_domain": res["n_cross"],
+            "n_cross_tested": res["n_cross_valid"],
+            "n_cross_excluded_min_coverage": res["n_excluded_cross"],
+            "exclusion_note": "§6.7: pairs with <3 jointly observed major feature groups "
+                "(symmetry/mode/ratio/FD) are NaN-excluded. Kluver constants carry no size/"
+                "mode/ratios, so nearly all Kluver pairs are excluded by design — "
+                "Kluver matches are exploratory regardless (§3.2).",
+        },
+        "matrix_summary": {
+            "median_cross_D": res["median_cross"], "mad_cross": res["mad_cross"],
+            "min_cross_D_T_obs": res["T_obs"],
+            "fwer_alpha_cut_quantile05": res["alpha_cut"],
+            "null_min_statistic_quantiles": res["null_quantiles"],
+            "count_statistic_enrichment_test": res["count_statistic"],
+            "bonferroni_alpha": res["bonferroni_alpha"],
+            "n_bonferroni_pass": res["n_bonferroni_pass"],
+            "n_wy_fwer_pass": res["n_wy_pass"],
+            "n_bh_fdr_pass": res["n_fdr_pass"],
+        },
+        "n_interesting": len(res["interesting"]),
+        "interesting": res["interesting"],
+        "candidates_fdr_only": res["candidates"],
+        "top_matches_per_item": res["top5"],
+        "global_top50": res["global_top50"],
+        "verdicts": verdicts_list(res),
+        "unit_checks": [{"check": c, "passed": bool(p)} for c, p in checks],
+        "caveats": [
+            "d_sym is a semi-metric (octave equivalence is non-transitive: 6~12, 12~24, 6!~24) — do not feed D to metric-space algorithms (§6.4).",
+            "FD silhouettes are procedural proxies (rosette/rect/circle) since no images exist for most items; FD peaks at n_fold by construction (§2.4 note).",
+            "Monument (m,n) values come from the physics spec's heuristic symmetry-class mapping, NOT from isomorphic transforms; Stonehenge/El Castillo carry no modes by design.",
+            "The 95-120 Hz megalithic band is dimensionally inevitable for 1.5-12 m stone rooms; a bare-frequency match to ~110 Hz has very low evidentiary weight (archaeoacoustics brief §4).",
+            "Domain sizes are wildly unequal (60/4/8/13); shared feature pipelines induce dependence. WY min-statistic handles the multiplicity, not the interpretation (§3.2).",
+            "Patterns noticed after seeing this matrix are hypothesis-generating only (§4.4 HARKing firewall).",
+        ],
+    }
+    path = os.path.join(RESULTS_DIR, "crossmatch.json")
+    with open(path, "w") as fh:
+        json.dump(out, fh, indent=1, ensure_ascii=False)
+
+    # ---- console summary ----
+    print(f"N={len(items)} items {dom_sizes} | pairs={res['n_pairs']} "
+          f"cross={res['n_cross']} tested={res['n_cross_valid']} "
+          f"excluded={res['n_excluded_cross']}")
+    print(f"cross-domain D: median={res['median_cross']:.3f} MAD={res['mad_cross']:.3f} "
+          f"min={res['T_obs']:.3f}")
+    print(f"null min-stat quantiles: {res['null_quantiles']}")
+    cs = res["count_statistic"]
+    print(f"count statistic: C_obs={cs['C_obs_pairs_below_tau']} vs null median "
+          f"{cs['C_null_median']:.0f} (q95={cs['C_null_q95']:.0f}) -> "
+          f"p_enrichment={cs['p_enrichment']:.4f}")
+    print(f"FWER: alpha_cut={res['alpha_cut']:.4f}, WY pass={res['n_wy_pass']}, "
+          f"Bonferroni pass={res['n_bonferroni_pass']}, BH-FDR(q=0.10) pass={res['n_fdr_pass']}")
+    print(f"INTERESTING pairs (pre-registered criterion): {len(res['interesting'])}")
+    for line in out["verdicts"][:25]:
+        print("  " + line)
+    print("\nGlobal top-10 cross-domain matches:")
+    for g in res["global_top50"][:10]:
+        print(f"  D={g['D']:.3f} p={g['p_fwer']:.2e} z={g['robust_z']:.1f}  "
+              f"{g['a']} <-> {g['b']}  [{g['domains'][0]}x{g['domains'][1]}]")
+    print("\nUnit checks:")
+    for c, p in checks:
+        print(f"  {'PASS' if p else 'FAIL'}  {c}")
+    print(f"\nwrote {path}")
+    return out
+
+
+if __name__ == "__main__":
+    main()
