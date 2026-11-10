@@ -1,0 +1,61 @@
+al. 2008; Cook et al. 2010; Kolar et al. 2012 | Stanford CCRMA, calibrated; interpretation cautious |
+| **(a)** | Painted-cave resonance mapping; image/resonance spatial correlation | Reznikoff & Dauvois 1988; Dauvois & Boutillon 1990; Waller 1993 | Repeatedly observed; correlation robust, causality debated |
+| **(a)** | Hypogeum Oracle Chamber: strong multi-second reverb, modes at 41/72/76 Hz, poor speech intelligibility | Till 2017 (Antiquity 91:74) | Calibrated ISO-standard measurement; supersedes earlier claims |
+| **(b) Measured, contested interpretation** | Chambers "tuned" to ~110 Hz deliberately | Jahn et al. 1996 (implied); Devereux 2001 *Stone Age Soundtracks* | Cluster is geometrically expected; tuning intent unproven |
+| **(b)** | Cave images placed *because of* resonance (ritual sound-art linkage) | Reznikoff 2006, 2008 | Plausible; alternative explanations (visibility, access, hydrography) under-tested |
+| **(b)** | Quetzal chirp as intentional Maya design | Lubman 1998 vs. Declercq (later work) | Any similar staircase chirps; pareidolia risk; no textual evidence |
+| **(b)** | 110 Hz → specific regional brain activity | Cook, Pajot & Leuchter 2008 | Single small-n study, unreplicated, weak journal |
+| **(b)** | Hypogeum geometric "tuning" | Wolfe, Swanson & Till 2020 (arXiv) | Preprint modelling; hypothesis-grade |
+| **(c) Folklore/fringe** | "Hypogeum resonates at exactly 110 Hz" | Debertolis et al. 2015; Eneix/OTSF proceedings | Refuted by the claimants' own data (114/70 Hz) and by Till 2017 (41/72/76 Hz) |
+| **(c)** | "Chambers entrain theta brainwaves (4–8 Hz)" | uncited; conflation with Neher 1961/62 drumming-tempo EEG | Physically impossible as room mode; no measurements exist |
+| **(c)** | Newgrange 2–4 Hz infrasound; vibration-conducting stones; solstice-sound coupling | websites, tour literature | No published calibrated measurement |
+| **(c)** | "110 Hz at Maeshowe" | secondary blogs | Composite error: Jahn et al. numbers + Watson's *calculation* for Maeshowe |
+| **(c)** | Great Pyramid King's Chamber "resonance engineering," healing frequencies | Dunn 1998 *Giza Power Plant*; Reid appendix in Elkington 2001 | No peer-reviewed modal survey exists; modal *estimates* from room dimensions (~59, 69, 94 Hz for the ~10.5×5.2×5.8 m chamber) are arithmetic, not measurement |
+
+---
+
+## 4. Ground-truth frequency table for cross-domain matching
+
+Published, in-situ measured frequencies usable as ground truth:
+
+| Monument | Frequency / metric | Where measured | Method | Source |
+|---|---|---|---|---|
+| **Newgrange** (Ireland, ~3200 BC) | **110 Hz** chamber resonance; ~12 node/antinode pairs along 19 m passage | Cruciform chamber + passage | Swept sine, SPL grid | Jahn, Devereux & Ibison 1996, JASA 99(2):649–658 |
+| **Loughcrew Cairn L** | **110 Hz** dominant; sub-chamber modes ~58–120 Hz | Main chamber + 3 sub-chambers | Swept sine, modal mapping | Jahn et al. 1996 (same paper) |
+| **Loughcrew Cairn I** | **110 Hz** | Chamber + 7 sub-chambers | Swept sine, 8 radial traverses | Jahn et al. 1996 |
+| **Wayland's Smithy** | East chamber **112 Hz** (secondary 119 Hz); West chamber **95 Hz** | Transepted gallery grave | Swept sine | Jahn et al. 1996 |
+| **Chun Quoit** (Cornwall) | **110 Hz** | Chamber | Swept sine | Jahn et al. 1996 |
+| **Cairn Euny fogou** | **99 Hz** | Iron Age underground passage | Swept sine | Jahn et al. 1996 |
+| **Ħal Saflieni Hypogeum, Oracle Chamber** | **41, 72, 76 Hz** primary modes (calibrated); multi-second RT | Oracle Chamber, Level 2 | Swept sine, ISO 3382 metrics | Till 2017, Antiquity 91:74–89 |
+| — same site, contested earlier data | 114 Hz and 68–70 Hz (voice/drum excitation, uncalibrated) | Oracle Room | Voice/drum spectra | Debertolis et al. 2015 — use only as "contested" comparator |
+| **Stonehenge** (complete ~2200 BC, via 1:12 model) | Mid-freq RT60 **0.64±0.03 s**; speech gain **+4.3±0.9 dB** | Scale model, semi-anechoic chamber; Maryhill replica; ruin | Ultrasonic impulse responses (to 70 kHz ≙ 5.8 kHz) | Cox, Fazenda & Greaney 2020, JAS 122:105218 |
+| **El Castillo, Chichén Itzá** | Chirped echo sweeping **~1,300→~900 Hz in ~200 ms** | Base of main staircase | Handclap spectrograms; diffraction-grating model | Lubman 1998, JASA 104:1763; Declercq et al. 2004, JASA 116:3328 |
+| **Chavín de Huántar galleries** | Gallery-filtered pututu spectra; Lanzón→Circular Plaza transmission (site-specific Hz in dissertation) | Lanzón Gallery, Circular Plaza | Calibrated sources/mics, impulse responses, auralization | Abel et al. 2008 (JASA 123:605); Kolar 2013 PhD, Stanford CCRMA; https://ccrma.stanford.edu/groups/chavin/ |
+| **Le Portel / Niaux / Isturitz caves** | Resonant pitches mapped as notes (E2–F–B2 region), **3–4 s resonance durations** at painted loci | Gallery Jammes (Le Portel) etc. | Vocal pitch survey (uncalibrated) | Reznikoff & Dauvois 1988, BSPF 85(8):238–246 |
+
+**Matching-study caveats (apply before correlating with cymatic decodes):**
+1. The 95–120 Hz "megalithic band" is what the wave equation *predicts* for 2–3 m stone cavities (f ≈ c/2L ⇒ ~57–86 Hz for 2–3 m axial modes, higher for transverse). A match between a crop-circle "decode" and 110 Hz has very low evidentiary weight — the band is densely populated by any human-scale chamber.
+2. Use only swept-sine/ISO-calibrated Hz (Jahn et al. 1996; Till 2017; Cox et al. 2020) as ground truth. Voice/drum-excited peaks (Debertolis; Reznikoff) carry excitation bias.
+3. "110 Hz at the Hypogeum" is a meme, not a measurement — the site's calibrated modes are 41/72/76 Hz.
+
+---
+
+### Master source URLs
+- Jahn/Devereux/Ibison 1996 (JASA): DOI 10.1121/1.414642 — http://icrl.org/wp-content/uploads/2012/04/Acoustics-JASA.pdf
+- Devereux & Jahn 1996 (Antiquity): https://www.cambridge.org/core/journals/antiquity/article/preliminary-investigations-and-cognitive-considerations-of-the-acoustical-resonances-of-selected-archaeological-sites/D64ECE9DCBFEAE665001E2033D61A7D1
+- Watson & Keating 1999: DOI 10.1017/S0003598X00088281 — https://www.cambridge.org/core/journals/antiquity/article/architecture-and-sound-an-acoustic-analysis-of-megalithic-monuments-in-prehistoric-britain/F37AF50641B26AC288BA756A1C12EA33
+- Reznikoff & Dauvois 1988: DOI 10.3406/bspf.1988.9349 — https://www.larevuedesressources.org/IMG/pdf/article_bspf_0249-7638_1988_num_85_8_9349.pdf
+- Cook et al. 2010 (pututus abstract): JASA 128(2):359 — project hub https://ccrma.stanford.edu/groups/chavin/
+- Kolar et al. 2012: https://www.ekho-verlag.com/abstracts-flower1/flower-world-vol-1-kolar/
+- Lubman 1998: JASA 104(3):1763, DOI 10.1121/1.424061
+- Declercq et al. 2004: JASA 116(6):3328–3335
+- Till 2017 (Hypogeum): DOI 10.15184/aqy.2016.258 — author copy https://eprints.hud.ac.uk/30678/
+- Debertolis et al. 2015: DOI 10.15640/jaa.v3n1a4 — https://www.um.edu.mt/library/oar/bitstream/123456789/16630/1/OA%20Archaeoacoustic%20Analysis%20of%20the%20%C4%A6al%20Saflieni%20Hypogeum%20in%20Malta.pdf
+- Wolfe, Swanson & Till 2020: https://arxiv.org/abs/2010.13697
+- Cox, Fazenda & Greaney 2020: DOI 10.1016/j.jas.2020.105218 — https://www.sciencedirect.com/science/article/pii/S0305440320301394
+- Fazenda & Drumm 2013: Acta Acustica 99(1):110–117, DOI 10.3813/AAA.508592
+- Till 2019: Acoustics 1(3):661–692, DOI 10.3390/acoustics1030039
+- Till 2010 (Stonehenge/Maryhill): https://iaspmjournal.net/index.php/IASPM_Journal/article/view/308
+- Cook, Pajot & Leuchter 2008 (EEG/110 Hz): DOI 10.2752/175169608783489099
+- Neher 1961/1962 (drumming EEG): EEG Clin. Neurophysiol. 13:449–451; Human Biology 34:151–160
+- Scarre & Lawson 2006 (Cambridge archaeoacoustics volume): McDonald Institute Monographs

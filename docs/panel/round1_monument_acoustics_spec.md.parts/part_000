@@ -1,0 +1,90 @@
+# Round 1 Consultation — Monument Acoustics / Cymatics Spec
+**Scope:** computation-ready modal physics for 6 sites; status of the 110 Hz claim; mode-space mapping to circular-membrane (m,n); physical caveats. c = 343 m/s throughout.
+
+---
+
+## 0. Ground rules (validity of what follows)
+
+- Room-mode formula `f = (c/2)·√((nx/Lx)²+(ny/Ly)²+(nz/Lz)²)` assumes a **rigid-walled, empty rectangular box** with pressure-release-free (Neumann) boundaries. Real chambers fail this progressively via: non-rectangular geometry (corbelled vaults, curved ceilings), doorway/aperture losses, surface absorption, and modal overlap.
+- **Schroeder frequency** `f_s ≈ 2000·√(RT60/V)` [Hz, V in m³]: above f_s the spectrum is statistical (modal overlap); discrete-mode talk is only defensible below f_s. All sites here have f_s ≈ 250–580 Hz → the 95–120 Hz band is in the **discrete-mode regime** (good for cross-matching), but claims like "King's Chamber resonates at 438 Hz" are physically meaningless (modal density there ≈ 20 modes/Hz).
+- Scaling law: f ∝ c/L. All chambers here (L ~ 2.5–10.5 m) have **fundamentals of 15–50 Hz** (infrasonic/low bass). **No chamber's fundamental is 110 Hz.** 110 Hz is a 3rd–9th order axial mode of any room ~3–12 m in size — this matters for §2.
+- Open-air sites (Stonehenge, El Castillo) are **not resonators**. They are scatterers/diffractors. Treat them with grating/repetition-pitch physics, not eigenmodes (§1e, §1f).
+
+---
+
+## 1. Site-by-site computation
+
+### 1a. Great Pyramid — King's Chamber
+
+**Dims (verified):** Petrie/Hancock figures: 34 ft 4 in × 17 ft 2 in × 19 ft 1 in = **10.47 × 5.234 × 5.82–5.97 m** (height is the only ambiguous figure; 19 ft 1 in = 5.82 m, Wikipedia/Petrie-derived value 5.974 m; ±2.5 % → <2 % shift in nz-dependent modes). Use **10.47 × 5.234 × 5.84 m**; V ≈ 327 m³, S ≈ 297 m². Granite walls, five relieving chambers above (decoupled acoustically at audio frequencies).
+
+**First 6 modes (h = 5.84 m):**
+
+| # | (nx,ny,nz) | type | f [Hz] | membrane analog (m,n) |
+|---|-----------|------|--------|----------------------|
+| 1 | (1,0,0) | axial (E–W) | **16.38** | dipole (1,1) |
+| 2 | (0,0,1) | axial (vert.) | **28.71** | dipole (1,1) |
+| 3 | (2,0,0) | axial | **32.76** | (1,2) |
+| 4 | (0,1,0) | axial (N–S) | **32.77** | dipole (1,1) — *near-degenerate with (2,0,0): Lx ≈ 2·Ly by design (2:1 plan)* |
+| 5 | (1,0,1) | tangential | **33.05** | (2,1) |
+| 6 | (1,1,0) | tangential | **36.63** | (2,1) |
+
+Note the **2:1 plan ratio creates a near-degeneracy doublet at 32.8 Hz** — in a perfect 2:1 box (2,0,0) ≡ (0,1,0) exactly. If your engine sees doublets near 33 Hz, that is the fingerprint.
+- Near the "megalithic band": (7,0,0) = **114.7 Hz**; (6,1,0) = 103.6 Hz. So the KC does have a mode at ~115 Hz — as does virtually every room 8–12 m long.
+- Air shafts (2 × ~0.2×0.23 m, ~60 m to exterior): Helmholtz f_H ≈ **0.12 Hz** — negligible leakage; LF modes are well confined. Doorway (~1.2 m² open) is the dominant loss.
+- **RT60 estimate:** Sabine T = 0.161V/(αS+A_open): α_granite ≈ 0.01 → **~12.6 s**; α ≈ 0.03 → ~5.2 s. Realistic 5–12 s at LF (very live). Schroeder f_s ≈ 250–390 Hz.
+
+### 1b. The sarcophagus-as-resonator idea — assessment
+
+**Internal dims (Petrie, verified): 1.996 × 0.680 × 0.873 m, V ≈ 1.17 m³** (literature 1166 L). Lidless → an **open box**, i.e., a hybrid of a quarter-wave pipe (open at top) and a Helmholtz resonator (mouth = whole top). Four candidate mechanisms, computed:
+
+| Mechanism | Formula | Result |
+|---|---|---|
+| Vertical quarter-wave (depth, open top) | c/(4·(D+0.61√(A/π))) | **~67 Hz** (raw c/4D = 98 Hz) |
+| Helmholtz (mouth = open top A = 1.36 m²) | (c/2π)·√(A/(V·L_eff)), L_eff ≈ 1.46√(A/π) | **~60 Hz** |
+| Longitudinal half-wave (box approx, upper bound) | c/2L | **~86 Hz** |
+| Width half-wave | c/2W | ~252 Hz |
+| **Granite wall flexural modes** ("bell-like") | thin-plate bending, t ≈ 0.15 m, E ≈ 60 GPa | **~250 Hz (long wall), ~1.2 kHz (short wall)** — order-of-magnitude |
+
+**Verdict:** Yes, the coffer is a real resonator with acoustic resonances clustered at **~60–100 Hz** (air modes) and structural (bell) modes from ~250 Hz up. A voice at ~90–100 Hz *will* couple into it noticeably. **Caveats:** (1) with the lid on (original state), the top quarter-wave/Helmholtz collapses to a narrow-slot leak — spectrum shifts upward and Q changes drastically; all open-box numbers assume lidless. (2) A body inside detunes it (added mass/absorption). (3) It is a resonator *nested inside* the chamber's mode field: strongest observable effect is coupling of coffer modes to KC axial modes near 60–115 Hz. The popular "438 Hz / A=432" claim attached to this chamber has no physical basis (see §0: statistical regime).
+
+### 1c. Ħal Saflieni Hypogeum — Oracle Room
+
+**Dims: poorly documented.** Confirmed facts: it is "one of the smallest side chambers" on the middle level; the Oracle **niche measures ~0.65 × 0.60 m** (1910 survey photo caption, Zammit archive); the whole complex ≈ 500 m² over 3 levels, ~11 m deep. **No trustworthy published L×W×H for the Oracle Room.** The user's 6 × 5 × 4 m is plausible for the *main* middle-level chambers but likely too big for the Oracle Room itself.
+
+**Inversion (honest):** demanding box modes at 70 ± 2.5 Hz AND 114 ± 2.5 Hz admits thousands of solutions — dims are **not recoverable from two resonances alone**. What can be said:
+- 70 Hz as a pure axial mode → a **2.45 m** dimension (c/2f).
+- A compact room ~**3.5 × 3 × 3 m** has modes at 113.5–114.3 Hz ((2,0,1), (0,2,0), (0,0,2)…) and tangential modes ~75 Hz — i.e., a small room naturally produces the measured pair.
+- **Niche Helmholtz estimate:** opening 0.39 m², cavity 0.15–0.5 m³ → **f_H ≈ 50–91 Hz** — the niche itself is plausibly the 70 Hz source, with the 114 Hz from the room. This is the most physically economical interpretation.
+- The claim that the resonance "fills the whole complex" implies **coupled modes of the entire 3-level cavity network**, not a single room — a network resonator (comparable to Chavín's galleries).
+
+**Working numbers** until a survey is obtained: treat as box 3.0–3.5 m characteristic size, f₁ ≈ 49–57 Hz, measured resonances **70 & 114 Hz** as ground truth. If forced to use 6 × 5 × 4 m: first 6 = **28.6, 34.3, 42.9, 44.7, 51.5, 54.9 Hz** (axials + tangentials), but this box's 110-band modes (~102–110 Hz) match 114 Hz worse than the small-room model.
+
+### 1d. Newgrange
+
+**Dims (verified):** passage 19 m long, ~1–1.4 m wide, height decreasing ~1.8→1.2 m; cruciform chamber ≈ 6.5 m across recesses × ~5.8 m deep; flat roof 3.6 m, corbelled vault apex ≈ 6 m. Box models:
+
+**First 6 modes, 6.5 × 5.8 × 3.6 m (flat-roof approx):**
+
+| (nx,ny,nz) | f [Hz] | (m,n) analog |
+|---|---|---|
+| (1,0,0) | **26.4** | (1,1) |
+| (0,1,0) | **29.6** | (1,1) |
+| (1,1,0) | **39.6** | (2,1) |
+| (0,0,1) | **47.6** | (1,1) |
+| (2,0,0) | **52.8** | (1,2) |
+| (1,0,1) | **54.5** | (2,1) |
+
+With effective height 4.5 m (vault average): 26.4, 29.6, 38.1, 39.6, 46.4, 48.2 Hz.
+- **110 Hz identification:** (4,1,0) = **109.6 Hz**, (4,0,0) = 105.5 Hz — consistent with Watson & Keating's measured standing wave near 110 Hz. ✓
+- **Passage physics (the important part):** the 19 m passage is a *coupled waveguide/neck*, not part of the box. Two consequences:
+  - Closed–open pipe quarter-wave: c/(4·19.6) ≈ **4.4 Hz** — near the reported "2–4 Hz infrasound" from drumming tests (though drumming LF content is a likelier source; treat the 4 Hz as passage resonance, not a "trance design frequency").
+  - Chamber + passage Helmholtz: V ≈ 150 m³, neck 19 m × 1.4 m² → **f_H ≈ 1.2 Hz** (infrasonic port resonance — the chamber "breathes").
+- RT60 ≈ 5 s at LF (sealed cairn, α_stone ≈ 0.02); f_s ≈ 375 Hz.
+
+### 1e. Stonehenge — NOT a room; correct model + literature correction
+
+**Correction on attribution:** Watson & Keating's published acoustic work (Antiquity 73(280):325–336, 1999) is on **chambered tombs** (Newgrange etc.; method: swept-sine loudspeaker + microphone standing-wave mapping, balloon bursts, drumming — they observed nodes by walking a mic through the field). They did informal tests at Stonehenge, but the rigorous Stonehenge acoustics is **Rupert Till & Bruno Fazenda**: 1:12 laser-cut scale model (Salford), full-scale measurements at the **Maryhill, Washington concrete replica**, and CATT/ray-tracing reconstructions. Headline result: the *complete* circle (all sarsens present) gives **RT60 ≈ 0.6 s**, improves speech intelligibility inside the circle, and modestly amplifies/filters LF; today’s ruin is acoustically much drier.
+
+**Correct physics — periodic scatterer array, no eigenmodes:**
+- Open top + large gaps ⇒ radiation boundary; there are **no discrete room modes**. Any "Stonehenge mode" in your cr
