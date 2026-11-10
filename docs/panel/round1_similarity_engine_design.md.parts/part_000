@@ -1,0 +1,112 @@
+# Cross-Pattern Similarity Engine — Design Spec (Round 1)
+
+Population: 60 crop formations + 4 Klüver form constants + 8 sacred-geometry motifs + 8 monuments = **N = 80 items, 4 domains**. Total pairs C(80,2) = 3160; cross-domain pairs = **1328** (within-domain = 1832).
+
+---
+
+## 1. Feature vector
+
+### 1.1 Schema
+
+| # | Feature | Type | Encoding | Rationale |
+|---|---------|------|----------|-----------|
+| 1 | `n_fold` | int ≥ 0, or `INF` | azimuthal symmetry order; 0 = radial-no-preference (single ring/central dot), `INF` (coded −1) = full continuous rotational symmetry (plain circle / concentric rings) | primary symmetry descriptor; directly comparable across all 4 domains |
+| 2 | `is_spiral` | bool ∈ {0,1} | 1 if dominant structure is chirality-bearing spiral (golden spiral, spiral formations, Newgrange triple spiral) | topological family flag; spirals break mirror symmetry — cheap, high-discrimination bit |
+| 3 | `is_grid` | bool | 1 for lattice/array structure (Metatron's cube edges, Borobudur stupa grid, grid-ground formations) | separates lattice spectra from polar spectra |
+| 4 | `is_concentric` | bool | 1 if nested rings dominate (mandalas, Flower of Life, Stonehenge rings, Klüver "tunnel") | concentricity = radial-order carrier; pairs with `mode_m` |
+| 5 | `log_size` | float | `log10(size_m)`; size = max extent in meters. Klüver constants: **NaN** (no physical scale); sacred motifs: NaN unless canonically instantiated (e.g., Chartres rose window = 12.9 m) | weak feature; scale-free geometry means size is mostly noise cross-domain, but it penalizes absurd matches within domain |
+| 6 | `mode_n` | int ≥ 0, NaN if N/A | decoded azimuthal membrane order (circular membrane model: displacement ∝ J_n(k r)·cos(nθ)) | bridges pattern → physical vibration; NaN for items with no mode decoding |
+| 7 | `mode_m` | int ≥ 1, NaN if N/A | decoded radial order = number of radial nodal circles + 1 | pairs with `is_concentric`; m counts rings |
+| 8 | `ratio_sig` | 6-dim float vector | soft membership against canonical constants C = {φ=1.618, √2=1.414, √3=1.732, 2, 3, π}; entry k = max over item's documented ratios r of `exp(−(ln r − ln C_k)² / 2σ_r²)`, σ_r = 0.02 (≈2% ratio tolerance) | captures "golden-ratio-ness" etc. without brittle equality tests; log-space makes r and 1/r symmetric-adjacent via octave handling below |
+| 9 | `fourier_desc` | K-dim float (optional, K=32) | rotation/scale/translation-invariant Fourier shape descriptor of the rendered silhouette (§2.4) | image-level similarity for rendered glyphs; catches resemblance the hand-coded features miss |
+
+### 1.2 Why these choices
+
+- **Mixed-type vector with NaNs** is unavoidable: Klüver constants have no size and no decoded mode; monuments have acoustic modes but "size" is on a different scale class than formations. The distance metric (§2) is therefore **Gower-style**: pairwise distances computed per-feature over observed entries only, then combined as a weighted mean. Never impute mode (n,m) for motifs that lack them — imputation manufactures matches.
+- **log(size)**: equal ratios get equal weight; 3 orders of magnitude (10⁰ m chart → 10² m monument) compress to 2 log-units, comparable in scale to other features after normalization.
+- **`n_fold` hierarchy**: {0, 1..~24, INF} needs a non-Euclidean metric (§2.1) — plain subtraction would put 12-fold and 13-fold at distance 1, same as 1-fold vs 2-fold, which is geometrically wrong (relative ratio matters, not absolute difference).
+- **ratio_sig as soft histogram** avoids a combinatorial explosion of "which ratios does X have" set-distance definitions, and tolerates measurement error in monument proportions (e.g., Great Pyramid π/2 slope debate).
+
+### 1.3 Normalization
+
+- Continuous features (`log_size`, ratio_sig entries, fourier_desc entries): **robust scaling to [0,1] via the population's 5th–95th percentile range**, computed separately *within each domain then averaged*, to stop the 60-item crop domain from defining the scale. Store scaler parameters at build time; they are part of the pre-registration.
+- Booleans used as {0,1} (range 1 by construction).
+- `n_fold`, `mode_n`, `mode_m`: not normalized — they use dedicated metrics (§2.1, §2.2), not Euclidean distance.
+
+---
+
+## 2. Similarity metrics
+
+All per-feature distances return values in [0,1]. Composite = weighted mean over **features observed for both items** (Gower).
+
+### 2.1 Symmetry-space distance (n_fold)
+
+Log-octave distance with harmonic (octave) equivalence:
+
+```
+d_sym(a, b):
+    special cases (any is None → NaN, excluded):
+        a == INF and b == INF        → 0
+        exactly one of a,b == INF    → 1        (finite vs continuous symmetry: maximally different)
+        a == 0 and b == 0            → 0
+        exactly one is 0             → 1        (radial-null is a distinct class, not "order 1")
+    otherwise:
+        r = log2(a / b)
+        d = min(|r|, |r − 1|, |r + 1|)          # n vs 2n and n vs n/2 octave equivalence, capped
+        return d / D_MAX, D_MAX = 1.5           # |r| ≤ log2(24) ≈ 4.6; clamp raw d at 1.5
+```
+
+- **Octave equivalence justified**: a 12-fold rosette contains a strong 6-fold sub-symmetry (every second sector); n and 2n patterns share the generator. But the equivalence is *soft*: 6-vs-12 costs 0, while 6-vs-24 costs min(log2 4, ...) = 1 → partial.
+- **Deliberately not fully transitive** (6≈12 and 12≈24 but 6≉24): acceptable for a distance used in matching; flag as a mathematical caveat, not a bug.
+
+### 2.2 Mode-space distance (membrane modes)
+
+Two ingredients: (a) per-index harmonic distance, (b) **Bessel-zero proximity** — the physically meaningful test, because the eigenfrequency of an ideal circular membrane is proportional to j_{n,m} (the m-th zero of J_n). Two different (n,m) pairs with near-equal j_{n,m} are near-degenerate modes — acoustically almost indistinguishable.
+
+Reference table (computed with `scipy.special.jn_zeros`):
+
+```
+(0,1) 2.4048   (1,1) 3.8317   (2,1) 5.1356   (0,2) 5.5201   (3,1) 6.3802
+(1,2) 7.0156   (4,1) 7.5883   (2,2) 8.4172   (0,3) 8.6537   (5,1) 8.7715
+(3,2) 9.7610   (6,1) 9.9361   (1,3) 10.1735  (4,2) 11.0647  (2,3) 11.6198
+```
+
+Known near-degenerate clusters (gap < 0.25): {(2,2), (0,3), (5,1)} ≈ 8.4–8.8; {(3,2),(6,1),(1,3)} ≈ 9.8–10.2. An (n,m) match inside a cluster earns credit even when both indices differ.
+
+```
+d_mode((n1,m1), (n2,m2)):
+    if either is NaN → NaN (excluded from composite)
+    # per-index harmonic distance, octave-tolerant on n
+    dn = min(|n1−n2|, |2·n1−n2|, |n1−2·n2|) / max(n1, n2, 1)
+    dm = |m1−m2| / max(m1, m2)
+    d_index = (dn + dm) / 2
+    # Bessel-zero proximity
+    j1, j2 = jn_zeros(n1, m_max)[m1−1], jn_zeros(n2, m_max)[m2−1]
+    d_bessel = min(|j1 − j2| / ((j1 + j2)/2) / T_B, 1),  T_B = 0.05   # 5% frequency tolerance saturates
+    return 0.5·d_index + 0.5·d_bessel
+```
+
+For **monument acoustic modes**, use measured modal frequencies directly when available: `d_bessel` with f_1, f_2 replacing j's, same 5% tolerance (below the just-noticeable-difference threshold for pitch but above measurement error — pre-register 5%).
+
+### 2.3 Ratio-signature distance
+
+```
+d_ratio(u, v) = ||u − v||_2 / sqrt(6)      # u,v ∈ [0,1]^6 → bounded in [0,1]
+```
+Octave/harmonic equivalence of ratios (r vs 2r, r vs φ²) is handled upstream at encoding time: when building `ratio_sig`, also fold each documented ratio by 2^k and by φ^k into the membership computation, taking max over folds. This bakes the equivalence into the vector so a plain Euclidean distance suffices downstream.
+
+### 2.4 Fourier-descriptor shape distance (optional, image domain)
+
+Render each pattern as a 512×512 binary silhouette, centered, normalized to unit radius. Then:
+
+1. Extract radial signature `s(θ) = max radius of silhouette along ray θ`, θ ∈ [0, 2π), 1024 samples. (For non-star-shaped silhouettes fall back to boundary-arc-length parametrization: complex boundary z(t), resampled to uniform arc length.)
+2. DFT: `S_k = Σ_θ s(θ) e^{−i k θ}`, k = 0..K−1.
+3. Invariances:
+   - **Rotation** by θ₀ multiplies S_k by e^{−ikθ₀} → take **magnitude |S_k|**.
+   - **Scale**: divide by S₀ (mean radius): `F_k = |S_k| / S_0`.
+   - **Translation**: eliminated by centering.
+   - **Starting angle / circular shift**: magnitude is shift-invariant automatically.
+4. Distance: `d_fd = ||F^(a) − F^(b)||_2 / sqrt(K)`, K = 32 (k = 0..31; discard k=0 after normalization → use k=1..32).
+5. **Mirror ambiguity**: spirals have chiral pairs; |S_k| is reflection-invariant for the *radial* signature but not for 2-D boundary FDs. Pre-register choice: treat chiral pairs as identical (apophenia risk ↑, physical plausibility ↓) or as distance-1 on a separate chirality bit. Default: chirality as separate boolean feature, FD magnitude-only.
+
+Note: F_k peaks at k = n_fold with harmonics at 2n, 3n… — the FD 
