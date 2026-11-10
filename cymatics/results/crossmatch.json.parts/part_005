@@ -1,0 +1,478 @@
+ "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Silbury Hill Koch I snowflake",
+    "partner_domain": "crop",
+    "D": 0.4818,
+    "breakdown": {
+     "n_fold": 0.39,
+     "mode": 0.6667,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   }
+  ]
+ },
+ "global_top50": [
+  {
+   "a": "Cheesefoot Head first pictogram",
+   "b": "Chavín de Huántar — Underground galleries (Lanzón Gallery network)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.0,
+   "p_fwer": 0.9085509144908551,
+   "q_fdr": 1.0,
+   "robust_z": 3.55,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.0,
+    "fd": 0.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Cheesefoot Head first pictogram",
+   "b": "Wayland's Smithy — East + West chambers (transepted gallery grave)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.0,
+   "p_fwer": 0.9085509144908551,
+   "q_fdr": 1.0,
+   "robust_z": 3.55,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.0,
+    "fd": 0.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Cheesefoot Head first pictogram",
+   "b": "Great Pyramid of Khufu — King's Chamber",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.0356,
+   "p_fwer": 0.9370706292937071,
+   "q_fdr": 1.0,
+   "robust_z": 3.3,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.0,
+    "fd": 0.1779,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Cheesefoot Head first pictogram",
+   "b": "Newgrange — Cruciform chamber",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.1515,
+   "p_fwer": 0.978910210897891,
+   "q_fdr": 1.0,
+   "robust_z": 2.46,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.0,
+    "fd": 0.7574,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Vesica Piscis",
+   "b": "Great Pyramid of Khufu — King's Chamber",
+   "domains": [
+    "motif",
+    "monument"
+   ],
+   "D": 0.1652,
+   "p_fwer": 0.985820141798582,
+   "q_fdr": 1.0,
+   "robust_z": 2.36,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.5933,
+    "fd": 0.1779,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Vesica Piscis",
+   "b": "Great Pyramid of Khufu — King's Chamber sarcophagus (coffer)",
+   "domains": [
+    "motif",
+    "monument"
+   ],
+   "D": 0.1744,
+   "p_fwer": 0.9869301306986931,
+   "q_fdr": 1.0,
+   "robust_z": 2.29,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.5763,
+    "fd": 0.2373,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Silbury Hill Koch I snowflake",
+   "b": "Flower of Life",
+   "domains": [
+    "crop",
+    "motif"
+   ],
+   "D": 0.1949,
+   "p_fwer": 0.992690073099269,
+   "q_fdr": 1.0,
+   "robust_z": 2.15,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.5763,
+    "fd": 0.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 1,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Silbury Hill Koch I snowflake",
+   "b": "Seed of Life",
+   "domains": [
+    "crop",
+    "motif"
+   ],
+   "D": 0.1949,
+   "p_fwer": 0.992690073099269,
+   "q_fdr": 1.0,
+   "robust_z": 2.15,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.5763,
+    "fd": 0.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 1,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Milk Hill Koch II fractal",
+   "b": "Flower of Life",
+   "domains": [
+    "crop",
+    "motif"
+   ],
+   "D": 0.1949,
+   "p_fwer": 0.992690073099269,
+   "q_fdr": 1.0,
+   "robust_z": 2.15,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.5763,
+    "fd": 0.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 1,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Milk Hill Koch II fractal",
+   "b": "Seed of Life",
+   "domains": [
+    "crop",
+    "motif"
+   ],
+   "D": 0.1949,
+   "p_fwer": 0.992690073099269,
+   "q_fdr": 1.0,
+   "robust_z": 2.15,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.5763,
+    "fd": 0.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 1,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Chilbolton Sierpinski diamond",
+   "b": "Great Pyramid of Khufu — King's Chamber",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.2097,
+   "p_fwer": 0.994980050199498,
+   "q_fdr": 1.0,
+   "robust_z": 2.04,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.0,
+    "fd": 0.9786,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Cheesefoot Head first pictogram",
+   "b": "Great Pyramid of Khufu — King's Chamber sarcophagus (coffer)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.2475,
+   "p_fwer": 0.996760032399676,
+   "q_fdr": 1.0,
+   "robust_z": 1.77,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.75,
+    "fd": 0.2373,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Punchbowl quintuplet",
+   "b": "Newgrange — Cruciform chamber",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.2481,
+   "p_fwer": 0.997960020399796,
+   "q_fdr": 1.0,
+   "robust_z": 1.76,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.625,
+    "fd": 0.4072,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Crabwood alien face & disc",
+   "b": "Chavín de Huántar — Underground galleries (Lanzón Gallery network)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.2625,
+   "p_fwer": 0.999250007499925,
+   "q_fdr": 1.0,
+   "robust_z": 1.66,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.9844,
+    "fd": 0.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Crabwood alien face & disc",
+   "b": "Wayland's Smithy — East + West chambers (transepted gallery grave)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.2625,
+   "p_fwer": 0.999250007499925,
+   "q_fdr": 1.0,
+   "robust_z": 1.66,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.9844,
+    "fd": 0.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Crabwood alien face & disc",
+   "b": "Great Pyramid of Khufu — King's Chamber sarcophagus (coffer)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.2758,
+   "p_fwer": 0.999250007499925,
+   "q_fdr": 1.0,
+   "robust_z": 1.56,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.7344,
+    "fd": 0.2373,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0,
+    "log_size": 0.7635
+   }
+  },
+  {
+   "a": "Flower of Life",
+   "b": "Chartres Cathedral — West rose window (geometric item — no resonator)",
+   "domains": [
+    "motif",
+    "monument"
+   ],
+   "D": 0.3018,
+   "p_fwer": 0.999560004399956,
+   "q_fdr": 1.0,
+   "robust_z": 1.37,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.4083,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Seed of Life",
+   "b": "Chartres Cathedral — West rose window (geometric item — no resonator)",
+   "domains": [
+    "motif",
+    "monument"
+   ],
+   "D": 0.3018,
+   "p_fwer": 0.999560004399956,
+   "q_fdr": 1.0,
+   "robust_z": 1.37,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.4083,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Crabwood alien face & disc",
+   "b": "Great Pyramid of Khufu — King's Chamber",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.3039,
+   "p_fwer": 0.999560004399956,
+   "q_fdr": 1.0,
+   "robust_z": 1.36,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.9844,
+    "fd": 0.1779,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0,
+    "log_size": 0.3917
+   }
+  },
+  {
+   "a": "Chilbolton Sierpinski diamond",
+   "b": "Great Pyramid of Khufu — King's Chamber sarcophagus (coffer)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.3057,
+   "p_fwer": 0.999560004399956,
+   "q_fdr": 1.0,
+   "robust_z": 1.34,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.5869,
+    "fd": 0.8396,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Crabwood alien face & disc",
+   "b": "Newgrange — Passage (19 m waveguide/neck)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.3083,
+   "p_fwer": 0.999560004399956,
+   "q_fdr": 1.0,
+   "robust_z": 1.33,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.7344,
+    "fd": 0.5791,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0,
+    "log_size": 0.258
+   }
+  },
+  {
+   "a": "Cheesefoot Head first pictogram",
+   "b": "Newgrange — Passage (19 m waveguide/neck)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.3158,
+   "p_fwer": 0.999560004399956,
+   "q_fdr": 1.0,
+   "robust_z

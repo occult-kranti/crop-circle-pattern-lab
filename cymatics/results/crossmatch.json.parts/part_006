@@ -1,0 +1,487 @@
+: 1.27,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.75,
+    "fd": 0.5791,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Chilbolton Sierpinski diamond",
+   "b": "Vesica Piscis",
+   "domains": [
+    "crop",
+    "motif"
+   ],
+   "D": 0.3414,
+   "p_fwer": 0.999860001399986,
+   "q_fdr": 1.0,
+   "robust_z": 1.09,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.5933,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Metatron's Cube",
+   "b": "Chartres Cathedral — West rose window (geometric item — no resonator)",
+   "domains": [
+    "motif",
+    "monument"
+   ],
+   "D": 0.3415,
+   "p_fwer": 0.999920000799992,
+   "q_fdr": 1.0,
+   "robust_z": 1.09,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.0,
+    "fd": 0.9271,
+    "is_spiral": 0,
+    "is_grid": 1,
+    "is_concentric": 1,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Punchbowl quintuplet",
+   "b": "Newgrange — Passage (19 m waveguide/neck)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.3451,
+   "p_fwer": 0.999920000799992,
+   "q_fdr": 1.0,
+   "robust_z": 1.06,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.75,
+    "fd": 0.7254,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Milk Hill Koch II fractal",
+   "b": "Great Pyramid of Khufu — King's Chamber sarcophagus (coffer)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.353,
+   "p_fwer": 0.999920000799992,
+   "q_fdr": 1.0,
+   "robust_z": 1.0,
+   "breakdown": {
+    "n_fold": 0.39,
+    "ratio": 0.0,
+    "fd": 0.9904,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0,
+    "log_size": 0.7635
+   }
+  },
+  {
+   "a": "Chilbolton Sierpinski diamond",
+   "b": "Metatron's Cube",
+   "domains": [
+    "crop",
+    "motif"
+   ],
+   "D": 0.358,
+   "p_fwer": 0.999920000799992,
+   "q_fdr": 1.0,
+   "robust_z": 0.97,
+   "breakdown": {
+    "n_fold": 0.2767,
+    "ratio": 0.7202,
+    "fd": 0.2481,
+    "is_spiral": 0,
+    "is_grid": 1,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Punchbowl quintuplet",
+   "b": "Great Pyramid of Khufu — King's Chamber",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.3624,
+   "p_fwer": 0.999920000799992,
+   "q_fdr": 1.0,
+   "robust_z": 0.94,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.625,
+    "fd": 0.9786,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Punchbowl quintuplet",
+   "b": "Chavín de Huántar — Underground galleries (Lanzón Gallery network)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.3667,
+   "p_fwer": 0.999920000799992,
+   "q_fdr": 1.0,
+   "robust_z": 0.9,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.625,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Punchbowl quintuplet",
+   "b": "Wayland's Smithy — East + West chambers (transepted gallery grave)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.3667,
+   "p_fwer": 0.999920000799992,
+   "q_fdr": 1.0,
+   "robust_z": 0.9,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.625,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Punchbowl quintuplet",
+   "b": "Great Pyramid of Khufu — King's Chamber sarcophagus (coffer)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.3679,
+   "p_fwer": 0.999920000799992,
+   "q_fdr": 1.0,
+   "robust_z": 0.9,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.75,
+    "fd": 0.8396,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Barbury Castle pi",
+   "b": "Pentagram",
+   "domains": [
+    "crop",
+    "motif"
+   ],
+   "D": 0.3733,
+   "p_fwer": 0.999970000299997,
+   "q_fdr": 1.0,
+   "robust_z": 0.86,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.4088,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 1
+   }
+  },
+  {
+   "a": "Silbury Hill Koch I snowflake",
+   "b": "Pentagram",
+   "domains": [
+    "crop",
+    "motif"
+   ],
+   "D": 0.3902,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.73,
+   "breakdown": {
+    "n_fold": 0.1754,
+    "ratio": 0.5869,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Milk Hill Koch II fractal",
+   "b": "Pentagram",
+   "domains": [
+    "crop",
+    "motif"
+   ],
+   "D": 0.3902,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.73,
+   "breakdown": {
+    "n_fold": 0.1754,
+    "ratio": 0.5869,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Milk Hill Koch II fractal",
+   "b": "Great Pyramid of Khufu — King's Chamber",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.398,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.68,
+   "breakdown": {
+    "n_fold": 0.2767,
+    "ratio": 0.5869,
+    "fd": 0.9036,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0,
+    "log_size": 0.3917
+   }
+  },
+  {
+   "a": "Chilbolton Sierpinski diamond",
+   "b": "Pentagram",
+   "domains": [
+    "crop",
+    "motif"
+   ],
+   "D": 0.3993,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.67,
+   "breakdown": {
+    "n_fold": 0.2146,
+    "ratio": 0.5774,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Pentagram",
+   "b": "Great Pyramid of Khufu — King's Chamber",
+   "domains": [
+    "motif",
+    "monument"
+   ],
+   "D": 0.3993,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.67,
+   "breakdown": {
+    "n_fold": 0.2146,
+    "ratio": 0.5774,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Pentagram",
+   "b": "Great Pyramid of Khufu — King's Chamber sarcophagus (coffer)",
+   "domains": [
+    "motif",
+    "monument"
+   ],
+   "D": 0.4014,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.65,
+   "breakdown": {
+    "n_fold": 0.2146,
+    "ratio": 0.5869,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Silbury Hill Koch I snowflake",
+   "b": "Sri Yantra",
+   "domains": [
+    "crop",
+    "motif"
+   ],
+   "D": 0.4092,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.6,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.5763,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 1,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Milk Hill Koch II fractal",
+   "b": "Sri Yantra",
+   "domains": [
+    "crop",
+    "motif"
+   ],
+   "D": 0.4092,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.6,
+   "breakdown": {
+    "n_fold": 0.0,
+    "ratio": 0.5763,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 1,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Silbury Hill Koch I snowflake",
+   "b": "Great Pyramid of Khufu — King's Chamber sarcophagus (coffer)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.4184,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.53,
+   "breakdown": {
+    "n_fold": 0.39,
+    "mode": 0.75,
+    "ratio": 0.0,
+    "fd": 0.9904,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Crabwood alien face & disc",
+   "b": "Newgrange — Cruciform chamber",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.4193,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.52,
+   "breakdown": {
+    "n_fold": 0.0,
+    "mode": 0.9844,
+    "fd": 0.7574,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0,
+    "log_size": 0.4986
+   }
+  },
+  {
+   "a": "Barbury Castle tetrahedron",
+   "b": "Chavín de Huántar — Underground galleries (Lanzón Gallery network)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.4293,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.45,
+   "breakdown": {
+    "n_fold": 0.2767,
+    "mode": 0.5833,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Barbury Castle tetrahedron",
+   "b": "Wayland's Smithy — East + West chambers (transepted gallery grave)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.4293,
+   "p_fwer": 0.999990000099999,
+   "q_fdr": 1.0,
+   "robust_z": 0.45,
+   "breakdown": {
+    "n_fold": 0.2767,
+    "mode": 0.5833,
+    "fd": 1.0,
+    "is_spiral": 0,
+    "is_grid": 0,
+    "is_concentric": 0,
+    "chiral": 0
+   }
+  },
+  {
+   "a": "Milk Hill Koch II fractal",
+   "b": "Chartres Cathedral — West rose window (geometric item — no resonator)",
+   "domains": [
+    "crop",
+    "monument"
+   ],
+   "D": 0.4298,
+   "p_fwer": 0.999990000099999,
+   "q_
