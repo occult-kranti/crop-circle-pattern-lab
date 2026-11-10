@@ -11,6 +11,7 @@ A data-driven investigation of the crop-circle phenomenon — dataset, statistic
 | `cymatics/` | Reverse cymatic decoder: forward Chladni/membrane simulator, pattern→mode decoder, frequency/note/beat engine. `code/test_cymatics.py` → 31/31 passing. `results/` → decoded frequencies, 45-pair difference-vibration table, 13 rendered figures. `SPEC.md`, `report.md`. |
 | `casestudies/` | Claim adjudications: `carbon12_report.md` (the "2000 series / three-alpha lock" video, nine sub-claims classified against the published record). |
 | `compare/` | DMT × sacred geometry × crop circles comparison: `motif_mapping.csv`, `comparison_data.json`, `report.md`. |
+| `docs/` | Design & process documents: consultant specs (physics / math / sound-engineering), `plan.md`, ops manifests. |
 | `arecibo/` | Bit-level decode of the 1974 Arecibo message (the project that started this repo — decoding a photo of the message + its 3D-printed replica). |
 
 ## Headline results
