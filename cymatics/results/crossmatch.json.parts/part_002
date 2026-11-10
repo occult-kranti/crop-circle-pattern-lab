@@ -1,0 +1,427 @@
+is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0,
+     "log_size": 0.258
+    }
+   }
+  ],
+  "South Field 'Squared Ropes'": [],
+  "Crooked Soley DNA ring": [],
+  "Silbury Hill Greco-Egyptian mandala": [],
+  "Hello Kitty commission": [],
+  "The Sun Olympic-rings circles": [],
+  "Nike footprint circles (Italy)": [],
+  "Wayland's Smithy 'The Towers' 3-D": [],
+  "East Field 'Om'": [],
+  "Barbury Castle pi": [
+   {
+    "partner": "Pentagram",
+    "partner_domain": "motif",
+    "D": 0.3733,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.4088,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 1
+    }
+   },
+   {
+    "partner": "Great Pyramid of Khufu — King's Chamber",
+    "partner_domain": "monument",
+    "D": 0.4827,
+    "breakdown": {
+     "n_fold": 0.2146,
+     "mode": 0.7,
+     "ratio": 0.4088,
+     "fd": 0.9849,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 1,
+     "log_size": 0.3321
+    }
+   },
+   {
+    "partner": "Newgrange — Cruciform chamber",
+    "partner_domain": "monument",
+    "D": 0.496,
+    "breakdown": {
+     "n_fold": 0.2146,
+     "mode": 0.7,
+     "fd": 0.9463,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 1,
+     "log_size": 0.439
+    }
+   },
+   {
+    "partner": "Flower of Life",
+    "partner_domain": "motif",
+    "D": 0.5378,
+    "breakdown": {
+     "n_fold": 0.1754,
+     "ratio": 0.6091,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 1,
+     "chiral": 1
+    }
+   },
+   {
+    "partner": "Seed of Life",
+    "partner_domain": "motif",
+    "D": 0.5378,
+    "breakdown": {
+     "n_fold": 0.1754,
+     "ratio": 0.6091,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 1,
+     "chiral": 1
+    }
+   }
+  ],
+  "Avebury Manor 'solar system'": [],
+  "08-08-08 infinity figure": [],
+  "Oxfordshire 'Jellyfish'": [],
+  "Yatesbury 'Dragonfly'": [],
+  "Silbury 'Mayan headdress'": [],
+  "Wilton Windmill 'Euler's identity'": [],
+  "Korn concert circle": [],
+  "Olympic rings stunt (Heathrow flight path)": [],
+  "Hackpen Hill 3-D cubes": [
+   {
+    "partner": "Great Pyramid of Khufu — King's Chamber",
+    "partner_domain": "monument",
+    "D": 0.4823,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "mode": 0.8542,
+     "fd": 0.9036,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Newgrange — Cruciform chamber",
+    "partner_domain": "monument",
+    "D": 0.4833,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "mode": 0.8542,
+     "fd": 0.9088,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Newgrange — Passage (19 m waveguide/neck)",
+    "partner_domain": "monument",
+    "D": 0.5139,
+    "breakdown": {
+     "n_fold": 0.39,
+     "mode": 0.9375,
+     "fd": 0.7993,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Chavín de Huántar — Underground galleries (Lanzón Gallery network)",
+    "partner_domain": "monument",
+    "D": 0.5318,
+    "breakdown": {
+     "n_fold": 0.39,
+     "mode": 0.8542,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Wayland's Smithy — East + West chambers (transepted gallery grave)",
+    "partner_domain": "monument",
+    "D": 0.5318,
+    "breakdown": {
+     "n_fold": 0.39,
+     "mode": 0.8542,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   }
+  ],
+  "Chualar 'Nvidia' circle": [],
+  "Mulino Bianco commission": [],
+  "Supreme box-logo circle": [],
+  "Star Wars Rebel Alliance circle": [],
+  "Cley Hill 'coronavirus'": [],
+  "Sixpenny Handley yin-yang": [],
+  "Potterne Hill 18-fold mandala": [],
+  "Stonehenge Visitor Centre circle": [],
+  "Sutton Veny barley circle": [],
+  "Kluver tunnel/funnel": [],
+  "Kluver spiral": [],
+  "Kluver cobweb/lattice": [],
+  "Kluver filigree/honeycomb": [],
+  "Flower of Life": [
+   {
+    "partner": "Silbury Hill Koch I snowflake",
+    "partner_domain": "crop",
+    "D": 0.1949,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.5763,
+     "fd": 0.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 1,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Milk Hill Koch II fractal",
+    "partner_domain": "crop",
+    "D": 0.1949,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.5763,
+     "fd": 0.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 1,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Chartres Cathedral — West rose window (geometric item — no resonator)",
+    "partner_domain": "monument",
+    "D": 0.3018,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.4083,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Great Pyramid of Khufu — King's Chamber",
+    "partner_domain": "monument",
+    "D": 0.4712,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "ratio": 0.5933,
+     "fd": 0.9036,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 1,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Chilbolton Sierpinski diamond",
+    "partner_domain": "crop",
+    "D": 0.4919,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "ratio": 0.5933,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 1,
+     "chiral": 0
+    }
+   }
+  ],
+  "Seed of Life": [
+   {
+    "partner": "Silbury Hill Koch I snowflake",
+    "partner_domain": "crop",
+    "D": 0.1949,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.5763,
+     "fd": 0.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 1,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Milk Hill Koch II fractal",
+    "partner_domain": "crop",
+    "D": 0.1949,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.5763,
+     "fd": 0.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 1,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Chartres Cathedral — West rose window (geometric item — no resonator)",
+    "partner_domain": "monument",
+    "D": 0.3018,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.4083,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Great Pyramid of Khufu — King's Chamber",
+    "partner_domain": "monument",
+    "D": 0.4712,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "ratio": 0.5933,
+     "fd": 0.9036,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 1,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Chilbolton Sierpinski diamond",
+    "partner_domain": "crop",
+    "D": 0.4919,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "ratio": 0.5933,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 1,
+     "chiral": 0
+    }
+   }
+  ],
+  "Metatron's Cube": [
+   {
+    "partner": "Chartres Cathedral — West rose window (geometric item — no resonator)",
+    "partner_domain": "monument",
+    "D": 0.3415,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.0,
+     "fd": 0.9271,
+     "is_spiral": 0,
+     "is_grid": 1,
+     "is_concentric": 1,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Chilbolton Sierpinski diamond",
+    "partner_domain": "crop",
+    "D": 0.358,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "ratio": 0.7202,
+     "fd": 0.2481,
+     "is_spiral": 0,
+     "is_grid": 1,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Silbury Hill Koch I snowflake",
+    "partner_domain": "crop",
+    "D": 0.4359,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.7009,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 1,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Milk Hill Koch II fractal",
+    "partner_domain": "crop",
+    "D": 0.4359,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.7009,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 1,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Great Pyramid of Khufu — King's Chamber",
+    "partner_domain": "monument",
+    "D": 0.5092,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "ratio": 0.7202,
+     "fd": 0.9537,
+     "is_spiral": 0,
+     "is_grid": 1,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   }
+  ],
+  "Sri Yantra": [
+   {
+    "partner": "Silbury Hill Koch I snowflake",
+    "partner_domain": "crop",
+    "D": 0.4092,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.5763,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 1,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Milk Hill Koch II fractal",
+    "partner_domain": "crop",
+    "D": 0.4092,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.5763,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 1,
+     "chiral": 0
+    
