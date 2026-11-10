@@ -1,0 +1,290 @@
+{
+"README.md": {
+"sha": "e01e414748d78fe554fe78ee2692babba0babade",
+"size": 4394
+},
+"assemble_parts.sh": {
+"sha": "862a4206081f942db11b338b7737c053cc2d49fd",
+"size": 334
+},
+"cymatics/SPEC.md": {
+"sha": "d53c89a2b1d9e7db4111b5887848d71aea3046c4",
+"size": 5079
+},
+"cymatics/report.md": {
+"sha": "8e480eeb0aa7a07f865b9fa53d2904c34b05c2a3",
+"size": 4675
+},
+"cymatics/results/ARTIFACTS.md": {
+"sha": "f13233a0dedb0ccf3beb9e6fd2927229e99afe4a",
+"size": 178
+},
+"cymatics/results/decoded_frequencies.csv": {
+"sha": "e89129bc50630056c562f343252eca78c3346b97",
+"size": 1469
+},
+"cymatics/code/decode.py.parts/part_000": {
+"sha": "5664e6929847124c528fbbcd5d9509b7976dc5fb",
+"size": 9000
+},
+"cymatics/code/decode.py.parts/part_001": {
+"sha": "f380662d0b55da8dd6041617594d9bcd8eca4d45",
+"size": 9000
+},
+"cymatics/code/decode.py.parts/part_002": {
+"sha": "c86125d4d3f29ad04afa6e5b0c05e6ffdd326fb9",
+"size": 9000
+},
+"cymatics/code/decode.py.parts/part_003": {
+"sha": "18d232222472cce84feb0c731219ab02bcd41c10",
+"size": 9000
+},
+"cymatics/code/decode.py.parts/part_004": {
+"sha": "b443b4f9f8ce6fcde73e564352433be7c385a018",
+"size": 9000
+},
+"cymatics/code/decode.py.parts/part_005": {
+"sha": "407f9556a7e895383efa30e5c74864151451f836",
+"size": 4603
+},
+"cymatics/code/notes.py.parts/part_000": {
+"sha": "fbb84da51a6e8ba04b8f1ed919653a1e8e4ea2e0",
+"size": 9000
+},
+"cymatics/code/notes.py.parts/part_001": {
+"sha": "7f29bedeb2c8daa59aad4db8da9d016acfcd635d",
+"size": 7179
+},
+"cymatics/code/run_decoding.py.parts/part_000": {
+"sha": "c13c7f6154a6ff73fce76cd0fffb9c51474f5f6c",
+"size": 9000
+},
+"cymatics/code/run_decoding.py.parts/part_001": {
+"sha": "d400bb0e4679c9832ab0fe07228391a01b6c12a6",
+"size": 5063
+},
+"cymatics/code/test_cymatics.py.parts/part_000": {
+"sha": "ae30351ac4ca0552aaa3491d6f7b85a21d8e2886",
+"size": 9000
+},
+"cymatics/code/test_cymatics.py.parts/part_001": {
+"sha": "3af6864577a33d0de88b12bfe04c0fdc6ed267aa",
+"size": 9000
+},
+"cymatics/code/test_cymatics.py.parts/part_002": {
+"sha": "aadec399c482862dd822a0da543f8bedc8359199",
+"size": 9000
+},
+"cymatics/code/test_cymatics.py.parts/part_003": {
+"sha": "cdce157c5ae1aef0c90cf7d9d992cac5dba76c80",
+"size": 275
+},
+"cymatics/results/decoding_results.json.parts/part_000": {
+"sha": "a98e273ba0067fc5dd805417de65d878e34bab10",
+"size": 9000
+},
+"cymatics/results/decoding_results.json.parts/part_001": {
+"sha": "a41a97697081e43faa402ad678c559f05cc7c272",
+"size": 9000
+},
+"cymatics/results/decoding_results.json.parts/part_002": {
+"sha": "dc2a15a9505c07b0419968430d1bd40d62527553",
+"size": 9000
+},
+"cymatics/results/decoding_results.json.parts/part_003": {
+"sha": "e3113d4b8bf95d0f01906ae17efbda5d00cc5139",
+"size": 9000
+},
+"cymatics/results/decoding_results.json.parts/part_004": {
+"sha": "44b28be60b47b324e8dcddb8738255fbc9d70238",
+"size": 9000
+},
+"cymatics/results/decoding_results.json.parts/part_005": {
+"sha": "af9122bd302a7553ea0411b32a7e10956da088fc",
+"size": 9000
+},
+"cymatics/results/decoding_results.json.parts/part_006": {
+"sha": "5dfd2b09fb9ff25cab04a724c4eb84dbd738ae69",
+"size": 9000
+},
+"cymatics/results/decoding_results.json.parts/part_007": {
+"sha": "dfcda33d7caac9a20970004dbe731de83f749f9d",
+"size": 9000
+},
+"cymatics/results/decoding_results.json.parts/part_008": {
+"sha": "0dfc734763173ee4390a7c2bfa24f4eb53f15e4d",
+"size": 9000
+},
+"cymatics/results/decoding_results.json.parts/part_009": {
+"sha": "a0d64e6c1dd17f520ea5e2b833aa69bb987ddb15",
+"size": 9000
+},
+"cymatics/results/decoding_results.json.parts/part_010": {
+"sha": "a43bd54b5b7499d1dc6818bd04bcddcc00341e74",
+"size": 9000
+},
+"cymatics/results/decoding_results.json.parts/part_011": {
+"sha": "0b4c2a1cc6e248ebb5e15dcaab666fa169ce638d",
+"size": 9000
+},
+"cymatics/results/decoding_results.json.parts/part_012": {
+"sha": "bce530ed8db3504a1e4ca34143783f5d696bcb78",
+"size": 9000
+},
+"cymatics/results/decoding_results.json.parts/part_013": {
+"sha": "de673b2a932c429ee2da67ddb280128da26f5b87",
+"size": 7122
+},
+"cymatics/results/difference_vibrations.csv.parts/part_000": {
+"sha": "c1dcc4e63d53216c538742c7b9a68d0224d1d727",
+"size": 9000
+},
+"cymatics/results/difference_vibrations.csv.parts/part_001": {
+"sha": "332b0da3893d23972446a18c8304c52790cb6d0e",
+"size": 362
+},
+"website/assets/cymatics/comparison_03_image_decode.jpg.b64.parts/part_000": {
+"sha": "e54e1d046cffde1e955af727fd83a3d7793d06c8",
+"size": 9000
+},
+"website/assets/cymatics/comparison_03_image_decode.jpg.b64.parts/part_001": {
+"sha": "e4672877919203a8403f538eada5593fa63a1112",
+"size": 3025
+},
+"website/assets/cymatics/comparison_06_image_decode.jpg.b64.parts/part_000": {
+"sha": "d450b2c88c039ac18bf5b296e383a3953764a267",
+"size": 9000
+},
+"website/assets/cymatics/comparison_06_image_decode.jpg.b64.parts/part_001": {
+"sha": "f15558fc12e94dee52533c5c89d53e806ab29e86",
+"size": 1649
+},
+"website/assets/cymatics/comparison_07_image_decode.jpg.b64.parts/part_000": {
+"sha": "9e869ae714eb75f33cc8160ebe2b5b29e6e71305",
+"size": 9000
+},
+"website/assets/cymatics/comparison_07_image_decode.jpg.b64.parts/part_001": {
+"sha": "2de2fbc30fa952ce1d9e83bd28987f62424166df",
+"size": 177
+},
+"website/assets/cymatics/pattern_01_top_candidate.jpg.b64.parts/part_000": {
+"sha": "e1dc3c83ebb9dfc332f2be0e2e3decaacea167f2",
+"size": 9000
+},
+"website/assets/cymatics/pattern_01_top_candidate.jpg.b64.parts/part_001": {
+"sha": "66a2b01dcf7ea7047d0dbfe1688207d818f9f99d",
+"size": 9000
+},
+"website/assets/cymatics/pattern_01_top_candidate.jpg.b64.parts/part_002": {
+"sha": "3953a0cec9fcd1d2d254c27dcd8bae7673a7ab7e",
+"size": 569
+},
+"website/assets/cymatics/pattern_02_top_candidate.jpg.b64.parts/part_000": {
+"sha": "5612551c7e56684372adc4b7a55b1095d0e3087d",
+"size": 9000
+},
+"website/assets/cymatics/pattern_02_top_candidate.jpg.b64.parts/part_001": {
+"sha": "7632ca8116215ed61cf1ae595d4ba9bc72ce935d",
+"size": 6017
+},
+"website/assets/cymatics/pattern_03_top_candidate.jpg.b64.parts/part_000": {
+"sha": "a9405d9bbbf71c4aed78800a4a2c5f0839e44d07",
+"size": 9000
+},
+"website/assets/cymatics/pattern_03_top_candidate.jpg.b64.parts/part_001": {
+"sha": "37f42b95e19c607221e1012cd4e73f6eca8472a3",
+"size": 8913
+},
+"website/assets/cymatics/pattern_04_top_candidate.jpg.b64.parts/part_000": {
+"sha": "d13da0dafba2b55cae3c3750d031c142892f9e8e",
+"size": 9000
+},
+"website/assets/cymatics/pattern_04_top_candidate.jpg.b64.parts/part_001": {
+"sha": "28d739a72cf6d9714259c0617696309e4b4d96cd",
+"size": 1645
+},
+"website/assets/cymatics/pattern_05_top_candidate.jpg.b64.parts/part_000": {
+"sha": "a961b1a954356508b5c47ea3343ba4bc5d63c887",
+"size": 9000
+},
+"website/assets/cymatics/pattern_05_top_candidate.jpg.b64.parts/part_001": {
+"sha": "a3041d79ed0d94610fa9968fe3789ff6eb7b8523",
+"size": 9000
+},
+"website/assets/cymatics/pattern_05_top_candidate.jpg.b64.parts/part_002": {
+"sha": "97750787b523abd020426b49174a11b0c9f42221",
+"size": 1613
+},
+"website/assets/cymatics/pattern_06_top_candidate.jpg.b64.parts/part_000": {
+"sha": "7f927f1d162640c19693a65fd46d854b7bc5c676",
+"size": 9000
+},
+"website/assets/cymatics/pattern_06_top_candidate.jpg.b64.parts/part_001": {
+"sha": "0fcc719c8d9c785fd723905a11eb7665e2f77eaf",
+"size": 6285
+},
+"website/assets/cymatics/pattern_07_top_candidate.jpg.b64.parts/part_000": {
+"sha": "df7f16f379d9b7f0550db770fbb21b68943bcbc5",
+"size": 9000
+},
+"website/assets/cymatics/pattern_07_top_candidate.jpg.b64.parts/part_001": {
+"sha": "36250ef927bec41fddad1b504de1158cfa4174e2",
+"size": 9000
+},
+"website/assets/cymatics/pattern_07_top_candidate.jpg.b64.parts/part_002": {
+"sha": "c5d3a6a499ff010ae12f899b3a2f0309d6a57eaa",
+"size": 9000
+},
+"website/assets/cymatics/pattern_07_top_candidate.jpg.b64.parts/part_003": {
+"sha": "5bd51242ce80936a84733919af7f80c845f6db87",
+"size": 9000
+},
+"website/assets/cymatics/pattern_07_top_candidate.jpg.b64.parts/part_004": {
+"sha": "1d6cab346ffc749afad2637e1e5ae716de96b8dd",
+"size": 9000
+},
+"website/assets/cymatics/pattern_07_top_candidate.jpg.b64.parts/part_005": {
+"sha": "e607fc1f92f72bdc834343e978d640e6ce21e741",
+"size": 9000
+},
+"website/assets/cymatics/pattern_07_top_candidate.jpg.b64.parts/part_006": {
+"sha": "eeb0f6b9c0a10418fc759ee16971711123a71c52",
+"size": 1809
+},
+"website/assets/cymatics/pattern_08_top_candidate.jpg.b64.parts/part_000": {
+"sha": "614ea74f44eca965e31a62044e4fcfc5b19e3f7e",
+"size": 9000
+},
+"website/assets/cymatics/pattern_08_top_candidate.jpg.b64.parts/part_001": {
+"sha": "663a7364983193b06eb0a9b8f1b88e5dbba4695b",
+"size": 9000
+},
+"website/assets/cymatics/pattern_08_top_candidate.jpg.b64.parts/part_002": {
+"sha": "f7d8dd5b2c98b431eb30594f280989a51592d7b3",
+"size": 3421
+},
+"website/assets/cymatics/pattern_09_top_candidate.jpg.b64.parts/part_000": {
+"sha": "76fdfdba58e410ec4e378d14701d60583747cf01",
+"size": 9000
+},
+"website/assets/cymatics/pattern_09_top_candidate.jpg.b64.parts/part_001": {
+"sha": "a7b499880103817a643f77ae53f2502229098c47",
+"size": 9000
+},
+"website/assets/cymatics/pattern_09_top_candidate.jpg.b64.parts/part_002": {
+"sha": "fb395a7d26989293c6787b35fab04918e4f9a872",
+"size": 2477
+},
+"website/assets/cymatics/pattern_10_top_candidate.jpg.b64.parts/part_000": {
+"sha": "f6834b43f45b12564687093c021ec37e663fdccc",
+"size": 9000
+},
+"website/assets/cymatics/pattern_10_top_candidate.jpg.b64.parts/part_001": {
+"sha": "93fb3ca305a23ebf5500fbe96c2b029f0a8b315a",
+"size": 9000
+},
+"website/assets/cymatics/pattern_10_top_candidate.jpg.b64.parts/part_002": {
+"sha": "926e7484e3a24abcf785b0f2005498d80852e23c",
+"size": 6229
+}
+}
