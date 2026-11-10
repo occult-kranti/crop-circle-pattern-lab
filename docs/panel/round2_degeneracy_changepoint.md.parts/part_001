@@ -1,0 +1,38 @@
+): formations' complexity escalated secularly (post-1990 escalation predates 1998/99). So define ΔΔ_k = [mean S_ik, post − pre] − [mean S_ik′, post − pre over control motifs k′ ≠ k]. Diffusion predicts ΔΔ > 0 for the popularized motif; a generic "formations got fancier" trend cancels in the second difference. Primary decision uses ΔΔ, not the raw β.
+
+**Decision rule.** Declare a diffusion signal iff ALL hold: (i) T (stacked ΔΔ) FWER-significant at 0.05 under year-permutation; (ii) ≥1 motif individually significant at BH-FDR q=0.10 *and* its changepoint localizes within ±2 yr of t_k; (iii) all placebo checks (§2.3) null.
+
+### 2.3 Falsifiers (pre-registered, symmetric)
+
+The design is falsifiable in both directions:
+
+1. **Falsifier of diffusion.** β ≤ 0 or ΔΔ ≤ 0 for all motifs, or jumps that do NOT localize at t_k → transmission-after-popularization is rejected; residual similarity is level-only, consistent with §1.2's "shared exhausted symmetry classes" account.
+2. **Placebo dates.** Rerun with t_k shifted ±5 yr and with dates of unrelated cultural events. If placebo β's match real β's → the design detects only secular trend → reject interpretation, regardless of (i)–(iii).
+3. **Placebo motifs (negative controls).** Motifs with pre-modern popularization (pentagram, yin–yang: t_k before the formation era → no post-window) must yield no detected jump; any "detection" there indicates pipeline failure.
+4. **HARKing firewall.** t_k values are fixed from bibliographic records BEFORE touching the S matrix; the Koch↔FoL D=0.195 exploratory pair may motivate *including* FoL as a motif but may not tune t_k, the window, or the feature set.
+
+### 2.4 Power (verified)
+
+With σ(S) ≈ 0.15 (consistent with the observed cross-domain D spread), a pre/post split of 20/40 formations around 1999 gives SE(β̂) ≈ 0.041 → power ≈ 0.79 at one-sided α=0.05 against Δ = 0.10 in S units (≈ the Koch↔FoL gap); 25/35 → 0.82; 30/30 → 0.83. Adequate. Power scales with formations × motifs rather than being capped by the collision atom — the structural defect of Round 1 is removed, not patched.
+
+### 2.5 Mathematical edge cases (checklist)
+
+1. **Date asymmetry**: formation years exact; t_k fuzzy (±1–2 yr) → sensitivity over a t_k grid, pre-registered; report the full significance surface, not the best point.
+2. **Motifs sharing t_k** (e.g., several New Age motifs popularized by the same 1990s publications): their β̂_k are correlated through identical event time → cluster or stack them as one event; do not count as independent confirmations.
+3. **Left-censoring**: formations before the motif existed in any form (pre-1978) vs. "pre-popularization but post-invention" — pre-register that "pre" means pre-*popularization*; the ancient existence of a motif does not violate H₁, which is about designer-visible salience.
+4. **Selection**: undated formations excluded → check that included/excluded formation feature distributions match (two-sample test on n_fold), else selection bias in the trend term γ.
+5. **Discrete-outcome granularity**: S has atoms (D=0 duplicates); mean-difference statistics are unaffected, but quantile-based diagnostics are not — use means and permutation, never min-statistics, anywhere in this design.
+6. **Non-transitive semi-metric**: D's octave non-transitivity (Round-1 edge case 4) is harmless here (pairwise S only), but do not embed S in a metric space for the event study.
+7. **Multiple popularization waves**: a motif can re-popularize (e.g., 2012-era resurgence) → pre-register single-changepoint; a second changepoint is exploratory only.
+8. **Anticipation**: formations in year t_k (book published mid-year, formation season May–Aug) → pre-register inclusion of τ = 0 in "post", with ±1-yr exclusion sensitivity.
+
+### 2.6 Sensitivity cohort (secondary, not primary)
+
+Rerun the entire event-study on the **high-information sub-cohort**: formations with prime-order symmetry (n ∈ {5,7,11,13}), legible lattice grids, or decoded (n,m) with m ≥ 2 — cells of the profile space with low occupancy, where a match is *a priori* unlikely under the uniform-null intuition of §1.2. Convergence of the primary and cohort results strengthens causal reading; divergence (signal only in the low-information bulk) indicates the trend term, not motif transmission.
+
+---
+
+## 3. Bottom line
+
+- Round 1's "zero interesting pairs" is a **non-identifiability result**: the legible decorative-pattern space is small, concentrated at low highly-composite orders, and collision-dominated; any label-shuffle min-distance test on it has power zero (null atom at D=0 of mass ≥ 0.473 from a single duplicate pair). This is the mathematically interesting finding — a ceiling on what cross-sectional geometric matching can ever say.
+- The only identifiable path is **temporal**: the pre-registered stacked event-study / changepoint test in §2 tests diffusion (β > 0 at t_k) against timeless geometry (β = 0) with power ≈ 0.8, a non-degenerate permutation null, explicit placebo falsifiers, and a DiD guard against the known secular complexity trend.

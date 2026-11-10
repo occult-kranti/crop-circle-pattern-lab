@@ -1,0 +1,69 @@
+# Round 2 — Interpretation of the Null & One Refined Test
+
+Math/pattern expert. Inputs: Round-1 engine (`similarity_engine_design.md`), run result: 0/1688 cross-domain pairs interesting; WY null min-statistic degenerate at D=0; enrichment p=0.55; exploratory D ∈ {0, 0.091, 0.195}.
+
+---
+
+## 1. Interpretation: the degenerate null IS the result — a non-identifiability theorem, not a null finding
+
+### 1.1 The mechanism, exactly
+
+Let φ: items → profiles be the Round-1 encoding, and L ∈ {crop, Klüver, motif, monument} the domain label (sizes 60/4/8/13, N=85). The confirmatory statistic is T = min over cross-label pairs of D(i,j) = min over cross-label pairs of ‖φ(i)−φ(j)‖_Gower.
+
+**Observation 1 (collisions are structurally guaranteed).** φ's effective image is tiny and its pushforward distribution is heavily concentrated. Decorative geometry lives almost entirely on {C_n, D_n : n ∈ {3,4,5,6,8,10,12}} ∪ {concentric (∞)} ∪ {spiral}, with octave equivalence (6≈12≈24) collapsing it further, × ≤ 8 topology-flag combos × a 6-point spiky ratio signature. The continuous-looking components (FD, ratio_sig) are near-functions of the discrete ones (F_k peaks at k = n_fold by construction — §2.4 of Round 1). With ~40 effective cells and 85 items drawn from a Zipf-like concentration on highly-composite orders, E[#duplicate profile pairs] ≈ 470 (Monte Carlo, Zipf s=1.2); even under far more generous cell counts, birthday-paradox collisions are overdetermined. **The encoding is non-injective across domains by construction, not by coincidence.**
+
+**Observation 2 (one collision kills the test).** Under label shuffling with sizes preserved, any fixed pair is cross-label with probability
+
+> P(cross) = 1 − Σ_c s_c(s_c−1) / N(N−1) = 1 − 3764/7140 = **0.473**.
+
+Hence a **single** exact-duplicate pair — and one was observed: dumbbell (1,1) ↔ chamber axial (1,1), D=0 — puts an atom of mass ≈0.47 at the global metric minimum 0 in the Westfall–Young null {T_b}. The α=0.05 quantile of {T_b} is then 0; no pair can have D < 0; and the D=0 pair itself has p_pair ≈ (1+0.47B)/(B+1) ≈ 0.47. **The test's power function is identically zero against every alternative.** Zero interesting pairs is therefore a *theorem about the procedure*, deducible before looking at the data — not an empirical finding.
+
+### 1.2 The precise statement
+
+> **Proposition (decorative-space non-identifiability).** Let φ be any feature map whose profile space has ν effective cells with ν = O(10¹) and whose items concentrate on low, highly-composite symmetry orders, and let domains be arbitrary labelings of N=85 items. Then (i) cross-domain D=0 collisions occur w.p. → 1 as concentration grows; (ii) any min-D permutation test (Westfall–Young on label shuffles) has power = 0, because its null support minimum equals the metric minimum and carries mass ≥ 0.473; (iii) consequently no conclusion about cross-domain resemblance — positive OR negative — is identifiable from (φ, min-D, label-shuffle) at these N. The quantity I(L; φ) is bounded above by H(L) = 1.30 bits, but the effective resolution of φ at the mode of the distribution (orders 4–12, where ~all mass sits) is ≪ log2(85) ≈ 6.4 bits, so the many-to-one map swamps the label information.
+
+In words: **the decorative-pattern space, at the resolution at which humans can legibly encode it, is so small and so concentrated at low symmetry orders that "cross-domain matching" is content-free — the hypothesis (transmission/convergence) has finer grain than the measurement.** That is the interesting mathematical result. It is an *upper bound on what is knowable from this feature class*, not evidence that the domains are unrelated.
+
+### 1.3 What the result is NOT (guardrails against over-reading)
+
+- **Not a substantive null.** A degenerate null (power ≡ 0) must be reported as *uninformative*, which is epistemically different from "test had power and found nothing." The enrichment test (p=0.55) has a non-degenerate count statistic and IS a weak substantive null — but it averages over 1688 pairs, so it only rules out *broad* cross-domain closeness, not a handful of real matches.
+- **Not fixable by more permutations or bigger B.** The atom at 0 is a property of the collision graph, invariant to B.
+- **Partially fixable by resolution.** Raising ν (continuous FD on real imagery, sub-symmetry spectra {F_k} rather than argmax n_fold, full Bessel-mode spectra instead of dominant (n,m)) shrinks the D=0 atom — but for *idealized glyphs* of canonical motifs (Flower of Life, rose window) the FD is nearly a function of n_fold, so collisions among canonical forms persist. The degeneracy is a property of the pattern class, not only of the encoder: **low-order dihedral symmetry classes are finite and shared by all ornamental traditions on Earth.** Any purely geometric cross-sectional test inherits this ceiling.
+
+### 1.4 Reclassification of the exploratory matches
+
+- dumbbell↔chamber D=0: an encoding collision (both (n,m)=(1,1) + shared flags). Content-free, per §1.2.
+- 12-spoke wheel↔Chartres rose D=0.091: driven by n=12 ∧ concentric — the two most populated cells in the space. Under a non-degenerate statistic this is exactly the pair type with the *highest* null probability; assign no weight.
+- Koch↔Flower of Life D=0.195: only mildly interesting because Koch (is_grid/lattice + recursion) vs FoL (concentric + 6-fold) disagree on topology flags, so the match is not a pure collision — but it survives no multiplicity layer. Log as hypothesis-generating only (Round-1 HARKing firewall, item 4).
+
+---
+
+## 2. The one refined test: a pre-registered **popularization changepoint / stacked event-study** on similarity
+
+### 2.1 Why this and only this
+
+Every purely *cross-sectional* similarity test dies on §1.2: when geometry is legible enough to encode, it is generic. The one axis the degenerate space does NOT collapse is **time**. The substantive claim under investigation (formations/motifs/monuments share patterns because of cultural transmission, not because the symmetry classes are exhausted) makes a *temporal* prediction that "timeless geometry" does not: **resemblance to a specific named motif should appear/escalate in dated artifacts only after that motif enters the designer-visible culture.** Testing the *jump*, not the *level*, restores identifiability, because level is what is degenerate.
+
+(Restricting to high-information items — prime-order symmetry, legible grids — is retained only as a **sensitivity cohort** (§2.6), not as the primary test: it shrinks the already-small N and only mitigates, never removes, the collision problem.)
+
+### 2.2 Design: stacked event-study (difference-in-differences) with frozen features
+
+**Units.** All 60 dated crop formations (year known exactly), crossed with K motifs that have a documented *popularization date* t_k from bibliographic evidence (pre-registered source hierarchy: first ISBN-catalogued use of the motif's modern name / first mass-market publication; e.g., Flower of Life: Melchizedek, *Ancient Secret of the Flower of Life* vol. 1, 1998/99 → t = 1999). A motif enters the design only if t_k falls strictly inside the formation date range so both a pre- and post-window exist.
+
+**Outcome.** S_ik = 1 − D(formation i, motif k), computed with the **frozen Round-1 features, weights, and scalers** (no refitting — leakage guard, Round-1 edge case 11).
+
+**Estimand.** For each motif k, with event time τ_ik = year_i − t_k:
+
+```
+S_ik = α_k + β_k · 1[τ_ik ≥ 0] + γ · f(year_i) + ε_ik
+```
+
+f = pre-registered linear (or monotone) year trend; formation i enters all K regressions → cluster-robust SEs at the formation level (or formation-level permutation, below).
+
+**Pre-registered hypotheses.** Diffusion (H₁): β_k > 0 for popularization-linked motifs, with the changepoint *at* t_k. Timeless/convergent geometry (H₀′): β_k = 0 with arbitrary baseline α_k. **The two hypotheses are distinguished by β, not by S level** — which is precisely the quantity Round 1 could not identify.
+
+**Statistical procedure.**
+1. Primary statistic: precision-weighted stack, T = Σ_k w_k β̂_k, w_k ∝ 1/Var(β̂_k). Family statistic for FWER over motifs: max_k β̂_k/SE_k.
+2. Null: **permute formation years** (geometry and labels frozen, temporal alignment broken), B = 10⁵, preserving the year marginal distribution (formations are not uniform in time; permutation keeps the marginal, kills only the alignment). This null is *not* degenerate: T is a mean-difference, not a min — §1.2 does not apply.
+3. Changepoint-location check: per motif, scan all candidate breakpoints in ±10 yr around t_k; retain the motif's contribution only if the max-likelihood breakpoint lies within ±2 yr of t_k. A jump at the wrong date is evidence of a secular artifact, not popularization.
+4. **Difference-in-differences guard** (the key anti-confounder
