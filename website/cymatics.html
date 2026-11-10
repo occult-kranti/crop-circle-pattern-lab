@@ -1,0 +1,16 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cymatics Lab — Crop Circles</title>
+<style>body{background:#ece4d9;color:#4f483e;font:15px Georgia,serif;padding:60px 24px;text-align:center}</style></head><body>
+<div id="w">Loading Cymatics Lab…</div>
+<script>
+(async()=>{
+  const out=[];
+  for(let i=0;;i++){
+    const r=await fetch('cymatics.html.parts/part_'+String(i).padStart(3,'0'));
+    if(!r.ok) break; out.push(await r.text());
+    if(i>50) break;
+  }
+  if(!out.length){document.getElementById('w').textContent='Could not assemble this page.';return;}
+  document.open();document.write(out.join(''));document.close();
+})();
+</script></body></html>
