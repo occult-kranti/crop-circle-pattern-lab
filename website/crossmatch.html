@@ -51,8 +51,10 @@ generic — the match is real as geometry and meaningless as evidence.</p>
 </div></section>
 
 <footer><div class="wrap"><div>Engine: cymatics/code/crossmatch.py · spec: similarity_engine_design.md (panel math consultation) · results: cymatics/results/crossmatch.json. The multiple-comparison guardrails follow Westfall–Young min-statistic FWER + Bonferroni floor + BH-FDR, with a HARKing firewall (post-hoc patterns require independent confirmation).</div><div class="fmeta">Methods Paper<br>Crossmatch</div></div></footer>
-<script src="assets/crossmatch_data.js"></script>
+<script src="assets/boot.js"></script>
+<script>BOOT.load(['assets/crossmatch_data.js']);</script>
 <script>
+BOOT.ready(function(){
 const ms=CM.matrix_summary;
 document.getElementById('stats').innerHTML=
  `Pairs: ${CM.population.n_pairs.toLocaleString()} total · ${CM.population.n_cross_domain.toLocaleString()} cross-domain · ${CM.population.n_cross_tested} tested · ${CM.population.n_cross_excluded_min_coverage.toLocaleString()} excluded (coverage rule).<br>
@@ -63,5 +65,6 @@ document.getElementById('stats').innerHTML=
 document.getElementById('top').innerHTML=CM.global_top.map((t,i)=>
  `<tr><td>${i+1}</td><td>${t.a}</td><td>${t.b}</td><td>${t.D.toFixed(3)}</td><td>${(t.p_fwer??t.p).toFixed(2)}</td></tr>`).join('');
 document.getElementById('uc').innerHTML=CM.unit_checks.map(u=>typeof u==='string'?u:JSON.stringify(u)).join('<br>');
+});
 </script>
 </body></html>

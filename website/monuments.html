@@ -35,8 +35,10 @@ What distinguishes sites is mode order, degeneracy structure, and decay times.</
 </div></section>
 
 <footer><div class="wrap"><div>Ground truth: Jahn, Devereux &amp; Ibison 1996 (JASA 99:649) · Till 2017 (Antiquity 91:74) · Lubman 1998 (JASA 104:1763) · Cox, Fazenda &amp; Greaney 2020 (J. Arch. Sci. 122:105218) · Cook et al. 2008/2010 (Chavín). Modeling spec: panel physics consultation (rigid-box modes, Helmholtz, combs). Full data: website assets load monuments.json.</div><div class="fmeta">Special Report<br>Archaeoacoustics</div></div></footer>
-<script src="assets/charts.js"></script><script src="assets/monuments_data.js"></script>
+<script src="assets/boot.js"></script><script src="assets/charts.js"></script>
+<script>BOOT.load(['assets/monuments_data.js']);</script>
 <script>
+BOOT.ready(function(){
 document.getElementById('adj110').innerHTML = (typeof ADJ110==='string'?ADJ110:
  '<b>The 110 Hz claim:</b> real swept-sine measurements (Jahn/Devereux/Ibison 1996) found 95–120 Hz modes in six British/Irish stone chambers (Newgrange 110, Loughcrew 110, Wayland\'s 95/112/119, Chun Quoit 110, Cairn Euny 99). The Hypogeum "110 Hz oracle room" is a meme: uncalibrated 2015 measurements found 70 + 114 Hz, and the ISO-calibrated study (Till 2017) found 41/72/76 Hz. The 95–120 Hz cluster is dimensionally inevitable — and 110 Hz = A2 sits in the baritone chant range, which is the defensible ritual link.');
 const res = MONUMENTS.filter(m=>m.top_modes.length && typeof m.top_modes[0].f==='number');
@@ -50,5 +52,6 @@ document.getElementById('cards').innerHTML = MONUMENTS.map(m=>{
  <p class="note" style="margin-top:8px">Modeled modes: ${modes||'— (not a resonator)'}</p>
  ${meas?`<p class="note" style="margin-top:6px">Measured: ${meas}</p>`:''}
  </div>`;}).join('');
+});
 </script>
 </body></html>
