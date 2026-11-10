@@ -1,0 +1,247 @@
+ush({ n: n, m: m, hz: f, weight: 1 / (d * d + g2) });
+      }
+    }
+    raw.sort(function (a, b) { return b.weight - a.weight; });
+    var top = raw.slice(0, Math.max(1, limit));
+    var sum = 0;
+    for (var i = 0; i < top.length; i++) sum += top[i].weight;
+    if (!sum) sum = 1;
+    return top.map(function (md) {
+      return { n: md.n, m: md.m, hz: md.hz, weight: md.weight / sum };
+    });
+  }
+
+  /** Lorentzian-weighted circular modes near a driving frequency. */
+  function drivenCircularModes(hz, plate, gammaHz, maxOrder, limit) {
+    if (maxOrder === undefined) maxOrder = 5;
+    if (limit === undefined) limit = 6;
+    if (!Number.isFinite(hz) || hz <= 0) return [];
+    var gamma = Math.max(1e-6, gammaHz !== undefined ? gammaHz : hz * 0.06);
+    var g2 = gamma * gamma;
+    var raw = [];
+    var table = plate.boundary === 'free' ? BESSEL_DERIVATIVE_ZEROS : BESSEL_ZEROS;
+    for (var m = 0; m <= Math.min(maxOrder, table.length - 1); m++) {
+      var maxS = Math.min(maxOrder, table[m].length);
+      for (var s = 1; s <= maxS; s++) {
+        var f = circularModeHz(m, s, plate.fundamentalHz, plate.boundary);
+        if (f > hz * 4 && raw.length > 0) continue;
+        var d = f - hz;
+        raw.push({ m: m, s: s, hz: f, weight: 1 / (d * d + g2) });
+      }
+    }
+    raw.sort(function (a, b) { return b.weight - a.weight; });
+    var top = raw.slice(0, Math.max(1, limit));
+    var sum = 0;
+    for (var i = 0; i < top.length; i++) sum += top[i].weight;
+    if (!sum) sum = 1;
+    return top.map(function (md) {
+      return { m: md.m, s: md.s, hz: md.hz, weight: md.weight / sum };
+    });
+  }
+
+  /**
+   * Driven square-plate field: Σ w_nm·sin(nπx)sin(mπy) (simply-supported
+   * plate response). max |field| ≤ 1 (weights sum to 1).
+   */
+  function drivenSquareField(modes) {
+    var terms = modes.map(function (md) {
+      return { weight: md.weight, nPi: md.n * PI, mPi: md.m * PI };
+    });
+    return function (x, y) {
+      var v = 0;
+      for (var i = 0; i < terms.length; i++) {
+        var t = terms[i];
+        v += t.weight * Math.sin(t.nPi * x) * Math.sin(t.mPi * y);
+      }
+      return v;
+    };
+  }
+
+  /** Driven circular-plate field: Σ w_ms·J_m(k_ms·r)·cos(mθ)/norm. */
+  function drivenCircularField(modes, boundary) {
+    if (boundary === undefined) boundary = 'clamped';
+    var terms = modes.map(function (md) {
+      return {
+        weight: md.weight, m: md.m,
+        k: circularWaveNumber(md.m, md.s, boundary),
+        norm: circularPlateNorm(md.m, md.s, boundary),
+      };
+    });
+    return function (x, y) {
+      var dx = x - 0.5, dy = y - 0.5;
+      var r = Math.sqrt(dx * dx + dy * dy) * 2;
+      if (r > 1) return 0;
+      var theta = Math.atan2(dy, dx);
+      var v = 0;
+      for (var i = 0; i < terms.length; i++) {
+        var t = terms[i];
+        v += (t.weight * besselJ(t.m, t.k * r) * Math.cos(t.m * theta)) / t.norm;
+      }
+      return v;
+    };
+  }
+
+  CYM.drivenSquareModes = drivenSquareModes;
+  CYM.drivenCircularModes = drivenCircularModes;
+  CYM.drivenSquareField = drivenSquareField;
+  CYM.drivenCircularField = drivenCircularField;
+
+  /* ------------------------------------------------------------------------ */
+  /* Sand simulation — particles drift down-gradient of |field| (Euler step)  */
+  /* ------------------------------------------------------------------------ */
+
+  /** Uniform random particle layout over the plate domain (seeded). */
+  function createSand(count, seed, circular) {
+    if (seed === undefined) seed = 1;
+    var n = Math.max(0, Math.floor(count));
+    var x = new Float64Array(n);
+    var y = new Float64Array(n);
+    var prng = seedPrng(seed);
+    for (var i = 0; i < n; i++) {
+      var a, b;
+      if (circular) {
+        var dx = 0, dy = 0;
+        do {
+          a = nextRandom(prng); prng = a.state;
+          b = nextRandom(prng); prng = b.state;
+          dx = a.value - 0.5;
+          dy = b.value - 0.5;
+        } while (dx * dx + dy * dy > 0.25);
+        x[i] = dx + 0.5;
+        y[i] = dy + 0.5;
+      } else {
+        a = nextRandom(prng); prng = a.state;
+        b = nextRandom(prng); prng = b.state;
+        x[i] = a.value;
+        y[i] = b.value;
+      }
+    }
+    return { count: n, x: x, y: y, prng: prng, circular: !!circular };
+  }
+
+  /**
+   * One Euler step: particles move down the gradient of |field(x,y)| plus a
+   * small seeded jitter. Mutates and returns `state` (allocation-free).
+   * Deterministic for a given (state, field, dt, opts).
+   * opts: {speed=0.35, jitter=0.02, eps=1e-3}.
+   */
+  function stepParticles(state, field, dt, opts) {
+    opts = opts || {};
+    var speed = opts.speed !== undefined ? opts.speed : 0.35;
+    var jitter = opts.jitter !== undefined ? opts.jitter : 0.02;
+    var eps = opts.eps !== undefined ? opts.eps : 1e-3;
+    var step = speed * Math.max(0, dt);
+    var jig = jitter * Math.sqrt(Math.max(0, dt));
+    var inv2e = 1 / (2 * eps);
+
+    for (var i = 0; i < state.count; i++) {
+      var px = state.x[i], py = state.y[i];
+      var gx = (Math.abs(field(px + eps, py)) - Math.abs(field(px - eps, py))) * inv2e;
+      var gy = (Math.abs(field(px, py + eps)) - Math.abs(field(px, py - eps))) * inv2e;
+      var glen = Math.sqrt(gx * gx + gy * gy);
+      var nx = px, ny = py;
+      if (glen > 1e-9) {
+        nx -= (gx / glen) * step;
+        ny -= (gy / glen) * step;
+      }
+      if (jig > 0) {
+        var a = nextRandom(state.prng); state.prng = a.state;
+        var b = nextRandom(state.prng); state.prng = b.state;
+        nx += (a.value - 0.5) * 2 * jig;
+        ny += (b.value - 0.5) * 2 * jig;
+      }
+      if (state.circular) {
+        var dx = nx - 0.5, dy = ny - 0.5;
+        var rr = Math.sqrt(dx * dx + dy * dy);
+        var rMax = 0.499;
+        if (rr > rMax) {
+          nx = 0.5 + (dx / rr) * rMax;
+          ny = 0.5 + (dy / rr) * rMax;
+        }
+      } else {
+        nx = Math.min(1, Math.max(0, nx));
+        ny = Math.min(1, Math.max(0, ny));
+      }
+      state.x[i] = nx;
+      state.y[i] = ny;
+    }
+    return state;
+  }
+
+  /** Mean |field| over all particles — falls as sand collects on nodal lines. */
+  function meanParticleAbs(state, field) {
+    if (state.count === 0) return 0;
+    var sum = 0;
+    for (var i = 0; i < state.count; i++) sum += Math.abs(field(state.x[i], state.y[i]));
+    return sum / state.count;
+  }
+
+  CYM.createSand = createSand;
+  CYM.stepParticles = stepParticles;
+  CYM.meanParticleAbs = meanParticleAbs;
+
+  /* ------------------------------------------------------------------------ */
+  /* Colormaps                                                                */
+  /* ------------------------------------------------------------------------ */
+
+  /**
+   * Control points, dark→bright for the ported Open Sync maps; 'lab-paper'
+   * (the site default) runs bright paper → dark ink so shade=0 (background /
+   * antinodes) paints paper #ece4d9 and shade=1 (nodal lines) paints ink
+   * #332e26, with a muted warm mid that echoes accent #f54001.
+   */
+  var COLORMAP_STOPS = {
+    'lab-paper': [
+      CYM.PALETTE.bg,
+      [214, 196, 173],
+      [176, 130, 92],   // muted warm echo of #f54001
+      [104, 84, 64],
+      CYM.PALETTE.lines,
+    ],
+    'amber-grain': [
+      [11, 12, 13], [64, 50, 24], [122, 94, 38], [217, 164, 65], [240, 222, 178],
+    ],
+    'gold-plate': [
+      [10, 8, 6], [44, 34, 26], [97, 81, 66], [177, 157, 137], [240, 226, 205],
+    ],
+    'teal-glow': [
+      [11, 12, 13], [24, 42, 40], [46, 75, 70], [79, 140, 130], [191, 227, 220],
+    ],
+    'monochrome': [
+      [11, 12, 13], [58, 56, 51], [122, 118, 109], [168, 163, 153], [233, 229, 220],
+    ],
+    'inferno-warm': [
+      [11, 12, 13], [58, 28, 22], [131, 62, 40], [196, 99, 79], [217, 164, 65], [240, 224, 192],
+    ],
+    'spectrum-lab': [
+      [11, 12, 13], [46, 75, 70], [95, 169, 140], [169, 179, 104], [217, 164, 65], [196, 99, 79],
+    ],
+  };
+
+  CYM.COLORMAPS = Object.keys(COLORMAP_STOPS);
+
+  /**
+   * Sample a colormap at t. Out-of-range and non-finite t are clamped to
+   * [0, 1] (never throws, never returns NaN).
+   */
+  function sampleColormap(name, t) {
+    var stops = COLORMAP_STOPS[name] || COLORMAP_STOPS['lab-paper'];
+    var c = Number.isNaN(t) ? 0 : Math.min(1, Math.max(0, t));
+    var pos = c * (stops.length - 1);
+    var i = Math.min(stops.length - 2, Math.floor(pos));
+    var f = pos - i;
+    var a = stops[i], b = stops[i + 1];
+    return [
+      Math.round(a[0] + (b[0] - a[0]) * f),
+      Math.round(a[1] + (b[1] - a[1]) * f),
+      Math.round(a[2] + (b[2] - a[2]) * f),
+    ];
+  }
+
+  CYM.sampleColormap = sampleColormap;
+
+  /* ------------------------------------------------------------------------ */
+  /* Frame rendering (typed-array core)                                       */
+  /*                                                                          */
+  /* Sharpening trick: render |f|^p with p ≈ 0.25 so antinodes stay fat      */
+  /* while nodal lines go razor-thin; line emphasis via Gaussian ridge        
