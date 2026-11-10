@@ -1,0 +1,214 @@
+/* ============================================================================
+ * Cymatics Engine v2 — standalone browser port of the Open Sync cymatics core.
+ *
+ * Adapted (transliterated) from brainwave_opensync `src/cymatics/chladni.ts`
+ * and `src/cymatics/render.ts` — MIT License (c) 2026 Open Sync contributors.
+ * https://github.com/occult-kranti/brainwave_opensync
+ *
+ * Plain script (no ES modules, no dependencies): exposes a single global `CYM`.
+ * The numeric core is DOM-free (typed arrays only); the render* functions are
+ * thin canvas wrappers around CYM.renderToBuffer.
+ *
+ * HONESTY NOTE (mirrors the source module): `plateLadder`/`frequencyToModes`
+ * map a target frequency to idealized virtual-plate modal indices. Real
+ * Chladni patterns depend on plate geometry, thickness, material and boundary
+ * conditions — NOT on frequency alone. This engine simulates idealized
+ * virtual plates for visualization; it does not claim a given Hz "produces"
+ * a specific physical pattern.
+ *
+ * Site palette: bg #ece4d9 (paper), lines #332e26 (ink), accent #f54001.
+ * ==========================================================================*/
+(function (global) {
+  'use strict';
+
+  var CYM = {};
+  var PI = Math.PI;
+
+  /** Site palette (style.css custom properties, hardcoded for canvas use). */
+  CYM.PALETTE = {
+    bg: [236, 228, 217],      // #ece4d9
+    lines: [51, 46, 38],      // #332e26
+    accent: [245, 64, 1],     // #f54001
+    surface: [244, 240, 234], // #f4f0ea
+    muted: [138, 125, 107],   // #8a7d6b
+  };
+
+  CYM.HONESTY_NOTE =
+    'Frequency alone does not determine a real plate pattern. This engine ' +
+    'simulates idealized virtual plates (declared geometry + fundamental); ' +
+    "the same drive Hz excites different modes on different plates. " +
+    "'physics' labels = eigenmode/Lorentzian plate simulation; 'art' labels " +
+    '= cultural/aesthetic frequency choices with no physical claim.';
+
+  /* ------------------------------------------------------------------------ */
+  /* Seeded PRNG (mulberry32) — deterministic, serializable state.            */
+  /* ------------------------------------------------------------------------ */
+
+  function seedPrng(seed) { return (seed >>> 0) || 1; }
+
+  function nextRandom(state) {
+    var t = (state + 0x6d2b79f5) | 0;
+    var r = Math.imul(t ^ (t >>> 15), 1 | t);
+    r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r;
+    var value = ((r ^ (r >>> 14)) >>> 0) / 4294967296;
+    return { value: value, state: t >>> 0 };
+  }
+
+  function createPrng(seed) {
+    var s = seedPrng(seed);
+    return function () {
+      var r = nextRandom(s);
+      s = r.state;
+      return r.value;
+    };
+  }
+
+  CYM.seedPrng = seedPrng;
+  CYM.nextRandom = nextRandom;
+  CYM.createPrng = createPrng;
+
+  /* ------------------------------------------------------------------------ */
+  /* Square plate (Chladni figures)                                           */
+  /* ------------------------------------------------------------------------ */
+
+  function assertValidSquareMode(n, m) {
+    if (!Number.isInteger(n) || !Number.isInteger(m)) {
+      throw new Error('mode indices must be integers (got n=' + n + ', m=' + m + ')');
+    }
+    if (n < 0 || m < 0) {
+      throw new Error('mode indices must be ≥ 0 (got n=' + n + ', m=' + m + ')');
+    }
+    if (n === 0 && m === 0) {
+      throw new Error('n = m = 0 is not a vibration mode (rigid translation)');
+    }
+  }
+
+  /**
+   * Square-plate Chladni field value at (x, y) ∈ [0, 1]² (Bourke cos-form):
+   *   cos(nπx)cos(mπy) − sign·cos(mπx)cos(nπy)
+   * |value| ≤ 2. sign ∈ {+1, −1}.
+   */
+  function squarePlateValue(x, y, n, m, sign) {
+    if (sign === undefined) sign = 1;
+    assertValidSquareMode(n, m);
+    return (
+      Math.cos(n * PI * x) * Math.cos(m * PI * y) -
+      sign * Math.cos(m * PI * x) * Math.cos(n * PI * y)
+    );
+  }
+
+  CYM.SQUARE_PLATE_MAX = 2;
+
+  /**
+   * Generalized simply-supported form with mix coefficients:
+   *   a·sin(nπx)sin(mπy) + b·sin(mπx)sin(nπy)
+   * Fractional n, m ≥ 0 allowed ("art mode" morphing). |value| ≤ |a| + |b|.
+   */
+  function squarePlateValueMix(x, y, n, m, a, b) {
+    if (!(n >= 0) || !(m >= 0)) {
+      throw new Error('mode indices must be ≥ 0 (got n=' + n + ', m=' + m + ')');
+    }
+    if (n === 0 && m === 0) {
+      throw new Error('n = m = 0 is not a vibration mode (rigid translation)');
+    }
+    return (
+      a * Math.sin(n * PI * x) * Math.sin(m * PI * y) +
+      b * Math.sin(m * PI * x) * Math.sin(n * PI * y)
+    );
+  }
+
+  /** True when the mixed sin-form is identically zero (degenerate case). */
+  function isTrivialMix(n, m, a, b) {
+    if (a === 0 && b === 0) return true;
+    return n === m && a === -b;
+  }
+
+  CYM.squarePlateValue = squarePlateValue;
+  CYM.squarePlateValueMix = squarePlateValueMix;
+  CYM.isTrivialMix = isTrivialMix;
+
+  /* ------------------------------------------------------------------------ */
+  /* Bessel functions and zero tables (circular plate)                        */
+  /* ------------------------------------------------------------------------ */
+
+  /** Zeros of J_m for m = 0..5, ascending (Abramowitz & Stegun Table 9.5). */
+  var BESSEL_ZEROS = [
+    /* J0 */ [2.4048255577, 5.5200781103, 8.6537279129, 11.7915344391, 14.9309177086, 18.0710639679, 21.2116366299, 24.3524715308],
+    /* J1 */ [3.8317059702, 7.0155866698, 10.1734681351, 13.3236919363, 16.4706300509, 19.6158585105, 22.7600843806, 25.9036720876],
+    /* J2 */ [5.1356223018, 8.4172441404, 11.6198411721, 14.7959517824, 17.9598194950, 21.1169970530, 24.2701123136],
+    /* J3 */ [6.3801618959, 9.7610231300, 13.0152007217, 16.2234661603, 19.4094152264, 22.5827295933],
+    /* J4 */ [7.5883424345, 11.0647094886, 14.3725366716, 17.6159660498, 20.8269329570, 24.0190195248],
+    /* J5 */ [8.7714838159, 12.3386041974, 15.7001740794, 18.9801338752, 22.2177998966],
+  ];
+
+  /**
+   * Zeros of J'_m for m = 0..5 (free-rim approximation), ascending.
+   * J'_0 = −J_1, so row 0 matches the J1 zeros (A&S Table 9.5).
+   */
+  var BESSEL_DERIVATIVE_ZEROS = [
+    /* J'0 */ [3.8317059702, 7.0155866698, 10.1734681351, 13.3236919363, 16.4706300509, 19.6158585105, 22.7600843806],
+    /* J'1 */ [1.8411837813, 5.3314427735, 8.5363163664, 11.7060049026, 14.8635886339, 18.0155278627, 21.1643698592],
+    /* J'2 */ [3.0542369282, 6.7061331942, 9.9694678231, 13.1703708560, 16.3475225213, 19.5129135364],
+    /* J'3 */ [4.2011889412, 8.0152365984, 11.3459243107, 14.5858482862, 17.7887478661, 20.9724769366],
+    /* J'4 */ [5.3175531261, 9.2823962852, 12.6819084426, 15.9641070372, 19.1960288050],
+    /* J'5 */ [6.4156163757, 10.5198608737, 13.9871886301, 17.3128424989, 20.5755145214],
+  ];
+
+  CYM.BESSEL_ZEROS = BESSEL_ZEROS;
+  CYM.BESSEL_DERIVATIVE_ZEROS = BESSEL_DERIVATIVE_ZEROS;
+
+  /** k_r for circular mode (m, s): the s-th zero (1-based) of J_m or J'_m. */
+  function circularWaveNumber(m, s, boundary) {
+    if (boundary === undefined) boundary = 'clamped';
+    if (!Number.isInteger(m) || m < 0) throw new Error('azimuthal order must be an integer ≥ 0 (got ' + m + ')');
+    if (!Number.isInteger(s) || s < 1) throw new Error('radial order must be an integer ≥ 1 (got ' + s + ')');
+    if (m >= BESSEL_ZEROS.length) throw new Error('azimuthal order ' + m + ' outside zero table (max ' + (BESSEL_ZEROS.length - 1) + ')');
+    var table = boundary === 'free' ? BESSEL_DERIVATIVE_ZEROS : BESSEL_ZEROS;
+    var row = table[m];
+    if (s > row.length) throw new Error('radial order ' + s + ' outside zero table for m=' + m + ' (max ' + row.length + ')');
+    return row[s - 1];
+  }
+
+  function factorial(k) {
+    var f = 1;
+    for (var i = 2; i <= k; i++) f *= i;
+    return f;
+  }
+
+  /**
+   * Bessel J_m(x) for integer m ≥ 0 via power series.
+   * Accurate to ~1e-12 for |x| ≲ 25 (covers every zero in the tables).
+   */
+  function besselJ(m, x) {
+    if (!Number.isInteger(m) || m < 0) throw new Error('order must be an integer ≥ 0 (got ' + m + ')');
+    var ax = Math.abs(x);
+    if (ax > 30) throw new Error('besselJ series not valid for |x| = ' + ax + ' > 30');
+    var half = x / 2;
+    var term = Math.pow(half, m) / factorial(m);
+    var sum = term;
+    var halfSq = half * half;
+    for (var k = 1; k < 80; k++) {
+      term *= -halfSq / (k * (k + m));
+      sum += term;
+      if (Math.abs(term) < 1e-16 * Math.max(1, Math.abs(sum))) break;
+    }
+    return sum;
+  }
+
+  /** Approximate normalization: max of |J_m| on the mode's k·r range. */
+  function circularPlateNorm(m, s, boundary) {
+    var k = circularWaveNumber(m, s, boundary);
+    if (m === 0) return 1; // J_0(0) = 1 is the global max.
+    var peak = 0;
+    for (var i = 0; i <= 64; i++) {
+      var v = Math.abs(besselJ(m, (k * i) / 64));
+      if (v > peak) peak = v;
+    }
+    return peak || 1;
+  }
+
+  /**
+   * Circular-plate field value at polar (r, θ), r ∈ [0, 1]:
+   * J_m(k·r)·cos(m·θ), normalized so max |value| ≈ 1 for the mode.
+   */
+  function circularPlateValue(r, t
