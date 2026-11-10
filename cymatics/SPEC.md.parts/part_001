@@ -10,3 +10,4 @@ re kept.
   tolerance semantics.
 - Python free-rim zeros use scipy `jnp_zeros` (more accurate than the
   hardcoded A&S tables), per the intake merge strategy.
+
