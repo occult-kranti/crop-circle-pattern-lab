@@ -1,0 +1,76 @@
+lished / n/a",
+        "geometry_class": mon["geometry_class"],
+        "rt60": mon.get("rt60_measured_s") or mon.get("rt60_modeled_s") or "not published",
+        "top_modes_modeled": top3,
+        "measured_resonances": meas,
+        "measured_unverified": mon.get("measured_unverified", []),
+        "vocal_range_overlap": _vocal_overlap(all_hz),
+        "sub_20hz_content": {"frequencies_hz": sub20,
+                             "label": "below pitch perception — felt as pressure/vibration, not heard"},
+        "intra_chamber_beats": _intra_beats(all_hz),
+        "provenance_summary": f"{n_meas} MEASURED entries, {n_mod} MODELED values, 0 DECODED links",
+        "mode_space": mode_space,
+        "caveats": mon.get("caveats", []),
+    }
+    if mon.get("measured_unverified"):
+        card["provenance_summary"] += (f", +{len(mon['measured_unverified'])} "
+                                       "MEASURED-unverified popular claims (tier 3, flag only)")
+    return card
+
+
+def build_monument(mon):
+    """Full analysis record for one monument entry."""
+    modeled = _modeled_modes(mon)
+    mode_space = _mode_space(mon, modeled)
+    card = sonic_signature_card(mon, modeled, mode_space)
+    return {
+        "id": mon["id"], "site": mon["site"], "chamber": mon["chamber"],
+        "n_fold": mon["n_fold"], "key_ratio": mon["key_ratio"],
+        "geometry_class": mon["geometry_class"],
+        "dims": mon.get("dims_m"), "dims_status": mon.get("dims_status"),
+        "modes_modeled": modeled,
+        "measured": mon["measured"],
+        "mode_space": mode_space,
+        "signature_card": card,
+    }
+
+
+def main():
+    records = [build_monument(m) for m in MONUMENTS]
+    out = {
+        "title": "Monument Acoustics Engine — 10 sites / 13 resonator entries",
+        "conventions": {
+            "c_m_per_s": C_AIR,
+            "provenance": "every Hz tagged MEASURED / MODELED / DECODED (sound spec §1); "
+                          "DECODED unused here (belongs to the cymatics engine)",
+            "tiers": TIER_LABELS,
+            "mode_space": "box mode -> circular-membrane (m,n) leading component, heuristic by "
+                          "symmetry class (physics spec §3); NOT an isomorphism",
+            "non_resonators": "Stonehenge and El Castillo are scatterers/diffractors: comb scales "
+                              "and chirp signatures only, no eigenmodes, no (m,n) (physics spec §1e/§1f/§4.1)",
+        },
+        "adjudication_110hz": {
+            "verdict": "'110 Hz' as a universal sacred constant is NOT supported. Measured primaries are "
+                       "95-120 Hz across UK/Irish chambers (site-dependent, as f=c/L requires); the Hypogeum's "
+                       "calibrated modes are 41/72/76 Hz (Till 2017); Debertolis's own data show 70/114 Hz. "
+                       "The clustering is expected physics for 1.5-12 m stone rooms, not evidence of design. "
+                       "Strongest defensible statement: chamber modes ~= male chant fundamentals (A2=110 Hz).",
+            "ground_truth_policy": "use only swept-sine/ISO-calibrated Hz as ground truth "
+                                   "(Jahn et al. 1996; Till 2017; Cox et al. 2020)",
+        },
+        "monuments": records,
+    }
+    path = os.path.join(RESULTS_DIR, "monuments.json")
+    with open(path, "w") as fh:
+        json.dump(out, fh, indent=1, ensure_ascii=False)
+    print(f"wrote {path}: {len(records)} resonator entries "
+          f"({len(set(m['site'] for m in MONUMENTS))} sites)")
+    for r in records:
+        ms = r["mode_space"]
+        print(f"  {r['id']:<24} n_fold={str(r['n_fold']):<4} "
+              f"mn={ms.get('mn')}  modeled={len(r['modes_modeled'])}  measured={len(r['measured'])}")
+    return out
+
+
+if __name__ == "__main__":
+    main()

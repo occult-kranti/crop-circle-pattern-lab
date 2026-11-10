@@ -1,0 +1,174 @@
+for V in sorted(dims["cavity_m3_range"], reverse=True):  # big V first = low f
+            modeled.append({"kind": f"niche Helmholtz, V={V} m^3",
+                            "f_hz": round(helmholtz(A, V), 1),
+                            "formula": "(c/2pi)*sqrt(A/(V*L_eff)), L_eff=1.46*sqrt(A/pi)",
+                            "provenance": "MODELED"})
+        return modeled
+
+    if mid == "newgrange_passage":
+        L = dims["length_m"]
+        modeled.append({"kind": "closed-open pipe quarter-wave",
+                        "f_hz": round(C_AIR / (4.0 * (L + 0.6)), 2),
+                        "formula": "c/(4*19.6)", "provenance": "MODELED"})
+        modeled.append({"kind": "chamber+passage Helmholtz (V~150 m^3, neck 19 m x 1.4 m^2)",
+                        "f_hz": round(helmholtz(1.4, 150.0, L_eff=19.0), 2),
+                        "formula": "(c/2pi)*sqrt(A/(V*L_neck))", "provenance": "MODELED"})
+        return modeled
+
+    if mid == "stonehenge":
+        R = dims["circle_radius_m"]; d = dims["sarsen_spacing_m"]
+        modeled.append({"kind": "first Bragg/stop-band scale of 30-sarsen array",
+                        "f_hz": round(comb_scale(d), 1), "formula": "c/(2d), d=2piR/30=3.14 m",
+                        "provenance": "MODELED"})
+        g_lo, g_hi = dims["slot_gaps_m"]
+        modeled.append({"kind": "slot-gap scattering band",
+                        "f_hz": f"{round(C_AIR/g_hi)}-{round(C_AIR/g_lo)}",
+                        "formula": "c/gap, gap 1.0-1.5 m", "provenance": "MODELED"})
+        modeled.append({"kind": "cross-circle echo repetition pitch",
+                        "f_hz": round(C_AIR / (2 * R), 1), "formula": "c/(2R) (delay 2R/c ~ 87 ms)",
+                        "provenance": "MODELED"})
+        modeled.append({"kind": "whispering-gallery creeping waves (infrasonic)",
+                        "f_hz": "3.64*n", "formula": "n*c/(2piR)", "provenance": "MODELED"})
+        return modeled
+
+    if mid == "el_castillo":
+        tau_ms, f0 = chirp_comb(dims["tread_m"], dims["riser_m"])
+        modeled.append({"kind": "staircase reflection-grating comb peak",
+                        "f_hz": round(f0), "formula": "1/tau, tau=(tread*cos+riser*sin)/c",
+                        "tau_ms": round(tau_ms, 3), "provenance": "MODELED"})
+        modeled.append({"kind": "dominant chirp band (descending)",
+                        "f_hz": "800-1300, descending ~30%",
+                        "formula": "geometry drift along staircase glides instantaneous period",
+                        "provenance": "MODELED"})
+        return modeled
+
+    if mid == "chavin_galleries":
+        for W in dims["gallery_width_m_assumed"]:
+            modeled.append({"kind": f"gallery waveguide transverse cutoff, W={W} m (assumed)",
+                            "f_hz": round(C_AIR / (2 * W), 1), "formula": "c/2W",
+                            "provenance": "MODELED (assumed dims)"})
+        return modeled
+
+    # generic rectangular chamber — discrete-mode regime only (f_s ~ 250-580 Hz at
+    # these sites, so <=130 Hz covers fundamentals + the 95-120 Hz megalithic band)
+    if all(k in dims for k in ("Lx", "Ly", "Lz")):
+        return room_modes(dims["Lx"], dims["Ly"], dims["Lz"], n_max=10, f_max=130.0)
+
+    return modeled
+
+
+def _mode_space(mon, modeled):
+    """Map the monument's dominant acoustic mode into membrane (m, n) space.
+
+    Physics spec §3 convention + §3 per-site table. Open-air diffractors
+    (Stonehenge, El Castillo) and geometry-only items get None by design —
+    assigning them membrane modes would be overfitting (physics spec §4.1).
+    """
+    mid = mon["id"]
+    table = {  # per-site dominant-mode mapping (physics spec §3 table)
+        "kings_chamber": {"mn": [1, 1], "dominant_f_hz": 16.38,
+                          "floor_A_m2": 10.47 * 5.234,
+                          "comment": "quasi-1D harmonic ladder of 16.4 Hz; 2:1-plan doublet at 32.8 Hz is the fingerprint"},
+        "kc_sarcophagus": {"mn": [0, 1], "dominant_f_hz": 60.0,
+                           "floor_A_m2": 1.996 * 0.680,
+                           "comment": "Helmholtz/quarter-wave: (0,1) breathing -> (1,1) at the 86 Hz half-wave"},
+        "hypogeum_oracle_room": {"mn": [2, 1], "dominant_f_hz": 114.0,
+                                 "floor_A_m2": 3.5 * 3.0,
+                                 "comment": "room mode (2,1)-class at ~114 Hz + niche (0,1) at ~70 Hz (superposition)"},
+        "hypogeum_niche": {"mn": [0, 1], "dominant_f_hz": 67.0,
+                           "floor_A_m2": 0.39,
+                           "comment": "Helmholtz/port mode = uniform pressure = (0,1) breathing"},
+        "newgrange_chamber": {"mn": [1, 1], "dominant_f_hz": 26.4,
+                              "floor_A_m2": 6.5 * 5.8,
+                              "comment": "fundamental axial (1,0,0); measured 110 Hz ~ (4,1,0) = (2,2)-class"},
+        "newgrange_passage": {"mn": [0, 1], "dominant_f_hz": 1.2,
+                              "floor_A_m2": 19.0 * 1.2,
+                              "comment": "port/Helmholtz + quarter-wave pipe; infrasonic"},
+        "chavin_galleries": {"mn": [1, 1], "dominant_f_hz": 171.5,
+                             "floor_A_m2": None,
+                             "comment": "waveguide axial class (assumed 1.0 m width); network resonator in reality"},
+        "waylands_smithy": {"mn": [1, 1], "dominant_f_hz": 112.0,
+                            "floor_A_m2": None,
+                            "comment": "low-order axial chamber modes; dims not in specs"},
+        # explicit non-resonators / geometry-only:
+        "stonehenge": None, "el_castillo": None,
+        "chartres_rose": None, "borobudur": None, "angkor_wat": None,
+    }
+    entry = table.get(mid)
+    if entry is None:
+        return {"mn": None, "reason": "not a confined resonator (open-air diffractor or geometric item); "
+                                      "no (m,n) assigned by design (physics spec §4.1)"}
+    m, n = entry["mn"]
+    z = float(BESSEL_TABLE[m][n - 1])
+    out = {"mn": [m, n], "bessel_zero": round(z, 4),
+           "dominant_mode_f_hz": entry["dominant_f_hz"],
+           "comment": entry["comment"]}
+    if entry["floor_A_m2"]:
+        R = effective_radius(entry["floor_A_m2"])
+        out["effective_R_m"] = round(R, 2)
+        out["membrane_f01_at_R_hz"] = round(membrane_f01(R), 1)
+    return out
+
+
+# ---------------------------------------------------------------------------
+# 4. Sonic signature cards (sound spec §4)
+# ---------------------------------------------------------------------------
+
+def _vocal_overlap(freqs):
+    def in_rng(f, rng):
+        return isinstance(f, (int, float)) and rng[0] <= f <= rng[1]
+    male = [f for f in freqs if in_rng(f, MALE_RANGE)]
+    female = [f for f in freqs if in_rng(f, FEMALE_RANGE)]
+    return {"male_82_330_hz": male, "female_165_523_hz": female}
+
+
+def _intra_beats(freqs, top=3):
+    """Intra-chamber beats: top mode-pair Δf + perceptual category (card spec)."""
+    fs = sorted(f for f in freqs if isinstance(f, (int, float)))
+    pairs = []
+    for i in range(len(fs)):
+        for j in range(i + 1, len(fs)):
+            df = fs[j] - fs[i]
+            pairs.append({"f1_hz": round(fs[i], 2), "f2_hz": round(fs[j], 2),
+                          "delta_f_hz": round(df, 2),
+                          "category": notes.beat_category(df)})
+    pairs.sort(key=lambda p: p["delta_f_hz"])
+    return pairs[:top]
+
+
+def sonic_signature_card(mon, modeled, mode_space):
+    """One compact card per resonator (sound spec §4). All Hz carry provenance."""
+    modeled_hz = [m for m in modeled if isinstance(m.get("f_hz"), (int, float))]
+    measured_hz = [m for m in mon["measured"] if isinstance(m.get("f_hz"), (int, float))]
+    all_hz = [m["f_hz"] for m in modeled_hz] + [m["f_hz"] for m in measured_hz]
+
+    top3 = []
+    for m in modeled_hz[:3]:
+        row = {"type": m.get("type", m.get("kind", "")),
+               "indices": m.get("indices"),
+               "f_hz": m["f_hz"], "provenance": "MODELED"}
+        row.update(_note(m["f_hz"]))
+        top3.append(row)
+
+    meas = []
+    for m in mon["measured"]:
+        row = {"f_hz": m.get("f_hz"), "metric": m.get("metric"),
+               "source": m["source"], "method": m.get("method"),
+               "tier": m.get("tier"), "tier_label": TIER_LABELS.get(m.get("tier")),
+               "provenance": m["provenance"]}
+        if isinstance(m.get("f_hz"), (int, float)):
+            row.update(_note(m["f_hz"]))
+        meas.append(row)
+
+    sub20 = [f for f in all_hz if f < 20.0]
+    dims = mon.get("dims_m") or {}
+    vol = None
+    if all(k in dims for k in ("Lx", "Ly", "Lz")):
+        vol = round(dims["Lx"] * dims["Ly"] * dims["Lz"], 1)
+
+    n_meas = len(meas)
+    n_mod = len(modeled)
+    card = {
+        "title": f"Sonic Signature Card — {mon['site']}, {mon['chamber']}",
+        "location_date_material": f"{mon['location']} / {mon['date']} / {mon['material']}",
+        "dims": dims, "volume_m3": vol if vol else "not pub
