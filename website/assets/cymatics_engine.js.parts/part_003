@@ -1,0 +1,229 @@
+/* exp(−t²/2σ²) around the zero set.                                        */
+  /* ------------------------------------------------------------------------ */
+
+  CYM.MAX_DRAW_PARTICLES = 40000;
+
+  /**
+   * Render a frame into a fresh RGBA Uint8ClampedArray (width×height×4).
+   * params: {field, circular, mode:'lines'|'sand', colormap, threshold=0.08,
+   *          contrast=0.25, particles, maxParticles, energy=0}.
+   * Guaranteed NaN-free for any input, including 0×0 and zero particles.
+   */
+  function renderToBuffer(width, height, params) {
+    var w = Math.max(0, Math.floor(width));
+    var h = Math.max(0, Math.floor(height));
+    var out = new Uint8ClampedArray(w * h * 4);
+    if (w === 0 || h === 0) return out;
+
+    var threshold = Math.min(0.5, Math.max(0, params.threshold !== undefined ? params.threshold : 0.08));
+    var contrast = params.contrast !== undefined ? params.contrast : 0.25;
+    var energy = Math.min(1, Math.max(0, params.energy !== undefined ? params.energy : 0));
+    var field = params.field;
+    var circular = params.circular;
+
+    var norm = new Float32Array(w * h);
+    var max = 0;
+    for (var iy = 0; iy < h; iy++) {
+      var y = (iy + 0.5) / h;
+      for (var ix = 0; ix < w; ix++) {
+        var x = (ix + 0.5) / w;
+        if (circular) {
+          var dx = x - 0.5, dy = y - 0.5;
+          if (dx * dx + dy * dy > 0.25) {
+            norm[iy * w + ix] = -1; // outside the plate
+            continue;
+          }
+        }
+        var v = Math.abs(field(x, y));
+        if (!Number.isFinite(v)) v = 0;
+        norm[iy * w + ix] = v;
+        if (v > max) max = v;
+      }
+    }
+    if (!(max > 0)) max = 1;
+
+    var invMax = 1 / max;
+    var sigma = Math.max(1e-4, threshold * 0.5);
+    var inv2s2 = 1 / (2 * sigma * sigma);
+
+    for (var i = 0; i < w * h; i++) {
+      var nv = norm[i];
+      var shade;
+      if (nv < 0) {
+        shade = 0; // outside circular plate → background end of the map
+      } else {
+        var t = nv * invMax;
+        var fieldShade = Math.pow(t, contrast) * 0.3;
+        var line = Math.exp(-t * t * inv2s2);
+        shade = params.mode === 'lines' ? Math.max(fieldShade, line) : fieldShade * 0.7;
+        shade *= 1 + energy * 0.35;
+        if (!Number.isFinite(shade)) shade = 0;
+      }
+      var rgb = sampleColormap(params.colormap, shade);
+      var o = i * 4;
+      out[o] = rgb[0];
+      out[o + 1] = rgb[1];
+      out[o + 2] = rgb[2];
+      out[o + 3] = 255;
+    }
+
+    // Sand pass: grains over the dimmed field. For 'lab-paper' the grains are
+    // drawn in the site accent #f54001; other maps use their bright stop.
+    if (params.mode === 'sand' && params.particles && params.particles.count > 0) {
+      var p = params.particles;
+      var cap = Math.max(1, params.maxParticles !== undefined ? params.maxParticles : CYM.MAX_DRAW_PARTICLES);
+      var stride = Math.max(1, Math.ceil(p.count / cap));
+      var grain = Math.max(1, Math.round(Math.min(w, h) / 256));
+      var gc = params.grainColor ||
+        (params.colormap === 'lab-paper' || params.colormap === undefined
+          ? CYM.PALETTE.accent
+          : sampleColormap(params.colormap, 0.92 + energy * 0.08));
+      for (var pi = 0; pi < p.count; pi += stride) {
+        var px = p.x[pi], py = p.y[pi];
+        if (!Number.isFinite(px) || !Number.isFinite(py)) continue;
+        var cx = Math.floor(px * w);
+        var cy = Math.floor(py * h);
+        for (var gy = 0; gy < grain; gy++) {
+          for (var gx = 0; gx < grain; gx++) {
+            var xx = cx + gx, yy = cy + gy;
+            if (xx < 0 || xx >= w || yy < 0 || yy >= h) continue;
+            var oo = (yy * w + xx) * 4;
+            out[oo] = gc[0];
+            out[oo + 1] = gc[1];
+            out[oo + 2] = gc[2];
+            out[oo + 3] = 255;
+          }
+        }
+      }
+    }
+
+    return out;
+  }
+
+  CYM.renderToBuffer = renderToBuffer;
+
+  /** Canvas wrapper: paint a buffer via putImageData (no-op guards). */
+  function renderFrame(ctx, width, height, params) {
+    if (!ctx) return;
+    var w = Math.max(0, Math.floor(width));
+    var h = Math.max(0, Math.floor(height));
+    if (w === 0 || h === 0) {
+      ctx.clearRect(0, 0, Math.max(0, width), Math.max(0, height));
+      return;
+    }
+    var buf = renderToBuffer(w, h, params);
+    var img = ctx.createImageData(w, h);
+    img.data.set(buf);
+    ctx.putImageData(img, 0, 0);
+  }
+
+  CYM.renderFrame = renderFrame;
+
+  /* ------------------------------------------------------------------------ */
+  /* Field factories                                                          */
+  /* ------------------------------------------------------------------------ */
+
+  /**
+   * Square field from opts: driven (freq), sin-mix (useMix / fractional /
+   * explicit mixA|mixB), or Bourke cos-form single mode (default).
+   * Returns {field, kind, modes?}.
+   */
+  function squareFieldFromOpts(opts) {
+    if (Number.isFinite(opts.freq) && opts.freq > 0) {
+      var plate = typeof opts.plate === 'string' ? virtualPlateById(opts.plate)
+        : (opts.plate || VIRTUAL_PLATES[0]);
+      var modes = drivenSquareModes(opts.freq, plate, opts.gamma,
+        opts.maxOrder, opts.limit);
+      return { field: drivenSquareField(modes), kind: 'driven', modes: modes, plate: plate };
+    }
+    var n = opts.p !== undefined ? opts.p : (opts.n !== undefined ? opts.n : 1);
+    var m = opts.q !== undefined ? opts.q : (opts.m !== undefined ? opts.m : 1);
+    var a = opts.mixA !== undefined ? opts.mixA : 1;
+    var b = opts.mixB !== undefined ? opts.mixB : -1;
+    if (opts.useMix || !Number.isInteger(n) || !Number.isInteger(m) ||
+        opts.mixA !== undefined || opts.mixB !== undefined) {
+      if (isTrivialMix(n, m, a, b)) {
+        throw new Error('trivial mix: the field is identically zero');
+      }
+      return { field: function (x, y) { return squarePlateValueMix(x, y, n, m, a, b); }, kind: 'mix', n: n, m: m };
+    }
+    var sign = opts.sign === -1 ? -1 : 1;
+    return { field: function (x, y) { return squarePlateValue(x, y, n, m, sign); }, kind: 'cos', n: n, m: m, sign: sign };
+  }
+
+  /** Single circular mode field (x, y ∈ [0,1]²), disk radius 0.5. */
+  function circularFieldFromOpts(opts) {
+    var m = opts.n !== undefined ? opts.n : 0;   // azimuthal order
+    var s = opts.m !== undefined ? opts.m : 1;   // radial order
+    var rim = opts.rim || opts.boundary || 'clamped';
+    var k = circularWaveNumber(m, s, rim);
+    var norm = circularPlateNorm(m, s, rim);
+    return {
+      field: function (x, y) {
+        var dx = x - 0.5, dy = y - 0.5;
+        var r = Math.sqrt(dx * dx + dy * dy) * 2;
+        if (r > 1) return 0;
+        return (besselJ(m, k * r) * Math.cos(m * Math.atan2(dy, dx))) / norm;
+      },
+      m: m, s: s, rim: rim, k: k,
+    };
+  }
+
+  /** Superposed circular field from modes:[{n,m,w}] (n azimuthal, m radial). */
+  function circularSuperpositionField(modes, rim) {
+    var terms = modes.map(function (md) {
+      return {
+        w: md.w !== undefined ? md.w : 1,
+        m: md.n !== undefined ? md.n : 0,
+        k: circularWaveNumber(md.n !== undefined ? md.n : 0, md.m, rim),
+        norm: circularPlateNorm(md.n !== undefined ? md.n : 0, md.m, rim),
+      };
+    });
+    return function (x, y) {
+      var dx = x - 0.5, dy = y - 0.5;
+      var r = Math.sqrt(dx * dx + dy * dy) * 2;
+      if (r > 1) return 0;
+      var theta = Math.atan2(dy, dx);
+      var v = 0;
+      for (var i = 0; i < terms.length; i++) {
+        var t = terms[i];
+        v += (t.w * besselJ(t.m, t.k * r) * Math.cos(t.m * theta)) / t.norm;
+      }
+      return v;
+    };
+  }
+
+  /* ------------------------------------------------------------------------ */
+  /* Public canvas API                                                        */
+  /* ------------------------------------------------------------------------ */
+
+  function canvasSize(canvas, res) {
+    if (res !== undefined) {
+      canvas.width = Math.max(1, Math.floor(res));
+      canvas.height = canvas.width;
+    }
+    return { w: canvas.width | 0, h: canvas.height | 0 };
+  }
+
+  /**
+   * Render a square Chladni plate.
+   * opts: {p, q, sign=+1} single Bourke cos-form mode;
+   *       {p, q, mixA, mixB} or fractional p/q or useMix → sin-form mix;
+   *       {freq, gamma, plate} → Lorentzian driven superposition
+   *       (gamma defaults to 6% of freq, clamped ≥ 1e-6; plate defaults to
+   *       'steel-square-30').
+   * Render opts: {res, mode='lines'|'sand', colormap='lab-paper', threshold,
+   *               contrast, energy, particles, seed, sandSteps, dt}.
+   * Returns {kind, modes?, info}.
+   */
+  function renderSquare(canvas, opts) {
+    opts = opts || {};
+    var size = canvasSize(canvas, opts.res);
+    var built = squareFieldFromOpts(opts);
+    var params = {
+      field: built.field, circular: false,
+      mode: opts.mode || 'lines',
+      colormap: opts.colormap || 'lab-paper',
+      threshold: opts.threshold, contrast: opts.contrast, energy: opts.energy,
+    };
+    if (params.mode === 
