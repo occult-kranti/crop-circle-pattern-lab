@@ -22,6 +22,12 @@ A data-driven investigation of the crop-circle phenomenon — dataset, statistic
 - **Cymatics:** spiral form constant and 1990 dumbbell pictogram decode to the *identical* membrane mode (1,1); honeycomb and 2012 3-D cubes both (6,4).
 - **Comparison:** 86.8% of formations have symmetry n ≤ 6 — the same wallpaper families as V1-cortex hallucination geometry (Bressloff–Cowan). Divergences (legible bit grids, exact fractals, n = 10–44 symmetry) mark deliberate human design.
 
+
+## Live on GitHub Pages
+
+**https://occult-kranti.github.io/crop-circle-pattern-lab/** → the full website (root `index.html` redirects to `website/`).
+Pages serves the repo as-is: `website/assets/boot.js` assembles split (`*.parts`) JS and base64 (`*.b64`) images client-side, so no build step is needed on Pages or localhost. For a local run, `bash assemble_parts.sh && bash decode_b64.sh` then `cd website && python -m http.server` is the fast path (whole files), but the boot loader works either way.
+
 ## Honesty notes
 
 The formations dataset is **curated** (notable formations, not a census); every aggregate count is flagged hard data / estimate / media claim. The cymatic decoding is a modeling exercise — the geometry→mode inversion is fundamentally ambiguous, and absolute Hz depends on the assumed resonator (ratios are reported as primary). Shared geometry with DMT/sacred motifs reflects shared human neuroarchitecture, not shared cosmic sources.
