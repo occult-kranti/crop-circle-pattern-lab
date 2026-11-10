@@ -1,0 +1,449 @@
+akdown": {
+     "n_fold": 1.0,
+     "mode": 0.5833,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0,
+     "log_size": 0.7521
+    }
+   },
+   {
+    "partner": "Hackpen Hill 3-D cubes",
+    "partner_domain": "crop",
+    "D": 0.6491,
+    "breakdown": {
+     "n_fold": 1.0,
+     "mode": 0.7708,
+     "fd": 0.8842,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   }
+  ],
+  "Ħal Saflieni Hypogeum — Oracle niche ('megaphone')": [
+   {
+    "partner": "Punchbowl quintuplet",
+    "partner_domain": "crop",
+    "D": 0.5347,
+    "breakdown": {
+     "n_fold": 1.0,
+     "mode": 0.75,
+     "fd": 0.3404,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Cheesefoot Head first pictogram",
+    "partner_domain": "crop",
+    "D": 0.6326,
+    "breakdown": {
+     "n_fold": 1.0,
+     "mode": 0.75,
+     "fd": 0.8294,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Crabwood alien face & disc",
+    "partner_domain": "crop",
+    "D": 0.6526,
+    "breakdown": {
+     "n_fold": 1.0,
+     "mode": 0.7344,
+     "fd": 0.8294,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0,
+     "log_size": 1.0152
+    }
+   },
+   {
+    "partner": "Silbury Hill Koch I snowflake",
+    "partner_domain": "crop",
+    "D": 0.6534,
+    "breakdown": {
+     "n_fold": 1.0,
+     "mode": 0.75,
+     "fd": 0.9335,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Barbury Castle tetrahedron",
+    "partner_domain": "crop",
+    "D": 0.6956,
+    "breakdown": {
+     "n_fold": 1.0,
+     "mode": 0.75,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0,
+     "log_size": 1.1298
+    }
+   }
+  ],
+  "Newgrange — Cruciform chamber": [
+   {
+    "partner": "Cheesefoot Head first pictogram",
+    "partner_domain": "crop",
+    "D": 0.1515,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.0,
+     "fd": 0.7574,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Punchbowl quintuplet",
+    "partner_domain": "crop",
+    "D": 0.2481,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.625,
+     "fd": 0.4072,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Crabwood alien face & disc",
+    "partner_domain": "crop",
+    "D": 0.4193,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.9844,
+     "fd": 0.7574,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0,
+     "log_size": 0.4986
+    }
+   },
+   {
+    "partner": "Silbury Hill Koch I snowflake",
+    "partner_domain": "crop",
+    "D": 0.4333,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "mode": 0.6667,
+     "fd": 0.9088,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Barbury Castle tetrahedron",
+    "partner_domain": "crop",
+    "D": 0.4408,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "mode": 0.5833,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0,
+     "log_size": 0.6132
+    }
+   }
+  ],
+  "Newgrange — Passage (19 m waveguide/neck)": [
+   {
+    "partner": "Crabwood alien face & disc",
+    "partner_domain": "crop",
+    "D": 0.3083,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.7344,
+     "fd": 0.5791,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0,
+     "log_size": 0.258
+    }
+   },
+   {
+    "partner": "Cheesefoot Head first pictogram",
+    "partner_domain": "crop",
+    "D": 0.3158,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.75,
+     "fd": 0.5791,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Punchbowl quintuplet",
+    "partner_domain": "crop",
+    "D": 0.3451,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.75,
+     "fd": 0.7254,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Silbury Hill Koch I snowflake",
+    "partner_domain": "crop",
+    "D": 0.4639,
+    "breakdown": {
+     "n_fold": 0.39,
+     "mode": 0.75,
+     "fd": 0.7993,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Barbury Castle tetrahedron",
+    "partner_domain": "crop",
+    "D": 0.4675,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "mode": 0.75,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0,
+     "log_size": 0.3726
+    }
+   }
+  ],
+  "Stonehenge — Sarsen circle (open-air — NOT a resonator)": [],
+  "El Castillo, Chichén Itzá — Main staircase (reflection grating — NOT a cavity)": [],
+  "Chavín de Huántar — Underground galleries (Lanzón Gallery network)": [
+   {
+    "partner": "Cheesefoot Head first pictogram",
+    "partner_domain": "crop",
+    "D": 0.0,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.0,
+     "fd": 0.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Crabwood alien face & disc",
+    "partner_domain": "crop",
+    "D": 0.2625,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.9844,
+     "fd": 0.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Punchbowl quintuplet",
+    "partner_domain": "crop",
+    "D": 0.3667,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.625,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Barbury Castle tetrahedron",
+    "partner_domain": "crop",
+    "D": 0.4293,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "mode": 0.5833,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Silbury Hill Koch I snowflake",
+    "partner_domain": "crop",
+    "D": 0.4818,
+    "breakdown": {
+     "n_fold": 0.39,
+     "mode": 0.6667,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   }
+  ],
+  "Chartres Cathedral — West rose window (geometric item — no resonator)": [
+   {
+    "partner": "Flower of Life",
+    "partner_domain": "motif",
+    "D": 0.3018,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.4083,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Seed of Life",
+    "partner_domain": "motif",
+    "D": 0.3018,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.4083,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Metatron's Cube",
+    "partner_domain": "motif",
+    "D": 0.3415,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.0,
+     "fd": 0.9271,
+     "is_spiral": 0,
+     "is_grid": 1,
+     "is_concentric": 1,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Milk Hill Koch II fractal",
+    "partner_domain": "crop",
+    "D": 0.4298,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.7009,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 1,
+     "chiral": 0,
+     "log_size": 0.3449
+    }
+   },
+   {
+    "partner": "Silbury Hill Koch I snowflake",
+    "partner_domain": "crop",
+    "D": 0.4359,
+    "breakdown": {
+     "n_fold": 0.0,
+     "ratio": 0.7009,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 1,
+     "chiral": 0
+    }
+   }
+  ],
+  "Borobudur — Whole monument (geometric item — no resonator)": [],
+  "Angkor Wat — Temple enclosure (geometric item — no resonator)": [],
+  "Wayland's Smithy — East + West chambers (transepted gallery grave)": [
+   {
+    "partner": "Cheesefoot Head first pictogram",
+    "partner_domain": "crop",
+    "D": 0.0,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.0,
+     "fd": 0.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Crabwood alien face & disc",
+    "partner_domain": "crop",
+    "D": 0.2625,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.9844,
+     "fd": 0.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Punchbowl quintuplet",
+    "partner_domain": "crop",
+    "D": 0.3667,
+    "breakdown": {
+     "n_fold": 0.0,
+     "mode": 0.625,
+     "fd": 1.0,
+     "is_spiral": 0,
+     "is_grid": 0,
+     "is_concentric": 0,
+     "chiral": 0
+    }
+   },
+   {
+    "partner": "Barbury Castle tetrahedron",
+    "partner_domain": "crop",
+    "D": 0.4293,
+    "breakdown": {
+     "n_fold": 0.2767,
+     "mode": 0.5833,
+     "fd": 1.0,
+    
