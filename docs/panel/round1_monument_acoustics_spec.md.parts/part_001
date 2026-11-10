@@ -1,0 +1,92 @@
+oss-match must be expressed as one of these characteristic scales:
+  - Sarsen spacing d = 2πR/N ≈ 3.14 m (30 uprights, R ≈ 15 m) → first Bragg/stop-band scale **f ~ c/2d ≈ 55 Hz**; slot gaps (~1–1.5 m) scatter at c/gap ≈ 230–340 Hz.
+  - Cross-circle echo: delay 2R/c ≈ 87 ms → **repetition pitch ≈ 11.4 Hz** (perceived as roughness, not pitch).
+  - Whispering-gallery creeping waves along inner face: f_n = n·c/(2πR) = **3.64·n Hz** — infrasonic, physically present but irrelevant to ritual audio.
+  - Bluestones ring when struck (lithophone behavior, kHz structural modes) — real, documented.
+- Deliverable for your engine: treat Stonehenge as a **comb filter + 0.6 s reverb**, not an (m,n) mode source. If a crop decode maps cleanly to "Stonehenge", be suspicious.
+
+### 1f. Chichén Itzá, El Castillo — chirped echo (reflection grating)
+
+**Mechanism (Lubman 1998, ASA/JASA 104(3)S:1763; Declercq et al., JASA 116(6):3328, 2004; Bilsen, JASA 120(2):594, 2006):** a handclap (broadband ~2 ms pulse) in front of a staircase reflects off ~91 periodic steps (tread ≈ 0.26 m, riser ≈ 0.24 m, slope ≈ 43°). Adjacent-step reflections arrive with near-constant incremental delay
+
+  τ ≈ (tread·cos θ + riser·sin θ)/c ≈ 1.0–1.1 ms (θ ≈ 45°) → comb peaks at **f ≈ 1/τ ≈ 930–1000 Hz**,
+
+and because the viewing/incidence geometry drifts along the staircase (higher steps have slightly different path increments), the instantaneous period glides → a **descending chirp**. Measured values:
+- **Lubman: chirp ≈ 1310 → 922 Hz over >100 ms** (matches a quetzal call's pitch glide within ~3 %);
+- **Bilsen: repetition-pitch glide 796 → 471 Hz over 177 ms** (psychoacoustic pitch, lower than the spectral comb).
+So your "~1–1.5 kHz" is roughly right for the spectral peak; the *perceived* pitch is lower. Dominant band to use: **0.8–1.3 kHz, descending ~30 %**.
+- **Not a resonance** — it's a transient diffraction-grating/comb-filter signature; there is no cavity, no (m,n). Any tall periodic staircase does this (Declercq's point: likely incidental, not designed; Lubman argues intent. Physics is settled, intent is not).
+
+---
+
+## 2. The 110 Hz claim — what was actually measured, and where it stands
+
+**Measurement history:**
+1. **Jahn, Devereux & Ibison (1996, JASA 99(2):649–658):** swept-tone measurements in 6 megalithic chambers (Newgrange, Wayland's Smithy, Cairn L Loughcrew, etc.); all showed **strong primary resonances in 95–120 Hz**. Peer-reviewed; method sound.
+2. **Watson & Keating (1999, Antiquity 73):** Newgrange standing waves mapped at ~110 Hz (consistent with box mode (4,1,0) ≈ 109.6 Hz, §1d).
+3. **Debertolis, Coimbra & Eneix (2015, J. Anthropology & Archaeology 3(1):59–79):** Hypogeum Oracle Room — **double resonance 68–70 Hz and 114 Hz**, excited by male voice "ooh", Irish frame drum, friction drum; conch shell (peak ~290 Hz) did *not* excite it. Explicitly: "a bit different from the 110/111 Hz initially expected". **Method caveat (flagged by Till): uncalibrated sources (voice/drums) → not strictly repeatable; amplitude/frequency content indeterminate.**
+4. **Till (2017, Antiquity 91(355)):** calibrated independent study of the same Hypogeum (same day, after Debertolis) — confirms strong resonance behavior and long reverberation (reported decays of **7–8 s**), qualifies the earlier work.
+5. **Wolfe, Swanson & Till (arXiv:2010.13697, 2020):** whole-complex spectrum analysis arguing the Hypogeum's chambers appear jointly tuned.
+6. **Cook, Pajot & Leuchter (2008, Time and Mind):** EEG study, 30 subjects, tones 90/100/110/120/130 Hz; at 110 Hz: reduced left-temporal activity + rightward prefrontal shift. **Small sample, unreplicated in 17+ years, humanities-adjacent venue → Tier 3 (suggestive only).**
+
+**Assessment:**
+- "110 Hz" as a universal sacred constant is **not supported**: measured primaries are 95–120 Hz across sites (site-dependent, as physics requires — f ∝ c/L), and the Hypogeum itself measured **70 + 114 Hz**, not 110.
+- The clustering itself is **expected physics, not evidence of design**: any stone room of characteristic size 1.5–12 m has strong low-order modes in 95–120 Hz. Stone chambers are also unusually live (RT60 5–12 s), so these modes are prominent. Intentionality cannot be inferred from the resonance alone — only from design convergence (construction choices that *select* the mode, e.g., a niche tuned as a Helmholtz element).
+- **Male-voice link is real and quantitative:** 110 Hz = A2; adult male speech fundamental ≈ 85–180 Hz; baritone chant comfortably spans 98–147 Hz; a trained voice reaches 70 Hz. So male chant *does* sit on these modes; female voices (≈165–255 Hz) fall between them — this matches the documented "works for male voices only" effect at the Hypogeum. This is the strongest defensible statement: **chamber modes ≈ male chant fundamentals**, whether by design or by exploitation.
+
+---
+
+## 3. Mode-space mapping (rectangular → circular membrane (m,n))
+
+**Convention** (heuristic by symmetry class — not an isomorphism; a box mode is a *superposition* of circular harmonics, this table gives the leading component):
+
+| Box mode pattern | nodal structure | membrane analog |
+|---|---|---|
+| Helmholtz / port mode | uniform pressure | **(0,1) breathing** |
+| axial (1,0,0) & permutations | 1 nodal plane | **(1,1) dipole** |
+| axial (2,0,0) | 2 parallel planes | **(1,2)** |
+| axial (n,0,0) | n parallel planes | **(1,⌈n/2⌉+… )** → use (1,2) for n=2–3, (1,3) for n=4–5 |
+| tangential (1,1,0) & perms | crossed planes | **(2,1) quadrupole** |
+| tangential (2,1,0) | 3-plane grid, odd parity | **(3,1)** |
+| tangential (2,2,0) | 2×2 grid | (0,2)⊕(4,1) superposition — flag as mixed |
+| oblique (1,1,1) | 3 crossed planes | **(3,1) / octupole class** |
+
+**Clamped circular membrane reference** (f_mn = z_mn·c/(2πR), z_mn = n-th zero of J_m):
+
+| (m,n) | z_mn | f/f_01 |
+|---|---|---|
+| (0,1) | 2.405 | 1.000 |
+| (1,1) | 3.832 | 1.593 |
+| (2,1) | 5.136 | 2.136 |
+| (0,2) | 5.520 | 2.295 |
+| (3,1) | 6.380 | 2.653 |
+| (1,2) | 7.016 | 2.917 |
+| (4,1) | 7.588 | 3.155 |
+| (2,2) | 8.417 | 3.500 |
+| (0,3) | 8.654 | 3.598 |
+| (3,2) | 9.761 | 4.059 |
+
+**Per-site dominant modes in mode-space:**
+
+| Site | dominant mode(s) | f [Hz] | (m,n) | effective R = √(A_floor/π) | membrane f_01 at that R |
+|---|---|---|---|---|---|
+| King's Chamber | (1,0,0) axial | 16.4 | (1,1) | 4.18 m | 31.4 Hz |
+| KC sarcophagus | Helmholtz/quarter-wave | 60–98 | (0,1)→(1,1) | 0.66 m | 199.7 Hz |
+| Oracle Room (meas.) | room + niche | 70, 114 | (0,1) niche ⊕ (2,1)-class room | ~1.8 m (if 3.5×3) | 71.8 Hz |
+| Newgrange | (1,0,0), and measured 110 ≈ (4,1,0) | 26.4; 109.6 | (1,1); (2,2)-class | 3.46 m | 37.9 Hz |
+| Stonehenge | — (no modes; comb/reverb) | — | — | — | — |
+| El Castillo | — (chirp comb 0.8–1.3 kHz) | — | — | — | — |
+
+Caveat for cross-matching: the King's Chamber 2:1 plan makes its spectrum quasi-1D (harmonics of 16.4 Hz dominate: 16.4, 32.8, 49.1, 65.5, 81.9, 98.3, **114.7**…) — a crop decode showing an *integer harmonic ladder* matches KC; one showing *Bessel ratios* (1.59, 2.14, 2.30, 2.65…) matches a true circular geometry, which none of these rooms has.
+
+---
+
+## 4. Stress-test caveats (for your whitepaper's honesty section)
+
+1. **Open-air sites are not resonators.** Stonehenge/El Castillo: no confinement ⇒ no eigenmodes ⇒ no (m,n). Their signatures are comb/repetition-pitch + short reverb. Any engine that assigns them membrane modes is overfitting.
+2. **The "megaphone effect" is misnamed.** The Oracle niche is a **coupled Helmholtz resonator** (est. 50–91 Hz): by reciprocity it both *collects* sound into the chamber and *radiates* chamber modes outward; it amplifies only near its own resonance, not broadband. "Amplifies everything like a megaphone" is not physically justified.
+3. **Doorway/aperture losses dominate over wall absorption** in stone chambers (α_granite ≈ 0.01–0.03): an open doorway of ~1 m² is equivalent to tens of m² of absorber. RT60 estimates above (5–12 s) assume the current open state; a sealed Neolithic chamber would be even livelier at LF but its port Helmholtz (~1 Hz) would shift.
+4. **Corbelled/vaulted/curved geometry** (Newgrange vault, Hypogeum curved ceilings) breaks the rectangular formula's exactness; expect ±5–10 % detuning and mode splitting of near-degeneracies. FEM/BEM needed for better than ±10 %.
+5. **Infrasound claims** (2–4 Hz "trance drumming", 19 Hz eye resonance) are real physics but weakly evidenced at these sites; passage quarter-waves (4.4 Hz at Newgrange) are a plausible *coincidence* mechanism, not established design.
+6. **Source calibration:** voice/drum excitation (Debertolis) proves modes exist but cannot fix their Q or exact center frequency to better than a few Hz; swept-sine/MLS (Jahn, Watson & Keating, Till) can.
+7. **Selection 
