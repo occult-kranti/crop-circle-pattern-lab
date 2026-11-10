@@ -1,0 +1,151 @@
+pipeline is also the **measurement device** that extracts `n_fold` from rendered images in the first place (angular autocorrelation / FFT peak-picking), so the descriptor and the discrete feature are consistent by construction.
+
+### 2.5 Composite distance
+
+```
+D(i, j) = Σ_f w_f · d_f(i, j) / Σ_f w_f · 1[d_f observed]
+```
+
+Pre-registered weights (sum = 1 over the full feature set):
+
+| feature | w | justification |
+|---|---|---|
+| n_fold | 0.20 | primary cross-domain invariant |
+| mode pair (§2.2) | 0.20 | the hypothesis of interest (vibration modes) |
+| ratio_sig | 0.15 | classical "sacred proportion" claim |
+| fourier_desc | 0.15 | holistic shape |
+| is_spiral / is_grid / is_concentric | 0.05 each | topology flags |
+| log_size | 0.05 | deliberately weak |
+| chirality bit | 0.05 | tiebreaker |
+| n_fold ⊕ mode redundancy guard | — | see edge cases |
+
+Similarity reported as `S = 1 − D`.
+
+---
+
+## 3. All-pairs computation & top-match table
+
+1. Build 80×80 symmetric matrix `D` (O(N²) = 3160 pairs — trivially brute-force, no indexing/ANN: the *point* is exhaustive, assumption-free enumeration).
+2. Restrict attention to the **1328 cross-domain pairs** (block off-diagonal). Within-domain matches are computed but only used as a sanity baseline (e.g., two golden-spiral items should match; if they don't, the features are broken).
+3. **Top-match table**: for each item, rank cross-domain partners by D; report top-5. Plus the global top-50 pairs. Report per-pair: D, per-feature breakdown (which features drove the match — essential for interpretability), and the match's permutation p-value (§4).
+
+### 3.1 Significance by permutation test
+
+Null hypothesis: domain labels are exchangeable — cross-domain matches are no stronger than arbitrary cross-set pairings.
+
+```
+observed statistic: T_obs = min over cross-domain pairs of D   (or: number of pairs with D < τ)
+for b in 1..10_000:
+    shuffle the 80 domain labels, keeping domain sizes {60, 4, 8, 8}
+    recompute the SAME statistic on cross-label pairs → T_b
+p = (1 + #{T_b ≤ T_obs}) / (10_000 + 1)
+```
+
+- Use the **min-statistic (Westfall–Young)**: the permutation distribution of the minimum D automatically controls the **family-wise error rate** over the whole search. A pair is "FWER-significant at α" iff its D ≤ quantile_α of {T_b}. This is the cleanest brute-force-compatible guardrail — it needs no independence assumptions and uses the same permutations for all pairs.
+- Per-pair p-values for ranking: for pair (i,j), `p_pair = (1 + #{T_b ≤ D_ij})/(B+1)` (using the min-statistic distribution — conservative, simple, valid).
+- Pre-register B = 10 000 → resolution floor p_min = 1/10001 ≈ 1e-4. If deeper resolution needed for FWER after Bonferroni (see below), raise B to 10⁵ (still seconds of compute).
+
+### 3.2 Statistical caveat (structural, not fixable by shuffling)
+
+Domains share feature-construction pipelines (e.g., `n_fold` enters both the discrete feature and the FD), and domain sizes are wildly unequal (60 vs 4). With only 4 Klüver items, any Klüver-involving match has at most 4·76 = 304 candidate pairs and its null is thin — interpret Klüver matches as exploratory regardless of p. Pre-register this asymmetry.
+
+---
+
+## 4. Anti-apophenia guardrail (multiple comparisons)
+
+The search space is 1328 cross-domain pairs × (top-5-per-item tables + global top-50 + per-feature post-hoc slicing). Guaranteed inflation without control.
+
+**Layered controls (all pre-registered):**
+
+1. **FWER (primary, confirmatory)**: Westfall–Young min-statistic permutation procedure (§3.1). Equivalent in spirit to Bonferroni at α′ = 0.05/1328 = **3.8×10⁻⁵** but less conservative because it exploits dependence between pair distances. Report both; WY is decisive.
+2. **FDR (secondary, exploratory)**: Benjamini–Hochberg at q = 0.10 on per-pair permutation p-values, applied to the 1328 cross-domain pairs only. Pairs passing FDR but not FWER are labeled **"candidate"**, never "confirmed".
+3. **Pre-registered "interesting" criterion** — a match is declared interesting iff ALL hold:
+   - D ≤ τ where τ is fixed *before* looking at data (proposed τ = 0.25, justified by a pilot on within-domain known-similar pairs: within-domain known matches should have D ≤ 0.2, so τ = 0.25 gives margin); AND
+   - FWER p ≤ 0.05 (WY min-statistic); AND
+   - the match is not driven by a single feature: at least 2 of the four major feature groups {symmetry, mode, ratio, FD} individually contribute d_f ≤ 0.35 (blocks trivial matches like "both are big" or "both are 12-fold, nothing else alike"); AND
+   - effect size: D_ij is ≥ 2 MAD below the median cross-domain D (robust z ≥ 2).
+4. **HARKing firewall**: any pattern noticed *after* seeing the matrix (e.g., "all 5-fold items cluster with pentagram") is logged as hypothesis-generating and requires confirmation on a held-out criterion (e.g., re-derived after adding noise to features / after removing one domain) before promotion.
+5. **Report the full matrix**: publish all 3160 distances, not just winners. Apophenia thrives on selective reporting; the engine's main deliverable is the null distribution itself.
+6. **Bonferroni as floor**: also apply plain Bonferroni (α′ = 3.8×10⁻⁵) to per-pair p's as a sanity check; WY should reject a superset of Bonferroni's rejections. If it doesn't, there's a bug.
+
+---
+
+## 5. Pseudocode (numpy/scipy-implementable)
+
+```python
+# ---------- build ----------
+CANON = np.array([1.618, 1.414, 1.732, 2.0, 3.0, np.pi])   # φ, √2, √3, 2, 3, π
+def encode_ratio_sig(ratios, sigma=0.02):
+    v = np.zeros(6)
+    for r in ratios:
+        folds = [r * 2.0**k for k in (-1,0,1)] + [r * 1.618**k for k in (-1,0,1)]
+        for rf in folds:
+            v = np.maximum(v, np.exp(-(np.log(rf) - np.log(CANON))**2 / (2*sigma**2)))
+    return v
+
+def fourier_desc(img):                # img: 512x512 binary, centered
+    s   = radial_signature(img, n_theta=1024)      # max-radius ray cast
+    S   = np.fft.fft(s)
+    F   = np.abs(S[1:33]) / S[0]                   # rotation+shift+scale invariant
+    return F / np.linalg.norm(F)
+
+def build_item(meta, img=None):
+    return dict(n_fold=meta.n_fold,                 # 0, k, or INF(-1)
+                flags=np.array([meta.is_spiral, meta.is_grid, meta.is_concentric, meta.chiral]),
+                log_size=np.log10(meta.size_m) if meta.size_m else np.nan,
+                mode=(meta.mode_n, meta.mode_m) if meta.has_mode else None,
+                ratio_sig=encode_ratio_sig(meta.ratios),
+                fd=fourier_desc(img) if img is not None else None)
+
+# ---------- distances ----------
+def d_sym(a, b):
+    if a is None or b is None: return np.nan
+    if a == b: return 0.0
+    if -1 in (a, b) or 0 in (a, b): return 1.0      # INF or radial-null vs anything finite
+    r = np.log2(a / b)
+    return min(abs(r), abs(r-1), abs(r+1)) / 1.5
+
+def d_mode(m1, m2):                                  # m = (n, m)
+    if m1 is None or m2 is None: return np.nan
+    n1, k1 = m1; n2, k2 = m2
+    dn = min(abs(n1-n2), abs(2*n1-n2), abs(n1-2*n2)) / max(n1, n2, 1)
+    dm = abs(k1-k2) / max(k1, k2)
+    j1 = jn_zeros(n1, k1)[-1]; j2 = jn_zeros(n2, k2)[-1]
+    db = min(abs(j1-j2) / ((j1+j2)/2) / 0.05, 1.0)
+    return 0.5*(dn+dm)/2 + 0.5*db
+
+def pair_dist(A, B, scalers):
+    parts, wts = [], []
+    d = d_sym(A['n_fold'], B['n_fold'])
+    if not np.isnan(d): parts.append(d); wts.append(0.20)
+    d = d_mode(A['mode'], B['mode'])
+    if not np.isnan(d): parts.append(d); wts.append(0.20)
+    parts.append(np.linalg.norm(A['ratio_sig']-B['ratio_sig'])/np.sqrt(6)); wts.append(0.15)
+    if A['fd'] is not None and B['fd'] is not None:
+        parts.append(np.linalg.norm(A['fd']-B['fd'])/np.sqrt(2)); wts.append(0.15)
+    parts.append(np.abs(A['flags']-B['flags']).mean()); wts.append(0.25)  # 4 flags incl. chirality
+    if not (np.isnan(A['log_size']) or np.isnan(B['log_size'])):
+        parts.append(abs(A['log_size']-B['log_size'])/scalers['log_size_range']); wts.append(0.05)
+    return np.dot(parts, wts)/sum(wts), parts         # distance + breakdown
+
+# ---------- brute force ----------
+D = np.full((N, N), np.nan)
+for i, j in itertools.combinations(range(N), 2):
+    D[i,j] = D[j,i] = pair_dist(items[i], items[j], scalers)[0]
+
+cross = [(i,j) for i in range(N) for j in range(i+1,N)
+         if domain[i] != domain[j]]                    # 1328 pairs
+
+# ---------- permutation FWER ----------
+T_obs = min(D[i,j] for i,j in cross)
+rng = np.random.default_rng(seed=PREREGISTERED_SEED)
+T_null = np.empty(B := 10_000)
+for b in range(B):
+    perm = rng.permutation(N)
+    lab  = domain_labels[perm]                         # shuffled labels, sizes preserved
+    T_null[b] = min(D[i,j] for i,j in cross if lab[i] != lab[j])
+alpha_cut = np.quantile(T_null, 0.05)                  # FWER threshold
+p_pair = {(i,j): (1 + (T_null <= D[i,j]).sum())/(B+1) for i,j in cross}
+
+# ---------- FDR + interesting ----------
+q_vals = benjamini

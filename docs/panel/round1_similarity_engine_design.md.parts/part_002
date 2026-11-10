@@ -1,0 +1,29 @@
+_hochberg(np.array([p_pair[p] for p in cross]), q=0.10)
+med, mad = np.median(Dcross), median_abs_deviation(Dcross)
+interesting = [p for p in cross
+               if D[p] <= 0.25 and p_pair[p] <= 0.05
+               and n_feature_groups_agree(p) >= 2
+               and (med - D[p])/mad >= 2]
+```
+
+---
+
+## 6. Mathematical edge cases (checklist for implementers)
+
+1. `n_fold = INF` (concentric rings: Flower of Life, Klüver tunnel) must not enter log2 arithmetic — guard before `np.log2`.
+2. `n_fold = 0` (pure radial, e.g., single circle/dot) is a distinct class, ≠ order-1 (1-fold = no symmetry but has orientation).
+3. Non-star-shaped silhouettes (Sri Yantra's interlocking triangles): radial signature `s(θ)` is multi-valued → use boundary-arc-length FD fallback; flag items where fallback was used (descriptors not strictly commensurable).
+4. Octave non-transitivity in d_sym (6≈12≈24 but 6≉24): do not feed D into metric-space algorithms (triangulation, t-SNE without care) without noting it is a **semi-metric**.
+5. Bessel-zero clamping: modes with n > 6 or m > 3 need extended `jn_zeros` calls; McMahon expansion j_{n,m} ≈ β − (4n²−1)/(8β), β = (n + 2m − ½)π/2, is accurate to <0.1% there — use it rather than failing.
+6. Degenerate monument modes: measured acoustic spectra have split doublets (non-circular geometry splits ±n degeneracy); take the doublet centroid before d_bessel.
+7. Klüver constants have ~half the features NaN → Gower renormalization inflates the weight of what remains; their distances are high-variance. Minimum-coverage rule: if fewer than 3 major feature groups are jointly observed, set D = NaN and exclude from the test (count exclusions in the report).
+8. Ties in top-match tables (identical motifs, e.g., two pentagram items): break ties deterministically by item index; report multiplicity.
+9. Permutation test granularity: with B = 10⁴, p_min = 1e-4 > Bonferroni α′ = 3.8e-5 — Bonferroni-level confirmation requires B ≥ 10⁵. Pre-register B = 10⁵ for the confirmatory run (compute is trivial: 10⁵ × 3160 min-reductions).
+10. `log_size` for formations: reported sizes vary by source; ±20% size error = ±0.08 log-units — small vs the ≈2 log-unit range, safe.
+11. Robust-scaler leakage: scalers must be fit once and frozen before the permutation test; do NOT refit inside permutations (labels shuffle, features don't — refitting would add no variance but invites bugs).
+
+## 7. Open questions for Round 2
+
+- Whether monument "dominant acoustic modes" arrive as (n,m) decodings or raw Hz — if Hz, the d_bessel branch needs a frequency-floor normalization per monument.
+- FD descriptor for chiral motifs: final call on chiral equivalence.
+- Whether crop-formation "decoded membrane modes" are trustworthy enough for w = 0.20, or should be down-weighted to 0.10 with n_fold raised to 0.30 (sensitivity analysis either way: report both weightings).
