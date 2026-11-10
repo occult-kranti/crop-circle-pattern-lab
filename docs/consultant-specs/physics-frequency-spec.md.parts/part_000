@@ -1,0 +1,137 @@
+# Reverse Cymatic Decoder — Physics Specification
+
+Scope: pattern → candidate vibration modes → frequencies on a reference resonator.
+All formulas below are implementable as written. SI units throughout.
+
+---
+
+## 1. Forward models
+
+### 1a. Circular membrane (ideal drum)
+
+Governing equation: wave equation on a 2-D disk, fixed rim u(R, θ) = 0.
+
+Mode shape (standing wave, separation of variables):
+
+    u_{n,m}(r, θ, t) = A · J_n(z_{n,m} · r / R) · cos(nθ + φ) · cos(ω_{n,m} t + ψ)
+
+- n = 0,1,2,...  azimuthal order → n nodal **diameters** (2n nodal radial spokes at angles where cos(nθ+φ)=0)
+- m = 1,2,3,...  radial order → m−1 nodal **circles** (interior zeros of J_n), plus the fixed rim
+- φ is an arbitrary rotation (degeneracy of cos/sin pairs for n ≥ 1)
+- Eigencondition: J_n(z) = 0 at r = R  ⟹  kR = z_{n,m}
+- Frequency:
+
+      f_{n,m} = z_{n,m} · c / (2πR),   c = √(T/σ)
+
+  where T = tension per unit length [N/m], σ = areal mass density [kg/m²].
+
+**Bessel zeros z_{n,m}** (numerical, 6 dp; n = azimuthal, m = radial):
+
+| n \ m | m=1 | m=2 | m=3 | m=4 |
+|-------|-----------|-----------|-----------|-----------|
+| 0 | 2.404826 | 5.520078 | 8.653728 | 11.791534 |
+| 1 | 3.831706 | 7.015587 | 10.173468 | 13.323692 |
+| 2 | 5.135622 | 8.417244 | 11.619841 | 14.795952 |
+| 3 | 6.380162 | 9.761023 | 13.015201 | 16.223466 |
+| 4 | 7.588342 | 11.064709 | 14.372537 | 17.615966 |
+| 5 | 8.771484 | 12.338604 | 15.700174 | 18.980134 |
+
+Asymptotic (useful for z beyond the table, valid for large m at fixed n):
+
+    z_{n,m} ≈ β − (μ−1)/(8β) − 4(μ−1)(7μ−31)/(3(8β)³),
+    β = π(m + n/2 − 1/4),  μ = 4n²
+
+Properties to encode as constants:
+- Frequency ratios within one resonator are **pure numbers**: f_{n,m}/f_{0,1} = z_{n,m}/z_{0,1}. E.g. f_{1,1}/f_{0,1} = 3.831706/2.404826 = 1.59334 (this is why drums are inharmonic — ratios are irrational, unlike strings).
+- Interlacing: z_{n,m} < z_{n+1,m} < z_{n,m+1} (zeros interleave across n).
+- Nodal-line counting rule (for reverse model): a pure (n,m) mode shows exactly n nodal diameters and m−1 concentric nodal circles.
+
+### 1b. Square plate / Chladni approximation
+
+Two distinct dispersion laws — **do not conflate them**:
+
+**(i) Membrane / simply-supported model (default recommendation):**
+
+    u_{p,q}(x,y) = sin(pπx/L)·sin(qπy/L)
+    f_{p,q} = (c/2L)·√(p²+q²)
+
+Nodal lines of a single mode are a rectangular grid: (p−1) vertical lines x = kL/p and (q−1) horizontal lines y = kL/q. The curved, diagonally-symmetric Chladni figures arise only from **degenerate superpositions** (see 1c).
+
+**(ii) Thin free plate (true Chladni physics):** biharmonic equation ∇⁴u = k⁴u with free-edge boundary conditions. No closed-form eigenfunctions on a square; the dispersion is
+
+    f_{p,q} ≈ C·(h/L²)·√(E/(12ρ(1−ν²)))·(p²+q²)
+
+i.e. **f ∝ (p²+q²)** (quadratic in mode numbers) instead of √(p²+q²). Free-edge nodal lines are not sin·sin grids; the sin·sin form is only a usable *shape ansatz* for interior structure far from edges.
+
+**Recommendation:** default to model (i) — closed form, invertible, and the superposition model reproduces the visual phenomenology of Chladni figures well. Expose model (ii) as an option that rescales only the frequency mapping (replace √(p²+q²) by (p²+q²), with its own constant C·h/L²), while keeping the same pattern-matching machinery. Flag to the user that (ii)'s shapes are approximate.
+
+### 1c. Amplitude rendering and nodal-line extraction
+
+Sand collects at nodes (|u| ≈ 0, time-averaged). Render the time-independent spatial amplitude:
+
+    A(x,y) = Σ_k w_k · u_k(x,y)          (real superposition; ± sign and phase absorbed in w_k)
+    nodal set = { (x,y) : |A(x,y)| ≤ ε · max|A| }
+
+Implementation parameters:
+- **ε (threshold):** default 0.05–0.15 of max amplitude. Physically ε encodes sand size + drive amplitude: grains hop until acceleration < threshold, so the *visible* nodal line is a band of finite width. Make ε user-tunable; report that all Chladni figures are threshold-dependent.
+- **Damping weights:** in steady state under harmonic drive at frequency ω_d, mode k is excited with amplitude
+
+      w_k ∝ F_k / √((ω_k² − ω_d²)² + (2ζ_k ω_k ω_d)²)
+
+  where F_k = modal overlap of the drive, ζ_k = modal damping ratio (typ. 0.005–0.05 for plates). For a decoder, the practical simplification: **w_k are free fit parameters**, optionally regularized by a prior w_k ∝ ω_k^{−α}, α ≈ 1–2 (high modes are harder to excite).
+- **Degenerate pairs:** for n ≥ 1 on the circle, cos(nθ) and sin(nθ) are degenerate — always superpose them (relative weight = rotation φ, which is free). On the square, (p,q) and (q,p) are exactly degenerate; a superposition w₁·sin(pπx/L)sin(qπy/L) ± w₂·sin(qπx/L)sin(pπy/L) with w₁ = ±w₂ produces the classic diagonal Chladni figures. **Always include both members of a degenerate pair in any candidate.**
+
+---
+
+## 2. Reverse model: pattern → modes → frequency
+
+### 2.1 Full chain
+
+    image/pattern
+      → (1) geometric feature extraction
+      → (2) candidate (n,m) / {(p,q)} enumeration
+      → (3) forward-render + fit (weights w_k, rotation φ, center, radius R_img, threshold ε)
+      → (4) ranked candidates with scores
+      → (5) frequency mapping via reference resonator
+
+**(1) Feature extraction** (the invertible observables):
+- count nodal diameters N_d (spokes through center) → n ≈ N_d
+- count concentric nodal circles N_c → m ≈ N_c + 1
+- symmetries: rotational order, mirror planes, square-vs-radial organization
+- these counts are only lower bounds when modes are superposed (see §3).
+
+**(2) Candidate enumeration:** all (n,m) with n ≤ 8, m ≤ 4 (circular) or p,q ≤ 8 (square) whose *nodal topology* is compatible with the extracted features; include all degenerate partners and the option of 2-mode superpositions when a single mode cannot match.
+
+**(3) Fit:** least-squares over {w_k, φ, center, R_img, ε} minimizing symmetric distance between rendered nodal set and extracted pattern lines. R_img maps pixel radius to the model's R; this is the *only* geometric calibration needed.
+
+**(4) Scoring:** χ² of nodal-set distance + penalty for number of modes (Occam). Report top-3 candidates, never a single answer (see §3).
+
+**(5) Frequency mapping:**
+
+    Circular:  f_{n,m} = K · z_{n,m},        K = c/(2πR)
+    Square:    f_{p,q} = K' · √(p²+q²),      K' = c/(2L)        [membrane model]
+               f_{p,q} = K'' · (p²+q²),      K'' = C·h/L² · √(E/12ρ(1−ν²))  [plate option]
+
+### 2.2 The scaling law — state this explicitly in the UI
+
+- **All frequency ratios are absolute** (dimensionless mode numbers / Bessel-zero ratios) and require no physical parameters.
+- **Any absolute frequency requires assuming both a resonator size and a wave speed.** f scales as:
+  - f ∝ 1/R (or 1/L): doubling the resonator halves every frequency.
+  - f ∝ c: frequency is linear in effective wave speed.
+  - Plate option: f ∝ h/L² (thickness matters; flexural waves are dispersive — c is *not* constant across modes for a real plate, which is exactly why f ∝ (p²+q²)).
+
+**Primary output = dimensionless mode identity + ratios.** Absolute Hz is a secondary, assumption-tagged output.
+
+**Suggested reference resonators (show frequencies for both):**
+- Steel plate, diameter 30 cm, effective flexural scaling calibrated so the fundamental ≈ a few hundred Hz — but note effective c for flexure depends on h and mode; use the plate formula, not a constant c. If a constant-c approximation is wanted, c_eff ≈ 1000–3000 m/s is an order-of-magnitude placeholder only; label it as such.
+- Drumhead: R = 0.15 m, T/σ chosen for c = 100 m/s → K = c/(2πR) ≈ 106.1 Hz → f_{0,1} = 2.404826·K ≈ 255 Hz, f_{1,1} ≈ 406 Hz, f_{2,1} ≈ 545 Hz. Drumheads with c = 50–300 m/s cover 50 Hz–5 kHz fundamentals.
+
+---
+
+## 3. Edge cases the implementation must handle
+
+1. **n = 0 (pure radial modes).** No angular factor; φ is undefined — do not fit it. Pattern = concentric circles only. Note z_{0,m} are not harmonics of each other (5.520078/2.404826 = 2.2954, not 2), so a stack of rings is *not* a harmonic overtone series.
+2. **Large m (many nodal circles).** Zeros beyond the table: use the asymptotic formula (§1a), error O(β⁻⁵); adequate for m ≥ 5 at any n. Numerically, J_n(z) for large n has a turning point at z ≈ n — modes with m·π ≲ n have amplitude concentrated near the rim; center-region patterns then cannot constrain them.
+3. **Degeneracies.**
+   - Circle: every n ≥ 1 mode is 2-fold degenerate (cos/sin) → rotation φ is unobservable from a static pattern. Never report φ as a physical result.
+   - Square: (p,q) ↔ (q,p) exactly degenerate; also accidental degeneracies, e.g. (1,7) & (5,5) & (7,1) share p²+q² = 50. A single frequency on a square resonator can correspond to severa

@@ -1,0 +1,32 @@
+l distinct patterns.
+   - Circle near-degeneracies are only approximate (zeros are irrational ratios), but at finite damping (Q ≲ 50) nearby modes merge — e.g. z_{1,2} = 7.0156 vs z_{3,1}·… check Δf/f vs 1/Q before claiming discrimination.
+4. **Superposition ambiguity (the fundamental ill-posedness).** A nodal pattern is a level set of a sum; it almost never determines the sum uniquely. Different {w_k} — and even different mode sets — can produce visually near-identical nodal lines. Mitigations: report top-3 ranked candidates, require nodal-**count** compatibility, and state explicitly that the decoder returns a *hypothesis set*, not a unique mode.
+5. **Near-zero radius / degenerate geometry.** J_n(kr) ~ (kr/2)ⁿ/n! as r→0, so for n ≥ 1 all amplitude near center is ~rⁿ — pattern pixels within r/R < 0.05 carry almost no information about n ≥ 2 modes. Guard against fitting R_img → 0 or center drift; regularize center/radius to the pattern's bounding circle. Similarly L → 0 for the square.
+6. **Units.** Keep everything in SI internally (m, kg, s). Convert only at I/O. K = c/(2πR) has units Hz; z and √(p²+q²) are dimensionless. Validate: K > 0, R > 0, c > 0, else raise.
+7. **Many (n,m) → similar patterns.** Distinguish by counts first (N_d, N_c), then by ring radii: interior nodal circles of mode (n,m) sit at r_j/R = z_{n,j}/z_{n,m}, j = 1..m−1 — these radii are mode-specific fingerprints and are far more discriminating than ring count alone. Use them in scoring (e.g. for (0,2): single ring at 2.404826/5.520078 = 0.4357R; for (0,3): rings at 0.2779R and 0.6379R).
+8. **Membrane vs plate misapplication.** If the resonator is a real free plate, membrane frequencies are wrong by O(1) factors at high mode number (since (p²+q²) vs √(p²+q²) diverge). Tag every frequency output with the dispersion model used.
+9. **Threshold sensitivity.** Because nodal lines are rendered at |A| ≤ ε·max, any pattern feature that appears/disappears across ε ∈ [0.05, 0.15] is unstable — exclude unstable features from scoring, or score over a sweep of ε.
+
+---
+
+## 4. Sanity-test battery (acceptance checks)
+
+1. **1/R scaling:** compute f_{0,1} for R and R/2 at fixed c; assert ratio = 2.000 (tol 1e-12). Same for 1/L on the square.
+2. **Zero-ratio identity:** for every table entry, assert f_{n,m}/f_{0,1} = z_{n,m}/z_{0,1} to machine precision. Reference: f_{1,1}/f_{0,1} = 1.59334, f_{2,1}/f_{0,1} = 2.13550, f_{0,2}/f_{0,1} = 2.29542, f_{3,1}/f_{0,1} = 2.65307.
+3. **Square (1,1) topology:** render u = sin(πx/L)sin(πy/L) alone → no interior nodal lines (single antinode at center). Render the degenerate pair (1,2)+(2,1) with equal weights and + sign → nodal cross along both diagonals (u ∝ sin(πx/L)sin(πy/L)[cos… ] — concretely, sin(πx/L)sin(2πy/L) + sin(2πx/L)sin(πy/L) ∝ sin(πx/L)sin(πy/L)(cos(πy/L)+cos(πx/L)), zero on x+y=L … and with − sign, zero on x = y). Assert the nodal set contains the expected diagonal(s) within 1 pixel. *(Note: the "one central nodal cross" figure is the equal-weight (1,2)±(2,1) superposition, not a single mode — a good test that degenerate partners are always included.)*
+4. **Ring-radius fingerprint:** render (0,2): assert interior nodal circle at r/R = 0.43565 (tol 1e-4). Render (0,3): rings at 0.27788R and 0.63789R.
+5. **Spoke count:** render (n,1) for n = 1..5; assert extracted N_d = n (nodal diameters), N_c = 0.
+6. **Rotation invariance:** render (3,1) at φ = 0 and φ = π/7; assert the reverse-model fit recovers the same (n,m) and that the two fits differ only in φ.
+7. **Round-trip (inverse consistency):** forward-render a known mode/superposition with noise σ_noise = 0.02·max|A|, run the decoder, assert the true mode set is in the top-3 candidates. Repeat for: (0,1), (2,2), (1,1)+(2,2) circle case, and square (1,2)+(2,1).
+8. **Asymptotic zeros:** assert |z_asymptotic(n,m) − z_exact| / z_exact < 1e-3 for m = 6, n ≤ 5.
+9. **Degeneracy completeness:** assert that for every candidate with n ≥ 1 (circle) or p ≠ q (square), the degenerate partner appears in the fit basis; assert accidental square degeneracies (1,7)/(5,5)/(7,1) are grouped.
+10. **Guard rails:** R = 0, c = 0, L = 0, negative ε, n or m < 0 → clean errors, no NaNs. Pattern smaller than 10 px across → "insufficient resolution" refusal rather than a guess.
+
+---
+
+## Quick-reference constants
+
+- z_{0,1} = 2.4048255577 (fundamental drum mode)
+- K_drum(15 cm, c=100 m/s) = 106.103 Hz; f_{0,1} = 255.1 Hz
+- Square K' = c/(2L); steel plate L=0.30 m, membrane-model c=1500 m/s → K' = 2500 Hz; f_{1,1} = K'√2 ≈ 3536 Hz (illustrative; a real 30 cm steel plate's actual flexural fundamental is far lower — plate option mandatory for metal)
+- Flexural plate coefficient for steel: √(E/(12ρ(1−ν²))) ≈ √(210e9/(12·7850·0.91)) ≈ 1567 (SI), f_{p,q} ≈ 1567·(h/L²)·(p²+q²); h=1 mm, L=0.30 m → K'' ≈ 17.4 Hz, f_{1,1} ≈ 35 Hz (order-of-magnitude; free-edge corrections O(1)).
