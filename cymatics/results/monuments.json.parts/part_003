@@ -1,0 +1,397 @@
+analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      2,
+      1,
+      4
+     ],
+     "type": "oblique",
+     "f_hz": 126.27,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      3,
+      0,
+      4
+     ],
+     "type": "tangential",
+     "f_hz": 127.33,
+     "membrane_analog": [
+      4,
+      3
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      4,
+      2,
+      3
+     ],
+     "type": "oblique",
+     "f_hz": 127.86,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      5,
+      3,
+      0
+     ],
+     "type": "tangential",
+     "f_hz": 127.95,
+     "membrane_analog": [
+      5,
+      3
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      7,
+      0,
+      2
+     ],
+     "type": "tangential",
+     "f_hz": 128.83,
+     "membrane_analog": [
+      7,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    }
+   ],
+   "measured": [],
+   "mode_space": {
+    "mn": [
+     1,
+     1
+    ],
+    "bessel_zero": 3.8317,
+    "dominant_mode_f_hz": 16.38,
+    "comment": "quasi-1D harmonic ladder of 16.4 Hz; 2:1-plan doublet at 32.8 Hz is the fingerprint",
+    "effective_R_m": 4.18,
+    "membrane_f01_at_R_hz": 31.4
+   },
+   "signature_card": {
+    "title": "Sonic Signature Card — Great Pyramid of Khufu, King's Chamber",
+    "location_date_material": "Giza, Egypt / c. 2560 BCE / granite chamber inside limestone pyramid",
+    "dims": {
+     "Lx": 10.47,
+     "Ly": 5.234,
+     "Lz": 5.84
+    },
+    "volume_m3": 320.0,
+    "geometry_class": "rectangular (2:1 plan by design)",
+    "rt60": "5-12 (Sabine, alpha_granite 0.01-0.03, open doorway dominates)",
+    "top_modes_modeled": [
+     {
+      "type": "axial",
+      "indices": [
+       1,
+       0,
+       0
+      ],
+      "f_hz": 16.38,
+      "provenance": "MODELED",
+      "note": "C0",
+      "cents": 3.0,
+      "band": "INFRASONIC"
+     },
+     {
+      "type": "axial",
+      "indices": [
+       0,
+       0,
+       1
+      ],
+      "f_hz": 29.37,
+      "provenance": "MODELED",
+      "note": "A#0",
+      "cents": 13.9,
+      "band": "SUB-PITCH EDGE"
+     },
+     {
+      "type": "axial",
+      "indices": [
+       2,
+       0,
+       0
+      ],
+      "f_hz": 32.76,
+      "provenance": "MODELED",
+      "note": "C1",
+      "cents": 3.0,
+      "band": "PITCH"
+     }
+    ],
+    "measured_resonances": [],
+    "measured_unverified": [
+     {
+      "f_hz": 95.0,
+      "note": "popular sarcophagus-resonance claim; weak documentation",
+      "tier": 3,
+      "provenance": "MEASURED (unverified)",
+      "source": "popular literature (Dunn 1998 era)"
+     },
+     {
+      "f_hz": 117.0,
+      "note": "popular sarcophagus-resonance claim; weak documentation",
+      "tier": 3,
+      "provenance": "MEASURED (unverified)",
+      "source": "popular literature"
+     }
+    ],
+    "vocal_range_overlap": {
+     "male_82_330_hz": [
+      83.29,
+      87.01,
+      87.02,
+      87.99,
+      88.0,
+      88.1,
+      88.21,
+      89.51,
+      89.61,
+      92.67,
+      92.97,
+      93.89,
+      93.9,
+      93.99,
+      94.0,
+      95.41,
+      97.21,
+      98.28,
+      98.3,
+      99.54,
+      99.65,
+      100.78,
+      100.79,
+      100.88,
+      102.57,
+      102.59,
+      103.6,
+      103.61,
+      103.89,
+      104.89,
+      105.98,
+      106.07,
+      107.68,
+      107.7,
+      108.93,
+      109.71,
+      109.79,
+      109.8,
+      109.9,
+      111.02,
+      113.75,
+      114.49,
+      114.51,
+      114.58,
+      114.58,
+      114.66,
+      115.67,
+      117.47,
+      118.13,
+      118.13,
+      118.36,
+      118.6,
+      119.09,
+      119.1,
+      119.25,
+      120.22,
+      120.29,
+      120.29,
+      121.72,
+      121.73,
+      121.95,
+      121.95,
+      122.81,
+      123.05,
+      124.61,
+      124.67,
+      126.27,
+      127.33,
+      127.86,
+      127.95,
+      128.83
+     ],
+     "female_165_523_hz": []
+    },
+    "sub_20hz_content": {
+     "frequencies_hz": [
+      16.38
+     ],
+     "label": "below pitch perception — felt as pressure/vibration, not heard"
+    },
+    "intra_chamber_beats": [
+     {
+      "f1_hz": 44.0,
+      "f2_hz": 44.0,
+      "delta_f_hz": 0.0,
+      "category": "UNISON (exact)"
+     },
+     {
+      "f1_hz": 67.25,
+      "f2_hz": 67.25,
+      "delta_f_hz": 0.0,
+      "category": "UNISON (exact)"
+     },
+     {
+      "f1_hz": 114.58,
+      "f2_hz": 114.58,
+      "delta_f_hz": 0.0,
+      "category": "UNISON (exact)"
+     }
+    ],
+    "provenance_summary": "0 MEASURED entries, 105 MODELED values, 0 DECODED links, +2 MEASURED-unverified popular claims (tier 3, flag only)",
+    "mode_space": {
+     "mn": [
+      1,
+      1
+     ],
+     "bessel_zero": 3.8317,
+     "dominant_mode_f_hz": 16.38,
+     "comment": "quasi-1D harmonic ladder of 16.4 Hz; 2:1-plan doublet at 32.8 Hz is the fingerprint",
+     "effective_R_m": 4.18,
+     "membrane_f01_at_R_hz": 31.4
+    },
+    "caveats": [
+     "2:1 plan makes the spectrum quasi-1D: harmonic ladder of 16.38 Hz (16.4, 32.8, 49.1, 65.5, 81.9, 98.3, 114.7).",
+     "'438 Hz / A=432 resonance' claim is physically meaningless: modal density there ~20 modes/Hz (statistical regime, physics spec §0).",
+     "Near-degenerate doublet (2,0,0)~=(0,1,0) at 32.8 Hz is the 2:1-plan fingerprint.",
+     "Height ambiguity 5.82-5.97 m: we use 5.84 m (spec text); nz-dependent modes shift <2.5% (e.g. (0,0,1) = 29.4 Hz here vs 28.7 Hz at 5.97 m)."
+    ]
+   }
+  },
+  {
+   "id": "kc_sarcophagus",
+   "site": "Great Pyramid of Khufu",
+   "chamber": "King's Chamber sarcophagus (coffer)",
+   "n_fold": 2,
+   "key_ratio": [
+    3.0
+   ],
+   "geometry_class": "open rectangular box (quarter-wave + Helmholtz hybrid)",
+   "dims": {
+    "Lx": 1.996,
+    "Ly": 0.68,
+    "Lz": 0.873
+   },
+   "dims_status": null,
+   "modes_modeled": [
+    {
+     "kind": "quarter-wave (vertical, open top, end-corrected)",
+     "f_hz": 67.3,
+     "formula": "c/(4*(D+0.61*sqrt(A/pi)))",
+     "provenance": "MODELED"
+    },
+    {
+     "kind": "Helmholtz (mouth = open top)",
+     "f_hz": 59.6,
+     "formula": "(c/2pi)*sqrt(A/(V*L_eff)), L_eff=1.46*sqrt(A/pi)",
+     "provenance": "MODELED"
+    },
+    {
+     "kind": "longitudinal half-wave (box approx, upper bound)",
+     "f_hz": 85.9,
+     "formula": "c/2L",
+     "provenance": "MODELED"
+    },
+    {
+     "kind": "width half-wave",
+     "f_hz": 252.2,
+     "formula": "c/2W",
+     "provenance": "MODELED"
+    },
+    {
+     "kind": "granite wall flexural ('bell') modes, order-of-magnitude",
+     "f_hz": "250 (long wall) / 1200 (short wall)",
+     "formula": "thin-plate bending, t~0.15 m, E~60 GPa",
+     "provenance": "MODELED (order-of-magnitude)"
+    }
+   ],
+   "measured": [],
+   "mode_space": {
+    "mn": [
+     0,
+     1
+    ],
+    "bessel_zero": 2.4048,
+    "dominant_mode_f_hz": 60.0,
+    "comment": "Helmholtz/quarter-wave: (0,1) breathing -> (1,1) at the 86 Hz half-wave",
+    "effective_R_m": 0.66,
+    "membrane_f01_at_R_hz": 199.7
+   },
+   "signature_card": {
+    "title": "Sonic Signature Card — Great Pyramid of Khufu, King's Chamber sarcophagus (coffer)",
+    "location_date_material": "Giza, Egypt / c. 2560 BCE / granite coffer, lidless (open box)",
+    "dims": {
+     "Lx": 1.996,
+     "Ly": 0.68,
+     "Lz": 0.873
+    },
+    "volume_m3": 1.2,
+    "geometry_class": "open rectangular box (quarter-wave + Helmholtz hybrid)",
+    "rt60": "n/a (open box inside chamber mode field)",
+    "top_modes_modeled": [
+     {
+      "type": "quarter-wave (vertical, open top, end-corrected)",
+      "indices": null,
+      "f_hz": 67.3,
+      "provenance": "MODELED",
+      "note": "C2",
+      "cents": 49.4,
+      "band": "PITCH"
+     },
+     {
+      "type": "Helmholtz (mouth = open top)",
+      "indices": null,
+      "f_hz": 59.6,
+      "provenance": "MODELED",
+      "note": "A#1",
+      "cents": 39.1,
+      "band": "PITCH"
+     },
+     {
+      "type": "longitudinal half-wave (box approx, upper bound)",
+      "indices": null,
+      "f_hz": 85.9,
+      "provenance": "MODELED",
+      "note": "F2",
+      "cents": -28.1,
+      "band": "PITCH"
+     }
+    ],
+    "measured_resonances": [],
+    "measured_unverified": [],
+    "vocal_range_overlap": {
+     "male_82_330_hz": [
+      85.9,
+      252.2
+     ],
+     "female_165_523_hz": [
+      252.2
+     ]
+    },
+    "sub_20hz_content": {
+     "frequencies_hz": [],
+     "label": "below pitch perception — felt as pressure/vibration, not heard"
+    },
+    "intra_chamber_beats": [
+     {
+      "f1_hz": 59.6,
+      "f2_hz": 67.3,
+      "delta_f_hz": 7.7,
+      "categor

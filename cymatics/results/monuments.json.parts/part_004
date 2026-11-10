@@ -1,0 +1,432 @@
+y": "ROUGHNESS"
+     },
+     {
+      "f1_hz": 67.3,
+      "f2_hz": 85.9,
+      "delta_f_hz": 18.6,
+      "category": "ROUGHNESS"
+     },
+     {
+      "f1_hz": 59.6,
+      "f2_hz": 85.9,
+      "delta_f_hz": 26.3,
+      "category": "TRANSITION"
+     }
+    ],
+    "provenance_summary": "0 MEASURED entries, 5 MODELED values, 0 DECODED links",
+    "mode_space": {
+     "mn": [
+      0,
+      1
+     ],
+     "bessel_zero": 2.4048,
+     "dominant_mode_f_hz": 60.0,
+     "comment": "Helmholtz/quarter-wave: (0,1) breathing -> (1,1) at the 86 Hz half-wave",
+     "effective_R_m": 0.66,
+     "membrane_f01_at_R_hz": 199.7
+    },
+    "caveats": [
+     "All numbers assume lidless; with lid on, spectrum shifts upward and Q changes drastically.",
+     "Nested resonator: strongest observable effect is coupling to KC axial modes near 60-115 Hz.",
+     "Granite flexural ('bell') modes ~250 Hz (long wall) / ~1.2 kHz (short wall) are order-of-magnitude only."
+    ]
+   }
+  },
+  {
+   "id": "hypogeum_oracle_room",
+   "site": "Ħal Saflieni Hypogeum",
+   "chamber": "Oracle Room",
+   "n_fold": 0,
+   "key_ratio": [],
+   "geometry_class": "irregular-cave (curved ceilings; box model is 0th-order)",
+   "dims": {
+    "Lx": 3.5,
+    "Ly": 3.0,
+    "Lz": 3.0
+   },
+   "dims_status": "not documented numerically; 3.5x3x3 m is an inversion-consistent working model, NOT a survey",
+   "modes_modeled": [
+    {
+     "indices": [
+      1,
+      0,
+      0
+     ],
+     "type": "axial",
+     "f_hz": 49.0,
+     "membrane_analog": [
+      1,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      0,
+      1
+     ],
+     "type": "axial",
+     "f_hz": 57.17,
+     "membrane_analog": [
+      1,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      1,
+      0
+     ],
+     "type": "axial",
+     "f_hz": 57.17,
+     "membrane_analog": [
+      1,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      1,
+      0,
+      1
+     ],
+     "type": "tangential",
+     "f_hz": 75.29,
+     "membrane_analog": [
+      2,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      1,
+      1,
+      0
+     ],
+     "type": "tangential",
+     "f_hz": 75.29,
+     "membrane_analog": [
+      2,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      1,
+      1
+     ],
+     "type": "tangential",
+     "f_hz": 80.85,
+     "membrane_analog": [
+      2,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      1,
+      1,
+      1
+     ],
+     "type": "oblique",
+     "f_hz": 94.54,
+     "membrane_analog": [
+      3,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      2,
+      0,
+      0
+     ],
+     "type": "axial",
+     "f_hz": 98.0,
+     "membrane_analog": [
+      1,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      2,
+      0,
+      1
+     ],
+     "type": "tangential",
+     "f_hz": 113.45,
+     "membrane_analog": [
+      3,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      2,
+      1,
+      0
+     ],
+     "type": "tangential",
+     "f_hz": 113.45,
+     "membrane_analog": [
+      3,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      0,
+      2
+     ],
+     "type": "axial",
+     "f_hz": 114.33,
+     "membrane_analog": [
+      1,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      2,
+      0
+     ],
+     "type": "axial",
+     "f_hz": 114.33,
+     "membrane_analog": [
+      1,
+      2
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      1,
+      0,
+      2
+     ],
+     "type": "tangential",
+     "f_hz": 124.39,
+     "membrane_analog": [
+      3,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      1,
+      2,
+      0
+     ],
+     "type": "tangential",
+     "f_hz": 124.39,
+     "membrane_analog": [
+      3,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      2,
+      1,
+      1
+     ],
+     "type": "oblique",
+     "f_hz": 127.04,
+     "membrane_analog": "mixed oblique",
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      1,
+      2
+     ],
+     "type": "tangential",
+     "f_hz": 127.83,
+     "membrane_analog": [
+      3,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    },
+    {
+     "indices": [
+      0,
+      2,
+      1
+     ],
+     "type": "tangential",
+     "f_hz": 127.83,
+     "membrane_analog": [
+      3,
+      1
+     ],
+     "provenance": "MODELED",
+     "model": "rigid-box (c/2)*sqrt((nx/Lx)^2+(ny/Ly)^2+(nz/Lz)^2)"
+    }
+   ],
+   "measured": [
+    {
+     "f_hz": 41.0,
+     "source": "Till 2017, Antiquity 91(355):74-89",
+     "method": "swept sine, ISO 3382-1 metrics",
+     "tier": 1,
+     "provenance": "MEASURED"
+    },
+    {
+     "f_hz": 72.0,
+     "source": "Till 2017, Antiquity 91(355):74-89",
+     "method": "swept sine, ISO 3382-1 metrics",
+     "tier": 1,
+     "provenance": "MEASURED"
+    },
+    {
+     "f_hz": 76.0,
+     "source": "Till 2017, Antiquity 91(355):74-89",
+     "method": "swept sine, ISO 3382-1 metrics",
+     "tier": 1,
+     "provenance": "MEASURED"
+    },
+    {
+     "f_hz": 70.0,
+     "source": "Debertolis, Coimbra & Eneix 2015, JAA 3(1):59-79",
+     "method": "uncalibrated voice/drum excitation",
+     "tier": 3,
+     "provenance": "MEASURED (contested)"
+    },
+    {
+     "f_hz": 114.0,
+     "source": "Debertolis, Coimbra & Eneix 2015, JAA 3(1):59-79",
+     "method": "uncalibrated voice/drum excitation",
+     "tier": 3,
+     "provenance": "MEASURED (contested)"
+    }
+   ],
+   "mode_space": {
+    "mn": [
+     2,
+     1
+    ],
+    "bessel_zero": 5.1356,
+    "dominant_mode_f_hz": 114.0,
+    "comment": "room mode (2,1)-class at ~114 Hz + niche (0,1) at ~70 Hz (superposition)",
+    "effective_R_m": 1.83,
+    "membrane_f01_at_R_hz": 71.8
+   },
+   "signature_card": {
+    "title": "Sonic Signature Card — Ħal Saflieni Hypogeum, Oracle Room",
+    "location_date_material": "Paola, Malta / Neolithic, c. 3300-3000 BCE / carved limestone, curved ceilings",
+    "dims": {
+     "Lx": 3.5,
+     "Ly": 3.0,
+     "Lz": 3.0
+    },
+    "volume_m3": 31.5,
+    "geometry_class": "irregular-cave (curved ceilings; box model is 0th-order)",
+    "rt60": "multi-second (Till 2017 reports decays of 7-8 s in the complex)",
+    "top_modes_modeled": [
+     {
+      "type": "axial",
+      "indices": [
+       1,
+       0,
+       0
+      ],
+      "f_hz": 49.0,
+      "provenance": "MODELED",
+      "note": "G1",
+      "cents": 0.0,
+      "band": "PITCH"
+     },
+     {
+      "type": "axial",
+      "indices": [
+       0,
+       0,
+       1
+      ],
+      "f_hz": 57.17,
+      "provenance": "MODELED",
+      "note": "A#1",
+      "cents": -33.0,
+      "band": "PITCH"
+     },
+     {
+      "type": "axial",
+      "indices": [
+       0,
+       1,
+       0
+      ],
+      "f_hz": 57.17,
+      "provenance": "MODELED",
+      "note": "A#1",
+      "cents": -33.0,
+      "band": "PITCH"
+     }
+    ],
+    "measured_resonances": [
+     {
+      "f_hz": 41.0,
+      "metric": null,
+      "source": "Till 2017, Antiquity 91(355):74-89",
+      "method": "swept sine, ISO 3382-1 metrics",
+      "tier": 1,
+      "tier_label": "calibrated/replicated",
+      "provenance": "MEASURED",
+      "note": "E1",
+      "cents": -8.6,
+      "band": "PITCH"
+     },
+     {
+      "f_hz": 72.0,
+      "metric": null,
+      "source": "Till 2017, Antiquity 91(355):74-89",
+      "method": "swept sine, ISO 3382-1 metrics",
+      "tier": 1,
+      "tier_label": "calibrated/replicated",
+      "provenance": "MEASURED",
+      "note": "D2",
+      "cents": -33.7,
+      "band": "PITCH"
+     },
+     {
+      "f_hz": 76.0,
+      "metric": null,
+      "source": "Till 2017, Antiquity 91(355):74-89",
+      "method": "swept sine, ISO 3382-1 metrics",
+      "tier":
