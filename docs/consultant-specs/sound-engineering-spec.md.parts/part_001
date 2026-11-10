@@ -1,0 +1,45 @@
+ modes of one resonator are inharmonic overtones, not a musical chord in the tonal sense.
+
+---
+
+## 4. Honesty Framing (mandatory disclaimer block)
+
+> **Absolute-frequency caveat.** The geometry decode yields **dimensionless mode ratios only**. Any Hz value follows entirely from an assumed resonator (size + wave speed + boundary model). We therefore report:
+> 1. **Primary:** dimensionless ratios r = f_mode/f_fundamental (resonator-independent).
+> 2. **Secondary:** Hz at 2–3 reference resonators as a sensitivity table.
+
+Reference resonators (f₀₁ for circular membrane, radius a: `f₀₁ = (j₀₁/2π)·(c/a)`, j₀₁ = 2.4048):
+
+| Reference resonator | a (m) | c (m/s) | f₀₁ (Hz) | Note | Cents | Comment |
+|:--|---:|---:|---:|:--|---:|:--|
+| A: 30 cm drumhead | 0.15 | 100 | 255.2 | C4 | −43.3 | mid-audible; physical membrane speeds 50–300 m/s typical |
+| B: 30 cm steel plate | 0.15 | ≈1000 (c_eff lumped) | 2 551.6 | D#7 | +43.0 | Chladni-plate regime; plate flexural waves are dispersive — c_eff is mode-dependent, so treat B/C as crude estimates |
+| C: 1 m plate | 0.50 | ≈1000 | 765.5 | G5 | −41.4 | |
+
+Additional required statements:
+- **Sensitivity:** f ∝ c/a — halving radius or doubling c doubles every frequency (one octave up). State this scaling rule so readers can re-map to any resonator: `f_new = f_ref · (c_new/c_ref)·(a_ref/a_new)`.
+- If a claimed "Schumann resonance" or specific Hz target is being matched, the match is only as good as the resonator assumption; a ratio match (JI interval) is a stronger, assumption-free claim than an absolute-Hz match.
+- Infrasonic/ultrasonic outputs (likely for large/slow or small/fast resonators) are labeled per §1.2 and are not "musical notes" in the perceptual sense — the note name is a mathematical placement on the 12-TET lattice only.
+
+---
+
+## 5. Edge Cases in Presentation
+
+| Case | Handling |
+|:--|:--|
+| **Δf = 0 (identical decoded freqs)** | Category `UNISON (exact)`. Never compute a beat period (would be ∞). Optional gloss: "infinite-sustain unison — no amplitude modulation." Ratio = 1.000, JI 1:1, error 0. |
+| **Δf > ~40 Hz** | Label `DIFFERENCE TONE`, not "beat". Additionally run §1 mapping on Δf itself and display it as a pitch (e.g., 440 vs 660 → Δf = 220 Hz = A3). If Δf < 20 Hz it cannot be a tone — keep beat categories. |
+| **Δf in ultrasonic/infrasonic band** | If both f₁,f₂ ultrasonic, a Δf may fall in the audible band (e.g., 22 000 vs 21 980 → Δf = 20 Hz ROUGHNESS, but nothing audible at the carriers). Print: "carriers inaudible; difference frequency hypothetical unless nonlinear demodulation exists." |
+| **Negative cents / rounding** | Report signed cents in [−50, +50). Never round e.g. −49.7 ¢ across the boundary to "+50.3 of the next note" — re-express as the neighbor note instead if |cents| ≥ 50 after rounding of f. At exactly ±50.0 ¢, report both adjacent spellings. |
+| **Note names < 20 Hz** | Allowed: MIDI numbers go negative (e.g., 8 Hz → C−1 −37.6 ¢; 5.5 Hz → F−2 +13.7 ¢). Always band-labeled `INFRASONIC`. Octave numbers below −1 are legal in scientific pitch notation under this convention (floor(m/12)−1). |
+| **f above MIDI 127** | MIDI note number is a mapping device, not a limit — values > 127 (e.g., 22 kHz → MIDI 136.7 → F10) are fine; label ULTRASONIC. |
+| **No close JI interval** | If best |cents error| > 50 ¢, print "— (no close JI interval)" instead of a forced interval name. |
+| **Compound ratios > 2:1** | Show raw ratio plus octave-reduced match, e.g. `3.01 ≈ 2×3:2 (twelfth, +2.6 ¢)`. |
+| **Inharmonicity warning** | Membrane/plate mode ratios (1.594, 2.136, …) are not integer harmonics; any "note" rendering of overtones is nominal. |
+
+---
+
+## Appendix — verified constants used
+- j₀₁ = 2.4048 (first zero of J₀); membrane ratio set: 1.0000, 1.5934, 2.1356, 2.2955, 2.6531, 2.9173.
+- c_air = 343 m/s.
+- All numeric rows in §1.3, §2.4, §3, §4 computed with the formulas above and machine-verified.

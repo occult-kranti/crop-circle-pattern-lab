@@ -1,0 +1,161 @@
+# Cymatic Decode Presentation Layer — Acoustics & Psychoacoustics Specification
+
+**Scope.** This document specifies how decoded geometric/cymatic quantities are presented musically and psychoacoustically. It defines conventions, formulas, perceptual categories, table layouts, and honesty framing. It does not specify decode algorithms.
+
+**Global conventions**
+- Tuning standard: **12-TET, A4 = 440.00 Hz** (stated on every output).
+- Angles/cents reported to 1 decimal place (0.1 ¢); frequencies to 3 significant figures minimum.
+- Speed of sound in air for wavelength display: c_air = 343 m/s (20 °C). Wavelengths in the *resonator medium* (if shown) must name that medium and its c separately.
+- All ratios are reported as **dimensionless mode ratios** (primary) and as Hz (secondary, resonator-dependent). See §4.
+
+---
+
+## 1. Frequency → Note Mapping (12-TET, A4 = 440)
+
+### 1.1 Formulas
+- Continuous pitch (MIDI-real): `m = 69 + 12·log2(f / 440)`
+- Nearest semitone: `m₀ = round(m)`
+- Cents deviation: `cents = 100·(m − m₀)`, range **[−50, +50) ¢**; sign convention: **+ = sharp of the named note, − = flat**.
+- Equivalent general form: `cents(f, f_ref) = 1200·log2(f / f_ref)`.
+- Note name: `NOTE_NAMES[m₀ mod 12]` with `['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']`; **octave = floor(m₀/12) − 1** (scientific pitch notation; C4 = middle C = MIDI 60 ≈ 261.63 Hz).
+- Wavelength in air (contextual): `λ = 343 / f` metres.
+
+### 1.2 Perceptual range labels (mandatory)
+Every frequency row carries a band label:
+
+| Band | Range | Label string | Notes |
+|---|---|---|---|
+| Infrasonic | f < 20 Hz | `INFRASONIC` | Note name still shown (allowed) but flagged; perceived as rhythm/pressure, not pitch. MIDI number may be negative — that is fine. |
+| Low sub-pitch | 20–30 Hz | `SUB-PITCH EDGE` | Pitch perception unreliable below ~30 Hz; note name is nominal. |
+| Audible pitch | 30 Hz – 4 kHz | `PITCH` | Full note + cents are perceptually meaningful. |
+| High treble | 4–16 kHz | `HIGH (pitch weakens)` | Pitch discrimination degrades >4–5 kHz; cents lose perceptual meaning above ~8 kHz. |
+| Ultrasonic edge | 16–20 kHz | `ULTRASONIC (borderline)` | Audible only to some listeners. |
+| Ultrasonic | f > 20 kHz | `ULTRASONIC` | Not audible; note name is mathematical only. |
+
+### 1.3 Verified example rows
+
+| f (Hz) | MIDI m | Note | Cents | λ_air (m) | Band |
+|---:|---:|:--|---:|---:|:--|
+| 440.000 | 69.000 | A4 | +0.0 | 0.78 | PITCH |
+| 261.626 | 60.000 | C4 | −0.0 | 1.31 | PITCH |
+| 110.000 | 45.000 | A2 | +0.0 | 3.12 | PITCH |
+| 432.000 | 68.682 | A4 | −31.8 | 0.79 | PITCH |
+| 100.000 | 43.350 | G2 | +35.0 | 3.43 | PITCH |
+| 33.300 | 24.313 | C1 | +31.3 | 10.30 | PITCH |
+| 8.000 | −0.376 | C−1 | −37.6 | 42.9 | **INFRASONIC** |
+| 7.830 | −0.748 | B−2 | +25.2 | 43.8 | **INFRASONIC** |
+| 5.500 | −6.863 | F−2 | +13.7 | 62.4 | **INFRASONIC** |
+| 17 600 | 132.863 | C#10 | −13.7 | 0.0195 | ULTRASONIC (borderline) |
+| 22 000 | 136.726 | F10 | −27.4 | 0.0156 | **ULTRASONIC** |
+
+---
+
+## 2. Difference Vibrations (Beats & Ratio Analysis)
+
+### 2.1 Definitions
+For two decoded frequencies f₁, f₂ (convention: f_lo = min, f_hi = max):
+- **Beat / difference frequency:** `Δf = |f₁ − f₂|` Hz.
+- **Frequency ratio:** `r = f_hi / f_lo` (≥ 1).
+- **Nearest just interval:** minimize `|cents_error|` over the JI table below, where `cents_error = 1200·log2(r / (p/q))`.
+- **Octave reduction (optional second column):** reduce r into [1, 2) by dividing by 2^k before matching, to catch compound intervals (e.g., a tenth → major third). Report reduced ratio as e.g. `3.01 ≈ 2×3:2`.
+
+### 2.2 Beat-rate perception categories (Δf)
+
+| Δf range | Category label | Perceptual description |
+|---|---|---|
+| Δf = 0 | `UNISON (exact)` | No beating; infinite-sustain unison. Flag as a special case (see §5). |
+| 0 < Δf < 0.5 Hz | `DRIFT` | Inaudible as beat; slow phase drift / very slow swell (period > 2 s). |
+| 0.5 – 4 Hz | `SLOW BEAT` | Audible slow amplitude pulsing (tuning beats). |
+| 4 – 20 Hz | `ROUGHNESS` | Roughness / tremolo-rate modulation; maximum roughness ≈ 15–20 Hz region (critical-band dependent; at low absolute frequencies the roughness peak shifts lower, ~70–100 Hz Δf near 1–2 kHz carriers, but as an absolute Δf band label we use 4–20 Hz). |
+| 20 – ~40 Hz | `TRANSITION` | Beats blur into a tonal residue; borderline. |
+| Δf > ~40 Hz | `DIFFERENCE TONE` | Perceived as a separate (combination/difference) tone, not a beat — if Δf itself is ≥ ~20–30 Hz and audible. **Do not call it a beat.** Also evaluate Δf itself as a pitch (run §1 mapping on Δf). |
+
+*Caveat to print in footnote:* roughness depends on absolute frequency and critical bandwidth (max roughness ≈ ¼ of the critical bandwidth); the absolute-Δf bands above are a simplified presentation convention.
+
+### 2.3 Just-intonation reference table
+
+| Interval | Ratio p:q | Cents |
+|:--|:--|---:|
+| Unison | 1:1 | 0.00 |
+| Minor 2nd | 16:15 | 111.73 |
+| Major 2nd | 9:8 | 203.91 |
+| Minor 3rd | 6:5 | 315.64 |
+| Major 3rd | 5:4 | 386.31 |
+| Perfect 4th | 4:3 | 498.04 |
+| Tritone | 45:32 | 590.22 |
+| Perfect 5th | 3:2 | 701.96 |
+| Minor 6th | 8:5 | 813.69 |
+| Major 6th | 5:3 | 884.36 |
+| Minor 7th | 9:5 | 1017.60 |
+| Major 7th | 15:8 | 1088.27 |
+| Octave | 2:1 | 1200.00 |
+
+**Match tolerance guidance:** |cents error| ≤ 5 ¢ → "exact (JI)"; ≤ 15 ¢ → "near"; ≤ 50 ¢ → "approximate"; > 50 ¢ → report "no close JI interval" rather than forcing a label.
+
+### 2.4 Verified pairwise examples
+
+| f₁ (Hz) | f₂ (Hz) | Δf (Hz) | Beat category | Ratio r | Nearest JI | Cents error |
+|---:|---:|---:|:--|---:|:--|---:|
+| 440 | 442 | 2.00 | SLOW BEAT | 1.0045 | unison 1:1 | +7.9 |
+| 440 | 445 | 5.00 | ROUGHNESS | 1.0114 | unison 1:1 | +19.6 (→ "approximate"/detuned unison) |
+| 110 | 163 | 53.00 | DIFFERENCE TONE (Δf ≈ A1♯/B♭1 region → map via §1) | 1.4818 | perfect 5th 3:2 | −21.1 |
+| 440 | 660 | 220.00 | DIFFERENCE TONE (Δf = A3) | 1.5000 | perfect 5th 3:2 | 0.0 — exact |
+| 220 | 330.5 | 110.50 | DIFFERENCE TONE (Δf ≈ A2) | 1.5023 | perfect 5th 3:2 | +2.6 |
+| 100 | 151 | 51.00 | DIFFERENCE TONE (Δf ≈ G#1) | 1.5100 | perfect 5th 3:2 | +11.5 |
+| 110 | 220 | 110.00 | DIFFERENCE TONE (Δf = A2 = f₁ itself — octave pair) | 2.0000 | octave 2:1 | 0.0 — exact |
+
+---
+
+## 3. Table Layouts
+
+### 3.1 Per-pattern decoded frequency card
+One card per formation. Primary column = dimensionless ratio; Hz columns shown per reference resonator (see §4).
+
+```
+## Pattern: <name/id>  — decoded modes (ideal circular-membrane model)
+Assumed decode model: <e.g., Chladni plate / membrane / ring>; Tuning ref: A4=440 Hz
+
+| Mode | Geom. feature | Ratio r (dim-less) | f @ drumhead 30 cm (Hz) | f @ plate 30 cm (Hz) | f @ plate 1 m (Hz) | Nearest note (per resonator col.) | Cents | Band |
+```
+
+Example row block (membrane ratios from Bessel zeros j_mn, verified):
+
+| Mode | Ratio r | f @ 30 cm drum, c=100 m/s (Hz) | Note | Cents | f @ 30 cm plate, c_eff≈1000 m/s (Hz) | Note | Cents | Band |
+|:--|---:|---:|:--|---:|---:|:--|---:|:--|
+| (0,1) fundamental | 1.0000 | 255.2 | C4 | −43.3 | 2 551.6 | D#7 | +43.0 | PITCH |
+| (1,1) | 1.5934 | 406.6 | G4/G#4 | — | 4 066 | — | — | PITCH |
+| (2,1) | 2.1356 | 544.9 | — | — | 5 449 | — | — | PITCH / HIGH |
+| (0,2) | 2.2955 | 585.7 | — | — | 5 857 | — | — | PITCH / HIGH |
+
+*(Note: ideal-membrane overtones are inharmonic — 1.594, 2.136, 2.295 are not harmonic partials; say so explicitly on the card.)*
+
+### 3.2 Pairwise difference table (N×N lower triangle)
+
+```
+## Pairwise differences — pattern set <id>
+Δf = |fᵢ − fⱼ| at reference resonator <name>; ratios are resonator-independent.
+
+| Pair (mode A × mode B) | Δf (Hz) | Beat category | Ratio r | Nearest JI interval | Cents error | Δf as pitch (if DIFFERENCE TONE) |
+```
+
+Example rows: use §2.4. Mark exact-unison cells with `Δf = 0 → UNISON (exact)` and leave ratio = 1.000, JI = 1:1, error = 0.
+
+### 3.3 "Chord" view (all decoded frequencies of a set, sorted)
+
+```
+## Chord view — pattern set <id>, reference resonator <name>
+Frequencies sorted ascending. Consecutive ratios checked against JI table.
+
+| # | f (Hz) | Ratio to root (f/f₁) | Nearest JI (vs root) | ¢ err | Consecutive ratio fᵢ/fᵢ₋₁ | Nearest JI | ¢ err | Note | ¢ | Band |
+```
+
+Example (fictional decoded set at drumhead reference):
+
+| # | f (Hz) | f/f₁ | JI vs root | ¢ err | consec. ratio | JI | ¢ err | Note | ¢ |
+|---:|---:|---:|:--|---:|---:|:--|---:|:--|---:|
+| 1 | 110.0 | 1.000 | unison 1:1 | 0.0 | — | — | — | A2 | 0.0 |
+| 2 | 163.0 | 1.482 | 5th 3:2 | −21.1 | 1.482 | 5th 3:2 | −21.1 | E3 | +23.5 |
+| 3 | 220.0 | 2.000 | octave 2:1 | 0.0 | 1.350 | 4th 4:3 | +23.5 | A3 | 0.0 |
+| 4 | 330.5 | 3.005 | 12th 3:1 (oct.-red. 3:2) | +2.6 | 1.502 | 5th 3:2 | +2.6 | E4 | +2.6 |
+
+Footnote: "Chord" is descriptive only; decoded
