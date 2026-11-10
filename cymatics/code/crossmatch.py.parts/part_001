@@ -1,0 +1,175 @@
+     return 0.5 * d_index + 0.5 * d_bessel
+    ha, hb = ma.get("hz"), mb.get("hz")
+    if ha is not None and hb is not None:
+        return min(abs(ha - hb) / ((ha + hb) / 2) / T_BESSEL, 1.0)
+    return np.nan
+
+
+def d_ratio(A, B):
+    """Euclidean distance of ratio signatures (§2.3); unobserved unless BOTH
+    items carry documented ratios (Gower: observed-for-both only; an all-zero
+    signature is treated as 'no data', not as 'zero ratios')."""
+    if A["ratio_sig"] is None or B["ratio_sig"] is None:
+        return np.nan
+    return float(np.linalg.norm(A["ratio_sig"] - B["ratio_sig"]) / np.sqrt(6))
+
+
+def d_fd(A, B):
+    if A["fd"] is None or B["fd"] is None:
+        return np.nan
+    return float(np.linalg.norm(A["fd"] - B["fd"]) / np.sqrt(2))  # unit-norm vectors (§5)
+
+
+def pair_dist(A, B, size_range):
+    """Weighted Gower composite (§2.5). Returns (D, breakdown, n_major_groups)."""
+    parts, wts, breakdown = [], [], {}
+    d = d_sym(A["n_fold"], B["n_fold"])
+    if not np.isnan(d):
+        parts.append(d); wts.append(WEIGHTS["n_fold"]); breakdown["n_fold"] = round(d, 4)
+    d = d_mode(A, B)
+    if not np.isnan(d):
+        parts.append(d); wts.append(WEIGHTS["mode"]); breakdown["mode"] = round(d, 4)
+    d = d_ratio(A, B)
+    if not np.isnan(d):
+        parts.append(d); wts.append(WEIGHTS["ratio"]); breakdown["ratio"] = round(d, 4)
+    d = d_fd(A, B)
+    if not np.isnan(d):
+        parts.append(d); wts.append(WEIGHTS["fd"]); breakdown["fd"] = round(d, 4)
+    for f in ("is_spiral", "is_grid", "is_concentric", "chiral"):
+        d = abs(A["flags"][f] - B["flags"][f])
+        parts.append(d); wts.append(WEIGHTS[f]); breakdown[f] = d
+    if not (np.isnan(A["log_size"]) or np.isnan(B["log_size"])) and size_range > 0:
+        d = abs(A["log_size"] - B["log_size"]) / size_range
+        parts.append(d); wts.append(WEIGHTS["log_size"]); breakdown["log_size"] = round(d, 4)
+    n_major = sum(1 for g in MAJOR_GROUPS if g in breakdown)
+    if not wts:
+        return np.nan, breakdown, n_major
+    return float(np.dot(parts, wts) / sum(wts)), breakdown, n_major
+
+
+# ---------------------------------------------------------------------------
+# Population build
+# ---------------------------------------------------------------------------
+
+def _text(*vals):
+    return " ".join(str(v) for v in vals if v and str(v) != "nan").lower()
+
+
+def load_crop_items():
+    """60 formations: n_fold from symmetry_orders.csv (authoritative), size from
+    crop_circles.csv, modes from the cymatics engine's structural decodes
+    (top candidate only; DECODED provenance noted)."""
+    so = {}
+    with open(os.path.join(CROP_DIR, "symmetry_orders.csv")) as fh:
+        for row in csv.DictReader(fh):
+            so[int(row["id"])] = row
+    cc = {}
+    with open(os.path.join(CROP_DIR, "crop_circles.csv")) as fh:
+        for row in csv.DictReader(fh):
+            cc[int(row["id"])] = row
+    decodes = json.load(open(os.path.join(RESULTS_DIR, "decoding_results.json")))["patterns"]
+    # decode pattern id -> crop csv id (SPEC.md pattern list vs dataset names)
+    decode_to_csv = {1: 10, 2: 12, 3: 16, 4: 21, 5: 23, 6: 30, 7: 32, 8: 33, 9: 42, 10: 51}
+    mode_by_csv_id = {}
+    for p in decodes:
+        top = p["structural_decode"][0]
+        mode_by_csv_id[decode_to_csv[p["id"]]] = {
+            "nm": (int(top["n"]), int(top["m"])), "model": top["model"],
+            "provenance": "DECODED", "confidence": top["confidence"],
+            "score": top["score"], "hz": None,
+        }
+    # documented ratios (sacred-geometry spec §3-4 discipline: integer/documented only)
+    ratios_by_id = {29: [np.pi], 42: [np.pi], 26: [2.0], 23: [3.0], 24: [3.0]}
+    grid_aspect_by_id = {32: 23.0 / 73.0}      # Arecibo reply grid
+
+    items = []
+    for cid in sorted(cc):
+        row, srow = cc[cid], so.get(cid, {})
+        nf_raw = srow.get("n_fold", "")
+        try:
+            n_fold = int(float(nf_raw))
+        except (TypeError, ValueError):
+            n_fold = None
+        # spec §1.1: plain circles / concentric rings have FULL continuous
+        # rotational symmetry (INF), not the radial-null class 0. The dataset
+        # codes them 0.0; remap when the basis text says circle/ring/oval.
+        if n_fold == 0 and any(k in _text(srow.get("n_basis"), row.get("geometry"))
+                               for k in ("circle", "ring", "oval", "nest")):
+            n_fold = INF
+        txt = _text(row.get("geometry"), row.get("geometry_family"),
+                    srow.get("n_basis"), row.get("name"))
+        is_spiral = int(any(k in txt for k in ("spiral", "julia", "galaxy", "helix")))
+        is_grid = int(any(k in txt for k in ("grid", "23x73", "chip rect")))
+        is_concentric = int(any(k in txt for k in ("ring", "concentric", "mandala")))
+        chiral = int(bool(is_spiral) or "ratchet" in txt)
+        try:
+            size = float(row.get("size_m") or "nan")
+        except ValueError:
+            size = float("nan")
+        items.append({
+            "idx": len(items), "domain": "crop", "id": f"crop_{cid:02d}",
+            "name": row["name"], "n_fold": n_fold,
+            "flags": {"is_spiral": is_spiral, "is_grid": is_grid,
+                      "is_concentric": is_concentric, "chiral": chiral},
+            "log_size": math.log10(size) if size > 0 else np.nan,
+            "mode": mode_by_csv_id.get(cid),
+            "ratios": ratios_by_id.get(cid, []),
+            "grid_aspect": grid_aspect_by_id.get(cid),
+            "rect_aspect": None,
+        })
+    return items
+
+
+def kluver_items():
+    """4 Kluver form constants (hallucination invariants). No size, no mode,
+    no documented ratios -> minimum-coverage rule (§6.7) will exclude most of
+    their pairs; this is spec-intended (§3.2: interpret as exploratory)."""
+    defs = [
+        ("kluver_tunnel", "Kluver tunnel/funnel", INF,
+         dict(is_spiral=0, is_grid=0, is_concentric=1, chiral=0)),
+        ("kluver_spiral", "Kluver spiral", 1,
+         dict(is_spiral=1, is_grid=0, is_concentric=0, chiral=1)),
+        ("kluver_cobweb", "Kluver cobweb/lattice", 4,
+         dict(is_spiral=0, is_grid=1, is_concentric=0, chiral=0)),
+        ("kluver_filigree", "Kluver filigree/honeycomb", 6,
+         dict(is_spiral=0, is_grid=1, is_concentric=1, chiral=0)),
+    ]
+    return [{"domain": "kluver", "id": i, "name": nm, "n_fold": nf, "flags": fl,
+             "log_size": np.nan, "mode": None, "ratios": [],
+             "grid_aspect": None, "rect_aspect": None} for i, nm, nf, fl in defs]
+
+
+def motif_items():
+    """8 canonical sacred-geometry motifs. Ratios per sacred_geometry_round1.md
+    documented column only (phi/pi claims for monuments are red-flag space)."""
+    defs = [
+        ("motif_flower_of_life", "Flower of Life", 6, dict(is_spiral=0, is_grid=0, is_concentric=1, chiral=0), [1.7321]),
+        ("motif_seed_of_life", "Seed of Life", 6, dict(is_spiral=0, is_grid=0, is_concentric=1, chiral=0), [1.7321]),
+        ("motif_metatrons_cube", "Metatron's Cube", 6, dict(is_spiral=0, is_grid=1, is_concentric=0, chiral=0), [1.4142, 1.7321]),
+        ("motif_sri_yantra", "Sri Yantra", 3, dict(is_spiral=0, is_grid=0, is_concentric=1, chiral=0), [1.7321]),
+        ("motif_vesica_piscis", "Vesica Piscis", 2, dict(is_spiral=0, is_grid=0, is_concentric=0, chiral=0), [1.7321]),
+        ("motif_golden_spiral", "Golden Spiral", 1, dict(is_spiral=1, is_grid=0, is_concentric=0, chiral=1), [1.618]),
+        ("motif_pentagram", "Pentagram", 5, dict(is_spiral=0, is_grid=0, is_concentric=0, chiral=0), [1.618]),
+        ("motif_torus", "Torus", INF, dict(is_spiral=0, is_grid=0, is_concentric=1, chiral=0), []),
+    ]
+    return [{"domain": "motif", "id": i, "name": nm, "n_fold": nf, "flags": fl,
+             "log_size": np.nan, "mode": None, "ratios": ratios,
+             "grid_aspect": None, "rect_aspect": None} for i, nm, nf, fl, ratios in defs]
+
+
+def monument_items():
+    """13 resonator entries from monuments.py (10 sites). Mode-space (m,n) from
+    the physics-spec §3 mapping; dominant Hz kept for the raw-Hz d_bessel branch.
+    Stonehenge/El Castillo/geometry-only sites carry no (m,n) by design."""
+    mon = json.load(open(os.path.join(RESULTS_DIR, "monuments.json")))["monuments"]
+    size_by_id = {"kings_chamber": 10.47, "kc_sarcophagus": 1.996,
+                  "hypogeum_oracle_room": 3.5, "hypogeum_niche": 0.65,
+                  "newgrange_chamber": 6.5, "newgrange_passage": 19.0,
+                  "stonehenge": 30.0, "el_castillo": 55.5, "chavin_galleries": None,
+                  "chartres_rose": 12.9, "borobudur": 123.0, "angkor_wat": 1500.0,
+                  "waylands_smithy": None}
+    aspect_by_id = {"kings_chamber": 5.234 / 10.47, "kc_sarcophagus": 0.680 / 1.996,
+                    "hypogeum_oracle_room": 3.0 / 3.5, "hypogeum_niche": 0.60 / 0.65,
+                    "newgrange_chamber": 5.8 / 6.5, "newgrange_passage": 1.4 / 19.0}
+    flag_by_id = {"stonehenge": dict(is_concentric=1),
+                  "chartres_rose": dict(is

@@ -1,0 +1,205 @@
+"""crossmatch.py — Cross-domain pattern similarity engine (crop circles x monuments).
+
+Faithful implementation of /mnt/agents/output/similarity_engine_design.md
+("Cross-Pattern Similarity Engine — Design Spec (Round 1)"):
+
+  Population: 60 crop formations + 4 Kluver form constants + 8 sacred motifs
+              + 10 monument sites (13 resonator entries from monuments.py, see
+              note below) = N = 85 items, 4 domains.
+  Features:   n_fold (log-octave metric), mode pair (index + Bessel-zero
+              proximity, raw-Hz branch for measured monument modes), ratio_sig
+              (soft membership vs {phi, sqrt2, sqrt3, 2, 3, pi} with 2^k/phi^k
+              folding), Fourier shape descriptor (radial-signature FFT,
+              rotation/scale/shift invariant), topology flags, log_size.
+  Distance:   weighted Gower composite over jointly observed features.
+  Stats:      Westfall-Young min-statistic permutation FWER (B = 100 000,
+              pre-registered seed), BH-FDR q = 0.10, Bonferroni floor sanity
+              check, pre-registered "interesting" criterion:
+              D <= 0.25 AND FWER p <= 0.05 AND >= 2/4 major feature groups with
+              d_f <= 0.35 AND robust z >= 2 below the cross-domain median.
+
+Deviation from the design spec's header (N = 80, 8 monuments): the lead's
+round-2 tasking specifies 10 monument *sites*; monuments.py models 3 of them
+as pairs of resonators (King's Chamber + sarcophagus, Oracle Room + niche,
+Newgrange chamber + passage), giving 13 monument entries and N = 85. All
+counting below is computed, not hard-coded.
+
+Kluver constants carry no size, no decoded mode, and no documented ratios, so
+by the spec's own minimum-coverage rule (§6.7: < 3 major feature groups jointly
+observed => D = NaN, excluded and counted) nearly all Kluver-involving pairs
+drop out of the test. This is the spec-faithful behavior; exclusions are
+counted and reported.
+
+Unit checks at end of file (printed PASS/FAIL):
+  U1 determinism   — full engine run twice, identical outputs
+  U2 d_sym sanity  — d(6,12) ~ 0 (octave equivalence), d(6,24) clearly larger
+  U3 WY superset   — Westfall-Young rejections superset of Bonferroni's (§4.6)
+  U4 within-domain — known-similar pair (Koch I vs Koch II snowflakes) has D <= 0.2
+                     (spec §4 pilot justification of tau)
+"""
+
+import csv
+import itertools
+import json
+import math
+import os
+import sys
+
+import numpy as np
+from scipy.special import jn_zeros
+from scipy.stats import median_abs_deviation
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+CODE_DIR = os.path.dirname(os.path.abspath(__file__))
+RESULTS_DIR = os.path.normpath(os.path.join(CODE_DIR, "..", "results"))
+CROP_DIR = "/mnt/agents/output/cropcircles/data"
+
+# ---------------------------------------------------------------------------
+# Pre-registered constants (design spec — do not tune after seeing the matrix)
+# ---------------------------------------------------------------------------
+PREREGISTERED_SEED = 20240601
+B_PERM = 100_000            # §6.9: confirmatory resolution requires B >= 1e5
+TAU_INTERESTING = 0.25      # §4.3
+FWER_ALPHA = 0.05
+FDR_Q = 0.10
+GROUP_AGREE_TOL = 0.35      # §4.3: d_f <= 0.35 counts as agreement
+ROBUST_Z_MIN = 2.0          # §4.3: >= 2 MAD below cross-domain median
+T_BESSEL = 0.05             # §2.2: 5% frequency tolerance saturates
+D_MAX_SYM = 1.5             # §2.1
+SIGMA_RATIO = 0.02          # §1.1 feature 8
+CANON = np.array([1.618, 1.414, 1.732, 2.0, 3.0, np.pi])   # phi, sqrt2, sqrt3, 2, 3, pi
+PHI = 1.618
+
+WEIGHTS = {                 # §2.5 (sum = 1.0)
+    "n_fold": 0.20, "mode": 0.20, "ratio": 0.15, "fd": 0.15,
+    "is_spiral": 0.05, "is_grid": 0.05, "is_concentric": 0.05,
+    "chiral": 0.05, "log_size": 0.05,
+}
+MAJOR_GROUPS = ("n_fold", "mode", "ratio", "fd")   # §4.3 four major feature groups
+MIN_MAJOR_GROUPS = 3                               # §6.7 minimum-coverage rule
+
+INF = -1   # n_fold code for full continuous rotational symmetry (§1.1)
+
+
+# ---------------------------------------------------------------------------
+# Feature encoding (§1)
+# ---------------------------------------------------------------------------
+
+def encode_ratio_sig(ratios, sigma=SIGMA_RATIO):
+    """Soft membership vs canonical constants with 2^k / phi^k octave folding (§2.3)."""
+    v = np.zeros(6)
+    for r in ratios:
+        folds = [r * 2.0 ** k for k in (-1, 0, 1)] + [r * PHI ** k for k in (-1, 0, 1)]
+        for rf in folds:
+            v = np.maximum(v, np.exp(-(np.log(rf) - np.log(CANON)) ** 2 / (2 * sigma ** 2)))
+    return v
+
+
+def analytic_radial_signature(glyph, n_theta=1024):
+    """Radial signature s(theta) = max silhouette radius along ray theta (§2.4 step 1).
+
+    Our glyph set is star-shaped by construction, so the ray-cast maximum equals
+    the analytic boundary exactly (no rasterization error, perfectly
+    deterministic). glyph kinds:
+      ('circle',)                 plain circle / concentric rings / INF
+      ('rosette', n, amp)         n-fold petal boundary r = R*(1-amp+amp*cos(n*theta))
+      ('rect', aspect)            rectangle, aspect = short/long <= 1
+    """
+    th = np.linspace(0.0, 2.0 * np.pi, n_theta, endpoint=False)
+    kind = glyph[0]
+    if kind == "circle":
+        return np.ones(n_theta)
+    if kind == "rosette":
+        _, n, amp = glyph
+        return (1.0 - amp) + amp * np.cos(n * th)
+    if kind == "rect":
+        aspect = glyph[1]
+        c, s = np.abs(np.cos(th)), np.abs(np.sin(th))
+        # distance from center to rectangle boundary along theta
+        r = np.where(s * 1.0 <= c * aspect,
+                     np.where(c > 0, 1.0 / np.maximum(c, 1e-12), np.inf),
+                     np.where(s > 0, aspect / np.maximum(s, 1e-12), np.inf))
+        return np.clip(r, 0.0, 1.0 / math.cos(math.pi / 4) * 1.0001) / (1.0 / math.cos(math.pi / 4))
+    raise ValueError(f"unknown glyph {glyph}")
+
+
+def fourier_desc(glyph, n_theta=1024, K=32):
+    """Rotation/scale/shift-invariant FD from the radial signature (§2.4).
+
+    F_k = |S_k|/S_0 for k=1..K, then unit-normalized (pseudocode in §5).
+    """
+    s = analytic_radial_signature(glyph, n_theta)
+    S = np.fft.fft(s)
+    F = np.abs(S[1:K + 1]) / S[0]
+    nrm = np.linalg.norm(F)
+    return F / nrm if nrm > 0 else F
+
+
+def choose_glyph(n_fold, is_grid, grid_aspect, rect_aspect):
+    """Map discrete features to a procedural star-shaped silhouette glyph.
+
+    Documented simplification: no photographs/renderings exist for most items, so
+    silhouettes are procedural proxies (rosette for n-fold, rectangle for boxes
+    and grids, circle for INF/0). FD therefore peaks at k = n_fold by construction
+    — consistent with the spec's note that the FD pipeline is the measurement
+    device that extracts n_fold (§2.4 note). Chirality is carried by the separate
+    boolean, FD is magnitude-only (pre-registered default §2.4 step 5).
+    """
+    if rect_aspect is not None:
+        return ("rect", min(1.0, rect_aspect))
+    if is_grid:
+        return ("rect", min(1.0, grid_aspect if grid_aspect else 1.0))
+    if n_fold is None or n_fold in (0, INF):
+        return ("circle",)
+    return ("rosette", int(n_fold), 0.25)
+
+
+def j_mode(mode):
+    """Eigenvalue analog for a decoded mode: Bessel zero (membrane) or
+    sqrt(p^2+q^2) (square model). McMahon fallback per §6.5."""
+    n, m = mode["nm"]
+    if mode["model"] == "square":
+        return math.sqrt(n * n + m * m)
+    if n <= 100 and m <= 200:
+        try:
+            return float(jn_zeros(n, m)[-1])
+        except Exception:
+            pass
+    beta = (n + 2 * m - 0.5) * math.pi / 2.0     # McMahon expansion (§6.5)
+    return beta - (4 * n * n - 1) / (8 * beta)
+
+
+# ---------------------------------------------------------------------------
+# Distances (§2)
+# ---------------------------------------------------------------------------
+
+def d_sym(a, b):
+    """Log-octave symmetry distance with soft octave equivalence (§2.1)."""
+    if a is None or b is None:
+        return np.nan
+    if a == b:
+        return 0.0
+    if INF in (a, b) or 0 in (a, b):
+        return 1.0                      # INF or radial-null vs anything finite
+    r = np.log2(a / b)
+    return min(abs(r), abs(r - 1), abs(r + 1)) / D_MAX_SYM
+
+
+def d_mode(A, B):
+    """Mode-space distance (§2.2): per-index harmonic distance + Bessel-zero
+    proximity. Raw-Hz branch when both sides carry measured/modeled Hz and at
+    least one lacks (n,m) (§2.2 final paragraph)."""
+    ma, mb = A.get("mode"), B.get("mode")
+    if ma is None or mb is None:
+        return np.nan
+    nma, nmb = ma.get("nm"), mb.get("nm")
+    if nma is not None and nmb is not None:
+        n1, m1 = nma
+        n2, m2 = nmb
+        dn = min(abs(n1 - n2), abs(2 * n1 - n2), abs(n1 - 2 * n2)) / max(n1, n2, 1)
+        dm = abs(m1 - m2) / max(m1, m2)
+        d_index = (dn + dm) / 2
+        j1, j2 = j_mode(ma), j_mode(mb)
+        d_bessel = min(abs(j1 - j2) / ((j1 + j2) / 2) / T_BESSEL, 1.0)
+   
