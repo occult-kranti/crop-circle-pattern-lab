@@ -1,4 +1,5 @@
- <td>${d.beat_category}</td><td>${d.ratio}</td><td>${d.ji_interval||'—'}${d.ji_ratio?(' ('+d.ji_ratio+')'):''}</td>
+}</td><td>${d.delta_f_note||'—'}</td>
+  <td>${d.beat_category}</td><td>${d.ratio}</td><td>${d.ji_interval||'—'}${d.ji_ratio?(' ('+d.ji_ratio+')'):''}</td>
   <td>${d.ji_cents_error??'—'}</td></tr>`).join('');
 }
 ['df','dq'].forEach(id=>document.getElementById(id).addEventListener('input',renderDif));

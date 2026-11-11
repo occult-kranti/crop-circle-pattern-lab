@@ -16,7 +16,7 @@
 <a href="dataset.html">Dataset</a><a href="analysis.html">Analysis</a>
 <a href="experiments.html">Hypotheses & Experiments</a><a href="papers.html">Research Papers</a>
 <a href="cymatics.html" class="active">Cymatics Lab</a>
-<a href="compare.html">DMT × Sacred Geometry</a><a href="carbon12.html">Case: Carbon-12</a><a href="monuments.html">Monuments</a><a href="crossmatch.html">Crossmatch</a>
+<a href="compare.html">DMT × Sacred Geometry</a><a href="carbon12.html">Case: Carbon-12</a><a href="monuments.html">Monuments</a><a href="crossmatch.html">Crossmatch</a><a href="studio.html">Cymatics Studio</a>
 </nav></div></header>
 
 <section><div class="wrap">
@@ -107,5 +107,4 @@ function renderDif(){
    if(f==='none' && tier!=='no close JI interval') return false;
    return !q || (d.a+d.b).toLowerCase().includes(q);});
  document.getElementById('difb').innerHTML=rows.map(d=>`<tr>
-  <td>${d.a}</td><td>${d.b}</td><td>${d.delta_f_hz}</td><td>${d.delta_f_note||'—'}</td>
- 
+  <td>${d.a}</td><td>${d.b}</td><td>${d.delta_f_hz
