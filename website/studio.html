@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cymatics Studio — Crop Circles</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+.spick{cursor:pointer;padding:12px}
+.spick img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;display:block;background:#241f18}
+.spick.selcard{outline:2px solid var(--accent);outline-offset:-2px}
+canvas.plate{width:100%;max-width:520px;border-radius:12px;border:1px solid var(--line);background:var(--bg);display:block}
+figure.ab{margin:0}figcaption.note{margin-top:4px}
+</style></head><body>
+<div class="masthead"><div class="wrap"><span>Field Notes on Flattened Wheat</span><span>Special Report · September 2026</span></div></div>
+<header class="top"><div class="wrap">
+<div class="brand">Crop<span>Circles</span> · Data &amp; Patterns</div>
+<nav>
+<a href="index.html">Overview</a><a href="timeline.html">Timeline</a>
+<a href="dataset.html">Dataset</a><a href="analysis.html">Analysis</a>
+<a href="experiments.html">Hypotheses &amp; Experiments</a><a href="papers.html">Research Papers</a>
+<a href="cymatics.html">Cymatics Lab</a><a href="compare.html">DMT × Sacred Geometry</a>
+<a href="carbon12.html">Case: Carbon-12</a><a href="monuments.html">Monuments</a>
+<a href="crossmatch.html">Crossmatch</a><a href="studio.html" class="active">Cymatics Studio</a>
+</nav></div></header>
+
+<div class="hero"><div class="wrap">
+<div class="kicker">Interactive · decode → hear → recreate</div>
+<h1>Cymatics Studio.</h1>
+<p>Pick a formation or a monument, inspect its decoded vibration mode, hear the frequency it maps to,
+and watch the pattern re-materialize on a virtual plate. Then turn the chain around: feed the microphone
+or an audio file into the analysis lab and let your own sound drive the plate.</p></div></div>
+
+<section><div class="wrap">
+<h2 class="sec">1 · Gallery — choose a target</h2>
+<p class="sub">Six formations with precomputed geometric decodes, six monuments with measured / modeled
+resonance values. Click a card to select it.</p>
+<h3 class="sub2">Formations</h3>
+<div class="cards" id="fcards">
+<div class="card spick" data-kind="f" data-key="milkhill_galaxy"><img data-boot-img="assets/studio/milkhill_galaxy.jpg" alt="Milk Hill Galaxy" loading="lazy"><div class="lbl">Milk Hill Galaxy · 2001</div></div>
+<div class="card spick" data-kind="f" data-key="julia_set"><img data-boot-img="assets/studio/julia_set.jpg" alt="Julia Set" loading="lazy"><div class="lbl">Julia Set · 1996</div></div>
+<div class="card spick" data-kind="f" data-key="chilbolton_reply"><img data-boot-img="assets/studio/chilbolton_reply.jpg" alt="Chilbolton Reply" loading="lazy"><div class="lbl">Chilbolton Reply · 2001</div></div>
+<div class="card spick" data-kind="f" data-key="crabwood"><img data-boot-img="assets/studio/crabwood.jpg" alt="Crabwood Disc" loading="lazy"><div class="lbl">Crabwood Disc · 2002</div></div>
+<div class="card spick" data-kind="f" data-key="koch"><img data-boot-img="assets/studio/koch.jpg" alt="Koch Snowflake" loading="lazy"><div class="lbl">Koch Snowflake · 1997</div></div>
+<div class="card spick" data-kind="f" data-key="pi_wheel"><img data-boot-img="assets/studio/pi_wheel.jpg" alt="Pi Wheel" loading="lazy"><div class="lbl">Pi Wheel · 2008</div></div>
+</div>
+<h3 class="sub2">Monuments</h3>
+<div class="cards" id="mcards">
+<div class="card spick" data-kind="m" data-key="pyramid"><img data-boot-img="assets/studio/pyramid.jpg" alt="Great Pyramid of Khufu" loading="lazy"><div class="lbl">Great Pyramid of Khufu</div></div>
+<div class="card spick" data-kind="m" data-key="stonehenge"><img data-boot-img="assets/studio/stonehenge.jpg" alt="Stonehenge" loading="lazy"><div class="lbl">Stonehenge</div></div>
+<div class="card spick" data-kind="m" data-key="elcastillo"><img data-boot-img="assets/studio/elcastillo.jpg" alt="El Castillo" loading="lazy"><div class="lbl">El Castillo, Chichén Itzá</div></div>
+<div class="card spick" data-kind="m" data-key="chartres_rose"><img data-boot-img="assets/studio/chartres_rose.jpg" alt="Chartres Cathedral" loading="lazy"><div class="lbl">Chartres Cathedral</div></div>
+<div class="card spick" data-kind="m" data-key="hypogeum"><img data-boot-img="assets/studio/hypogeum.jpg" alt="Ħal Saflieni Hypogeum" loading="lazy"><div class="lbl">Ħal Saflieni Hypogeum</div></div>
+<div class="card spick" data-kind="m" data-key="newgrange"><img data-boot-img="assets/studio/newgrange.jpg" alt="Newgrange" loading="lazy"><div class="lbl">Newgrange</div></div>
+</div>
+</div></section>
+
+<section class="band"><div class="wrap">
+<h2 class="sec">2 · Region selector &nbsp;·&nbsp; 3 · Decoded card</h2>
+<p class="sub">Left: each region is decoded independently — Whole is the default. Right: the selected
+region's decode — mode (n, m), f/f₀₁ ratio, Hz on the 30 cm reference drumhead, nearest 12-TET note
+(A4 = 440 Hz), band and confidence — plus the curated structural decode for comparison. Monuments show
+measured / modeled values with provenance tags instead of a photo decode.</p>
+<div class="grid2">
+<div class="panel" id="regions"></div>
+<div class="panel" id="decoded"></div>
+</div>
+</div></section>
+
+<section><div class="wrap">
+<h2 class="sec">4 · Play the frequency</h2>
+<div class="panel">
+<div class="controls"><button class="btn primary" id="playBtn">▶ Play frequency</button>
+<span class="note mono" id="playstate"></span></div>
+<p class="note">Pure sine through a gain node ramped 0 → 0.10 over 0.25 s (hard cap), auto-stops after 60 s.
+The button toggles; the Space bar works too. Infrasonic values (&lt; 20 Hz) are below hearing.</p>
+</div>
+
+<h2 class="sec">5 · Live recreation</h2>
+<div class="panel">
+<div class="controls">
+<label>drive Hz <input id="driveHz" type="number" value="2396.1" min="0.1" step="0.1" style="width:100px"></label>
+<button class="btn" id="driveBtn">Drive plate</button>
+<button class="btn" id="sandBtn">Sand sim</button>
+</div>
+<div class="grid2">
+<figure class="ab"><img id="srcimg" class="cym-img" src="assets/studio/milkhill_galaxy.jpg" alt="source"><figcaption id="srcfig" class="note"></figcaption></figure>
+<figure class="ab"><canvas id="plate" class="plate" width="520" height="520"></canvas><figcaption class="note" id="plateinfo"></figcaption></figure>
+</div>
+</div>
+
+<h2 class="sec">6 · Audio analysis lab</h2>
+<div class="panel">
+<div class="controls">
+<button class="btn primary" id="micBtn">Enable microphone</button>
+<label class="btn">Load audio file<input id="fileIn" type="file" accept="audio/*" hidden></label>
+</div>
+<p class="note" id="audstate">Idle. Microphone stays local — nothing is recorded or uploaded.</p>
+<p class="mono" id="audread"></p>
+<canvas id="audplate" class="plate" width="300" height="300" style="max-width:300px"></canvas>
+<p class="note">Dominant frequency via a naive 2048-sample DFT (plus RMS energy and spectral centroid),
+computed locally in your browser. The plate is driven at the detected dominant frequency through a
+Lorentzian resonance response. Analysis chain ported from the Open Sync (brainwave_opensync) audioLink.</p>
+</div>
+
+<h2 class="sec">7 · Honesty note</h2>
+<div class="disc"><b>Model estimates, not hidden music.</b> Every formation frequency shown here is a
+<i>model estimate</i> — geometry mapped onto candidate drum modes and an assumed 30 cm reference
+membrane — with confidence LOW or MEDIUM on real photographs (only the printed 23×73 Chilbolton grid
+rates HIGH). Monument values are <i>measured in situ</i> or <i>modeled from dimensions</i>, each with a
+cited source. None of this is evidence that formations encode sound; it is a demonstration of how
+geometry, vibration and pitch interrelate — and of how easily patterns invite over-reading.</div>
+</div></section>
+
+<footer><div class="wrap"><div>Reference resonator R1: 30 cm drumhead, c = 100 m/s (f₀₁ = 255.2 Hz). 12-TET, A4 = 440 Hz.
+Engine adapted from Open Sync (brainwave_opensync), MIT License. Self-test: <a href="assets/studio_selftest.html">assets/studio_selftest.html</a>.</div>
+<div class="fmeta">Special Report<br>Cymatics Studio</div></div></footer>
+<script src="assets/boot.js"></script><script>BOOT.loadImages("img[data-boot-img]");</script>
+<script src="assets/cymatics_engine.js"></script>
+<script src="assets/studio_data.js"></script>
+<script src="assets/studio.js"></script>
+</body></html>

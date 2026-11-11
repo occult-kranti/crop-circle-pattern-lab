@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cymatics Studio — self-test</title>
+<style>
+  body { background:#ece4d9; color:#332e26; font:14px/1.5 ui-monospace, monospace; margin:2em; }
+  h1 { font-size:1.2em; } h1 small { color:#8a7d6b; font-weight:normal; }
+  .pass { color:#1a7a3c; } .fail { color:#c22; font-weight:bold; }
+  #summary { font-size:1.3em; margin:1em 0; padding:.5em; border:2px solid #332e26; display:inline-block; }
+  canvas { border:1px solid #ddd2c0; margin:4px; vertical-align:top; }
+</style>
+</head>
+<body>
+<h1>Cymatics Studio self-test <small>— studio.js + studio_data.js + cymatics_engine.js</small></h1>
+<div id="summary">running…</div>
+<ol id="results"></ol>
+<div id="canvases"></div>
+<script src="cymatics_engine.js"></script>
+<script src="studio_data.js"></script>
+<script src="studio.js"></script>
+<script>
+(function () {
+  var results = [];
+  var ol = document.getElementById('results');
+  function check(name, ok, detail) {
+    ok = !!ok;
+    results.push(ok);
+    var li = document.createElement('li');
+    li.className = ok ? 'pass' : 'fail';
+    li.textContent = (ok ? 'PASS  ' : 'FAIL  ') + name + (detail ? '  [' + detail + ']' : '');
+    ol.appendChild(li);
+  }
+  function mkCanvas(res) {
+    var c = document.createElement('canvas');
+    c.width = res; c.height = res;
+    document.getElementById('canvases').appendChild(c);
+    return c;
+  }
+  function pixels(c) { return c.getContext('2d').getImageData(0, 0, c.width, c.height).data; }
+  function distinctColors(c) {
+    var d = pixels(c), set = {};
+    for (var i = 0; i < d.length; i += 4) set[d[i] + ',' + d[i + 1] + ',' + d[i + 2]] = 1;
+    return Object.keys(set).length;
+  }
+  function buffersEqual(a, b) {
+    if (a.length !== b.length) return false;
+    for (var i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+    return true;
+  }
+
+  try {
+    var A = window.STUDIOAPP || {};
+    var FKEYS = ['milkhill_galaxy', 'julia_set', 'chilbolton_reply', 'crabwood', 'koch', 'pi_wheel'];
+    var MKEYS = ['pyramid', 'stonehenge', 'elcastillo', 'chartres_rose', 'hypogeum', 'newgrange'];
+    var RKEYS = ['whole', 'quadrant_TL', 'quadrant_TR', 'quadrant_BL', 'quadrant_BR', 'center'];
+
+    // 1. STUDIO data present
+    check('STUDIO data present (formations + monuments objects)',
+      typeof STUDIO === 'object' && STUDIO && STUDIO.formations && STUDIO.monuments);
+
+    // 2. exactly the 6 expected formations
+    check('6 expected formations present',
+      FKEYS.every(function (k) { return !!STUDIO.formations[k]; }) &&
+      Object.keys(STUDIO.formations).length === 6, Object.keys(STUDIO.formations).join(','));
+
+    // 3. exactly the 6 expected monuments
+    check('6 expected monuments present',
+      MKEYS.every(function (k) { return !!STUDIO.monuments[k]; }) &&
+      Object.keys(STUDIO.monuments).length === 6, Object.keys(STUDIO.monuments).join(','));
+
+    // 4. region decode fields present for all 6 formations
+    var regionOk = FKEYS.every(function (k) {
+      var rg = STUDIO.formations[k].regions;
+      return rg && RKEYS.every(function (rk) {
+        var r = rg[rk];
+        return r && Number.isInteger(r.n) && Number.isInteger(r.m) && r.m >= 1 &&
+          typeof r.hz === 'number' && r.hz > 0 && typeof r.ratio === 'number' && r.ratio > 0 &&
+          /^(LOW|MEDIUM|HIGH)$/.test(r.conf) && typeof r.route === 'string';
+      });
+    });
+    check('all 6 formations have 6 regions with {n,m,conf,hz,ratio,route}', regionOk);
+
+    // 5. structural decode fields present for all 6 formations
+    var structOk = FKEYS.every(function (k) {
+      var s = STUDIO.formations[k].structural;
+      return s && Array.isArray(s.mode) && s.mode.length === 2 &&
+        s.mode.every(Number.isInteger) && typeof s.hz === 'number' && s.hz > 0 &&
+        typeof s.note === 'string' && /^(LOW|MEDIUM|HIGH)$/.test(s.conf);
+    });
+    check('all 6 formations have structural {mode:[n,m],hz,note,conf}', structOk);
+
+    // 6. region Hz consistent with ratio × f01 (255.2 Hz drumhead) within 1%
+    var worst = 0;
+    FKEYS.forEach(function (k) {
+      RKEYS.forEach(function (rk) {
+        var r = STUDIO.formations[k].regions[rk];
+        var err = Math.abs(r.hz - r.ratio * 255.2) / r.hz;
+        if (err > worst) worst = err;
+      });
+    });
+    check('region hz ≈ ratio × 255.2 (f01 drumhead) within 1% everywhere',
+      worst < 0.01, 'worst rel err ' + (worst * 100).toFixed(3) + '%');
+
+    // 7. note mapping: 440 Hz → A4 +0¢
+    var n440 = A.noteInfo(440);
+    check('noteInfo(440) → A4 +0¢ (midi=69+12·log2(f/440), A4=440)',
+      n440.name === 'A4' && n440.cents === 0, JSON.stringify(n440));
+
+    // 8. note mapping: 255.2 Hz → C4 −43¢ (±2¢ rounding slack)
+    var n255 = A.noteInfo(255.2);
+    check('noteInfo(255.2) → C4 −43¢ (±2¢)',
+      n255.name === 'C4' && Math.abs(n255.cents - -43) <= 2, JSON.stringify(n255));
+
+    // 9. band labels: 8 Hz INFRASONIC; 440 PITCH; 25000 ULTRASONIC
+    check('band(8 Hz)=INFRASONIC, band(440)=PITCH, band(25000)=ULTRASONIC',
+      A.band(8) === 'INFRASONIC' && A.band(440) === 'PITCH' && A.band(25000) === 'ULTRASONIC');
+
+    // 10. gain cap constant present and equal to 0.10
+    check('playback gain cap constant present: STUDIOAPP.GAIN_CAP === 0.10',
+      A.GAIN_CAP === 0.10 && A.RAMP_S === 0.25 && A.MAX_PLAY_S === 60);
+
+    // 11. naive-DFT analyzer recovers a known 440 Hz sine (offline, no AudioContext)
+    var sr = 8000, buf = new Float64Array(A.DFT_N);
+    for (var i = 0; i < buf.length; i++) buf[i] = Math.sin(2 * Math.PI * 440 * i / sr) * 0.5;
+    var an = A.analyze(buf, sr);
+    check('analyze(): 440 Hz sine → dominant 440±4 Hz, centroid>0, energy≈0.35',
+      !!an && Math.abs(an.hz - 440) <= 4 && an.centroid > 0 && Math.abs(an.energy - 0.354) < 0.01,
+      an && (an.hz + ' Hz · cent ' + an.centroid.toFixed(1) + ' · E ' + an.energy.toFixed(3)));
+
+    // 12. engine renders non-blank canvas for mode (4,1)
+    var c1 = mkCanvas(160);
+    CYM.renderDisc(c1, { n: 4, m: 1, rim: 'clamped' });
+    check('CYM.renderDisc (4,1) → non-blank canvas', distinctColors(c1) > 10,
+      distinctColors(c1) + ' distinct colors');
+
+    // 13. sand determinism: same seed → identical pixels
+    var c2 = mkCanvas(128), c3 = mkCanvas(128);
+    var sandOpts = { modes: [{ n: 3, m: 2, w: 1 }], rim: 'clamped', count: 1200, seed: 7, steps: 80 };
+    CYM.renderSand(c2, sandOpts);
+    CYM.renderSand(c3, sandOpts);
+    check('renderSand determinism: same seed → identical pixels',
+      buffersEqual(pixels(c2), pixels(c3)));
+
+    // 14. plateLadder anchor: steel-disc-17 @110 Hz → free-rim (m=0,s=1) at 0¢
+    var ld = CYM.plateLadder('steel-disc-17', 110).modes[0];
+    check('plateLadder anchor: 110 Hz → free-rim mode (m=0, s=1) at 0¢',
+      ld && ld.m === 0 && ld.s === 1 && Math.abs(ld.cents) < 1e-6, JSON.stringify(ld));
+
+    // 15. monument entries carry site/chamber + modeled/measured arrays
+    var monOk = MKEYS.every(function (k) {
+      var m = STUDIO.monuments[k];
+      return m && typeof m.site === 'string' && typeof m.chamber === 'string' &&
+        Array.isArray(m.modeled) && Array.isArray(m.measured) && typeof m.source === 'string';
+    });
+    check('all 6 monuments have {site,chamber,modeled[],measured[],source}', monOk);
+  } catch (e) {
+    check('harness completed without exception', false, String(e && e.stack || e));
+  }
+
+  var nFail = results.filter(function (x) { return !x; }).length;
+  var el = document.getElementById('summary');
+  el.textContent = (results.length - nFail) + '/' + results.length + (nFail ? ' FAILED' : ' — ALL PASS');
+  el.className = nFail ? 'fail' : 'pass';
+})();
+</script>
+</body>
+</html>
