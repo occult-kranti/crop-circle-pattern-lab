@@ -9,7 +9,7 @@
 <a href="index.html">Overview</a><a href="timeline.html">Timeline</a>
 <a href="dataset.html">Dataset</a><a href="analysis.html">Analysis</a>
 <a href="experiments.html" class="active">Hypotheses & Experiments</a><a href="papers.html">Research Papers</a>
-<a href="cymatics.html">Cymatics Lab</a><a href="compare.html">DMT × Sacred Geometry</a><a href="carbon12.html">Case: Carbon-12</a><a href="monuments.html">Monuments</a><a href="crossmatch.html">Crossmatch</a>
+<a href="cymatics.html">Cymatics Lab</a><a href="compare.html">DMT × Sacred Geometry</a><a href="carbon12.html">Case: Carbon-12</a><a href="monuments.html">Monuments</a><a href="crossmatch.html">Crossmatch</a><a href="studio.html">Cymatics Studio</a>
 </nav></div></header>
 
 <section><div class="wrap">
@@ -63,4 +63,4 @@ const H2=[
  {t:"R2-H3 · Chant-band bias, size-matched (sound engineering)", h:"Enclosed ritual chambers' strongest measured primary mode falls in the male chant band (98–147 Hz) more than uniform-log chance AND more than size-matched non-ritual stone cavities.",
   e:"Exact one-sided binomial (p₀=0.176) on tier-1 measured primaries + Fisher exact vs size-matched controls.",
   r:"NOT SUPPORTED at tier-1 today — 3/7 band hits (Newgrange 110, Wayland's 112/119; Hypogeum contributes zero under Till 2017's 41/72/76), binomial p=0.109; the '12-TET note-lock' variant is already falsified (2/7 within ±25¢ vs ~50% chance). Control-pairing arm awaits a non-ritual chamber sample.", v:"rejected"},
- {t:"R2-H4 · Degenerate null = ceiling theorem (mathematics)", h:"The crossmatch zero is not a finding about the world but about the test: the pattern space collapses to O(10) cells shared by every ornamental tradition, so one duplicate pair puts an ato
+ {t:"R2-H4 · Degenerate null = ceiling theorem (mathematics)", h:"The crossmatch zero is not a finding about the world but about the test: the pattern space collapses to O(10) cells shared by every ornamental tra
