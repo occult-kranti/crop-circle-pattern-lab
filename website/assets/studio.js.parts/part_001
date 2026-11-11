@@ -1,0 +1,139 @@
+ not the photograph.';
+  } catch (e) { info.textContent = 'render error: ' + e.message; }
+}
+function drivePlate() {
+  var f = parseFloat($('driveHz').value), info = $('plateinfo');
+  if (!isFinite(f) || f <= 0) { info.textContent = 'enter a drive frequency > 0 Hz.'; return; }
+  try {
+    var lad = CYM.plateLadder('steel-disc-17', f);
+    CYM.renderDisc($('plate'), { freq: f, res: 520 });
+    var top = lad.modes[0];
+    info.textContent = 'driven at ' + fmt(f) + ' Hz → nearest plate mode azimuthal ' + top.m + ', radial ' +
+      top.s + ' at ' + fmt(top.hz) + ' Hz (detune ' + (top.cents >= 0 ? '+' : '') + top.cents.toFixed(1) +
+      ' ¢; Lorentzian mix of ' + lad.modes.length + ' modes).';
+  } catch (e) { info.textContent = 'drive error: ' + e.message; }
+}
+function sandSim() {
+  var cv = $('plate'), info = $('plateinfo'), modes, rim = 'clamped', lbl;
+  try {
+    if (sel.kind === 'm') {
+      var hz = monHz();
+      if (!hz) { info.textContent = 'no frequency available for a sand sim at this site.'; return; }
+      var lad = CYM.plateLadder('steel-disc-17', hz);
+      modes = lad.modes.slice(0, 3).map(function (md) { return { n: md.m, m: md.s, w: 1 }; });
+      rim = lad.plate.boundary; lbl = 'driven modes near ' + fmt(hz) + ' Hz';
+    } else {
+      var r = STUDIO.formations[sel.key].regions[sel.region];
+      modes = [{ n: r.n, m: r.m, w: 1 }]; lbl = 'mode (' + r.n + ', ' + r.m + ')';
+    }
+    CYM.renderSand(cv, { modes: modes, rim: rim, count: 4000, res: 520 });
+    info.textContent = 'sand sim: ' + lbl + ' — 4000 grains, seeded (deterministic), grains collect on nodal lines.';
+  } catch (e) { info.textContent = 'sand error: ' + e.message; }
+}
+
+/* 6 · audio analysis lab (mic / file → naive DFT → Lorentzian-driven plate) */
+var aCtx = null, analyser = null, aBuf = null, lastFrame = 0, lastRender = 0;
+function setAud(msg) { $('audstate').textContent = msg; }
+function showAnalysis(r, srcLbl) {
+  if (!r) { setAud('analysis: not enough samples.'); return; }
+  $('audread').textContent = srcLbl + ' · dominant ' + fmt(r.hz) + ' Hz (≈ ' + noteInfo(r.hz).name +
+    ') · spectral centroid ' + fmt(r.centroid) + ' Hz · RMS energy ' + r.energy.toFixed(4);
+  var now = performance.now();
+  if (r.hz > 0 && r.energy > 1e-4 && now - lastRender > 300) { // throttled plate drive
+    lastRender = now;
+    try { CYM.renderDisc($('audplate'), { freq: r.hz, res: 300 }); } catch (e) { /* keep last frame */ }
+  }
+}
+function micLoop() {
+  if (!analyser) return;
+  requestAnimationFrame(micLoop);
+  var now = performance.now();
+  if (now - lastFrame < 150) return;
+  lastFrame = now;
+  if (analyser.getFloatTimeDomainData) analyser.getFloatTimeDomainData(aBuf);
+  else {
+    var b = new Uint8Array(DFT_N); analyser.getByteTimeDomainData(b);
+    for (var i = 0; i < DFT_N; i++) aBuf[i] = (b[i] - 128) / 128;
+  }
+  showAnalysis(analyze(aBuf, aCtx.sampleRate), 'mic');
+}
+function startMic() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    setAud('microphone unavailable: getUserMedia is not supported in this browser/context.'); return;
+  }
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+    aCtx = aCtx || new (window.AudioContext || window.webkitAudioContext)();
+    var src = aCtx.createMediaStreamSource(stream);
+    analyser = aCtx.createAnalyser(); analyser.fftSize = DFT_N;
+    src.connect(analyser);
+    aBuf = new Float32Array(DFT_N);
+    setAud('mic live — analyzing every ~150 ms; the plate below is driven by the dominant frequency ' +
+      '(Lorentzian response). Speak, hum or play a tone.');
+    micLoop();
+  }).catch(function (err) {
+    setAud('microphone denied or unavailable: ' + (err && err.message ? err.message : err) +
+      ' — try the file upload instead.');
+  });
+}
+function loadFile(ev) {
+  var file = ev.target.files && ev.target.files[0];
+  if (!file) return;
+  setAud('decoding ' + file.name + ' …');
+  var rd = new FileReader();
+  rd.onerror = function () { setAud('could not read the file.'); };
+  rd.onload = function () {
+    try {
+      aCtx = aCtx || new (window.AudioContext || window.webkitAudioContext)();
+      aCtx.decodeAudioData(rd.result, function (buf) {
+        var d = buf.getChannelData(0), sr = buf.sampleRate, best = null;
+        for (var w = 0; w < 5; w++) { // strongest of 5 windows spread across the file
+          var off = Math.max(0, Math.floor((d.length - DFT_N) * w / 4));
+          var r = analyze(d.subarray(off, off + DFT_N), sr);
+          if (r && (!best || r.energy > best.energy)) best = r;
+        }
+        showAnalysis(best, 'file: ' + file.name);
+        setAud('file analyzed (strongest ' + DFT_N + '-sample window of 5); plate driven at its dominant frequency.');
+      }, function () { setAud('could not decode that audio file (unsupported format?).'); });
+    } catch (e) { setAud('audio error: ' + e.message); }
+  };
+  rd.readAsArrayBuffer(file);
+}
+
+/* refresh everything after a selection change */
+function refresh() {
+  each('.spick', function (el) {
+    el.classList.toggle('selcard',
+      el.getAttribute('data-key') === sel.key && el.getAttribute('data-kind') === sel.kind);
+  });
+  $('decoded').innerHTML = decodedHTML();
+  $('regions').innerHTML = regionHTML();
+  each('#regions [data-region]', function (b) {
+    b.addEventListener('click', function () { sel.region = b.getAttribute('data-region'); refresh(); });
+  });
+  if (window.BOOT && BOOT.bootImageURL) {
+    BOOT.bootImageURL('assets/studio/' + sel.key + '.jpg').then(u => { $('srcimg').src = u; });
+  } else {
+    $('srcimg').src = 'assets/studio/' + sel.key + '.jpg';
+  }
+  $('srcimg').alt = tName();
+  $('srcfig').textContent = tName() + (sel.kind === 'f' ? ' · source photograph' : ' · site photograph');
+  var hz = curHz();
+  if (hz) $('driveHz').value = Math.round(hz * 10) / 10;
+  stopPlay(hz ? 'ready: ' + fmt(hz) + ' Hz · ' + noteInfo(hz).name + ' (' + band(hz) + ')'
+              : 'no playable frequency for this target.');
+  renderPlate();
+}
+
+bindGallery();
+$('playBtn').addEventListener('click', togglePlay);
+$('driveBtn').addEventListener('click', drivePlate);
+$('sandBtn').addEventListener('click', sandSim);
+$('micBtn').addEventListener('click', startMic);
+$('fileIn').addEventListener('change', loadFile);
+document.addEventListener('keydown', function (e) {
+  if (e.code !== 'Space' || e.repeat) return;
+  if (/^(INPUT|TEXTAREA|SELECT|BUTTON)$/.test((e.target && e.target.tagName) || '')) return;
+  e.preventDefault(); togglePlay();
+});
+refresh();
+})();

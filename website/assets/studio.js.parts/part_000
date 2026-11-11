@@ -1,0 +1,170 @@
+/* Cymatics Studio — logic for studio.html. Needs STUDIO (studio_data.js) + CYM (cymatics_engine.js).
+   Vanilla JS + Web Audio + canvas. No dependencies. */
+(function () {
+'use strict';
+var GAIN_CAP = 0.10, RAMP_S = 0.25, MAX_PLAY_S = 60, F01 = 255.2, // f01: 30 cm drumhead, c=100 m/s
+  NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'], DFT_N = 2048, COS = null;
+
+/* frequency → nearest 12-TET note (A4=440): midi = 69 + 12·log2(f/440) */
+function noteInfo(f) {
+  var mi = 69 + 12 * Math.log2(f / 440), r = Math.round(mi);
+  return { midi: mi, name: NOTES[((r % 12) + 12) % 12] + (Math.floor(r / 12) - 1), cents: Math.round((mi - r) * 100) };
+}
+function band(f) { return f < 20 ? 'INFRASONIC' : f < 2000 ? 'PITCH' : f < 20000 ? 'HIGH' : 'ULTRASONIC'; }
+function fmt(f) { return f >= 100 ? f.toFixed(1) : f.toFixed(2); }
+function tag(c) { return '<span class="tag ' + (c === 'HIGH' ? 'art' : c === 'MEDIUM' ? 'unexplained' : 'hoax') + '">' + c + '</span>'; }
+
+/* naive DFT (N=2048): dominant Hz, RMS energy, spectral centroid — port of brainwave_opensync audioLink */
+function analyze(s, sr) {
+  var N = Math.min(DFT_N, s.length);
+  if (N < 256 || !(sr > 0)) return null;
+  if (!COS) { COS = new Float64Array(N); for (var t = 0; t < N; t++) COS[t] = Math.cos(2 * Math.PI * t / N); }
+  var q = N >> 2, e = 0, i, k, n;
+  for (i = 0; i < N; i++) e += s[i] * s[i];
+  e = Math.sqrt(e / N);
+  var mx = Math.min(N >> 1, Math.ceil(5000 * N / sr)), bh = 0, bm = 0, ct = 0, ms = 0;
+  for (k = 1; k <= mx; k++) {
+    var re = 0, im = 0;
+    for (n = 0, i = 0; n < N; n++) { // COS[i+q] = −sin(i), so |X(k)| = √(re²+im²)
+      var v = s[n]; re += v * COS[i]; im += v * COS[(i + q) % N]; i = (i + k) % N;
+    }
+    var mg = Math.sqrt(re * re + im * im), f = k * sr / N;
+    ct += f * mg; ms += mg;
+    if (mg > bm) { bm = mg; bh = f; }
+  }
+  return { hz: bh, centroid: ms ? ct / ms : 0, energy: e };
+}
+
+/* exported for assets/studio_selftest.html */
+window.STUDIOAPP = { GAIN_CAP: GAIN_CAP, RAMP_S: RAMP_S, MAX_PLAY_S: MAX_PLAY_S,
+  F01: F01, DFT_N: DFT_N, noteInfo: noteInfo, band: band, analyze: analyze };
+
+/* self-test loads this file headless — stop before page wiring */
+if (typeof STUDIO === 'undefined' || typeof CYM === 'undefined' || !document.getElementById('fcards')) return;
+
+var $ = function (id) { return document.getElementById(id); },
+  FT = { milkhill_galaxy: ['Milk Hill Galaxy', 2001], julia_set: ['Julia Set', 1996],
+    chilbolton_reply: ['Chilbolton Reply', 2001], crabwood: ['Crabwood Disc', 2002],
+    koch: ['Koch Snowflake', 1997], pi_wheel: ['Pi Wheel', 2008] },
+  RKS = ['whole', 'quadrant_TL', 'quadrant_TR', 'quadrant_BL', 'quadrant_BR', 'center'],
+  sel = { kind: 'f', key: 'milkhill_galaxy', region: 'whole' };
+function rn(k) { return k === 'whole' ? 'Whole formation' : k === 'center' ? 'Center' : 'Quadrant ' + k.slice(-2); }
+function monHz() {
+  var m = STUDIO.monuments[sel.key],
+    v = (m.measured || []).concat(m.modeled || []).filter(function (x) { return typeof x === 'number'; });
+  return v.length ? v[0] : null;
+}
+function curHz() { return sel.kind === 'm' ? monHz() : STUDIO.formations[sel.key].regions[sel.region].hz; }
+function tName() { return sel.kind === 'm' ? STUDIO.monuments[sel.key].site : (FT[sel.key] || [sel.key])[0]; }
+function each(q, fn) { Array.prototype.forEach.call(document.querySelectorAll(q), fn); }
+
+/* 1 · gallery (cards are static markup in studio.html — bind clicks) */
+function bindGallery() {
+  each('.spick', function (el) {
+    el.addEventListener('click', function () {
+      sel = { kind: el.getAttribute('data-kind'), key: el.getAttribute('data-key'), region: 'whole' };
+      refresh();
+    });
+  });
+}
+
+/* 2+3 · region selector & decoded card */
+function decodedHTML() {
+  if (sel.kind === 'm') {
+    var m = STUDIO.monuments[sel.key];
+    function chips(a, cls, lbl) {
+      if (!a || !a.length) return '<span class="note">none reported</span>';
+      return a.map(function (x) {
+        return '<span class="tag ' + cls + '">' + lbl + '</span> <span class="mono">' +
+          (typeof x === 'number' ? fmt(x) + ' Hz' : String(x)) + '</span>';
+      }).join(' &nbsp;');
+    }
+    return '<p class="chart-title">' + m.site + '</p><p class="note">' + m.chamber + '</p>' +
+      '<p style="margin:8px 0 4px">Modeled: ' + chips(m.modeled, 'unexplained', 'MODELED') + '</p>' +
+      '<p style="margin:4px 0">Measured: ' + chips(m.measured, 'art', 'MEASURED') + '</p>' +
+      (m.source ? '<p class="note">Source: ' + m.source + '</p>' : '') +
+      '<p class="note" style="margin-top:8px">No photo decode for monuments — measured / forward-modeled ' +
+      'literature values with provenance tags only.</p>';
+  }
+  var f = STUDIO.formations[sel.key], r = f.regions[sel.region], s = f.structural, ni = noteInfo(r.hz);
+  return '<p class="chart-title">' + tName() + ' — ' + rn(sel.region) + '</p>' +
+    '<p class="mono" style="font-size:19px;color:var(--ink-strong)">mode (' + r.n + ', ' + r.m + ') · f/f₀₁ = ' +
+    r.ratio.toFixed(3) + ' · ' + fmt(r.hz) + ' Hz</p>' +
+    '<p>nearest note <b>' + ni.name + '</b> (' + (ni.cents >= 0 ? '+' : '') + ni.cents + ' ¢) · ' +
+    '<span class="tag commercial">' + band(r.hz) + '</span> · confidence ' + tag(r.conf) + '</p>' +
+    '<p class="note">Hz @ 30 cm drumhead (R1: c = 100 m/s, f₀₁ = ' + F01 + ' Hz) · decode route: ' + r.route + '</p>' +
+    '<hr style="border:none;border-top:1px solid var(--line);margin:12px 0">' +
+    '<p class="note"><b>Curated structural decode</b> (whole-pattern features, for comparison): mode (' +
+    s.mode[0] + ', ' + s.mode[1] + ') · ' + fmt(s.hz) + ' Hz · ' + s.note + ' · confidence ' + tag(s.conf) + '</p>';
+}
+function regionHTML() {
+  if (sel.kind === 'm') {
+    return '<p class="chart-title">Region selector</p><p class="note">Region decoding applies to formation ' +
+      'photographs only. Pick a formation above to compare regions against the curated structural decode.</p>';
+  }
+  var f = STUDIO.formations[sel.key];
+  return '<p class="chart-title">Region selector</p><div class="controls">' + RKS.map(function (k) {
+    return '<button class="btn' + (k === sel.region ? ' primary' : '') + '" data-region="' + k + '">' + rn(k) + '</button>';
+  }).join('') + '</div><p class="note">' + RKS.map(function (k) {
+    var r = f.regions[k];
+    return rn(k) + ' (' + r.n + ', ' + r.m + ') · ' + fmt(r.hz) + ' Hz · ' + r.conf;
+  }).join('<br>') + '</p>';
+}
+
+/* 4 · playback: sine, gain ramp 0→0.10 over 0.25 s, 60 s auto-stop, Space toggles */
+var actx = null, osc = null, gain = null, autoStop = null;
+function stopPlay(msg) {
+  if (autoStop) { clearTimeout(autoStop); autoStop = null; }
+  if (osc && actx) {
+    try {
+      var t = actx.currentTime;
+      gain.gain.cancelScheduledValues(t);
+      gain.gain.setValueAtTime(gain.gain.value, t);
+      gain.gain.linearRampToValueAtTime(0, t + 0.1);
+      osc.stop(t + 0.12);
+    } catch (e) { /* already stopped */ }
+  }
+  osc = null; gain = null;
+  $('playBtn').textContent = '▶ Play frequency';
+  if (msg) $('playstate').textContent = msg;
+}
+function togglePlay() {
+  if (osc) { stopPlay('stopped.'); return; }
+  var f = curHz();
+  if (!f) { $('playstate').textContent = 'no frequency available for this target.'; return; }
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+    osc = actx.createOscillator(); gain = actx.createGain();
+    osc.type = 'sine'; osc.frequency.value = f;
+    var t = actx.currentTime;
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(GAIN_CAP, t + RAMP_S); // hard cap 0.10
+    osc.connect(gain); gain.connect(actx.destination); osc.start();
+    autoStop = setTimeout(function () { stopPlay('auto-stopped (60 s limit).'); }, MAX_PLAY_S * 1000);
+    $('playstate').textContent = 'playing: ' + fmt(f) + ' Hz · ' + noteInfo(f).name +
+      (f < 20 ? ' (infrasonic — below hearing)' : '');
+    $('playBtn').textContent = '■ Stop';
+  } catch (e) { osc = null; gain = null; $('playstate').textContent = 'audio error: ' + e.message; }
+}
+
+/* 5 · live recreation */
+function renderPlate() {
+  var cv = $('plate'), info = $('plateinfo');
+  try {
+    if (sel.kind === 'm') {
+      var hz = monHz();
+      if (!hz) {
+        cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+        info.textContent = 'no resonator and no frequency values for this site — nothing to recreate.';
+        return;
+      }
+      CYM.renderDisc(cv, { freq: hz, res: 520 });
+      info.textContent = 'driven-plate (Lorentzian) response at ' + fmt(hz) +
+        ' Hz — first listed value. A resonance sketch, not a photo decode.';
+      return;
+    }
+    var r = STUDIO.formations[sel.key].regions[sel.region];
+    CYM.renderDisc(cv, { n: r.n, m: r.m, rim: 'clamped', res: 520 });
+    info.textContent = 'recreated mode (' + r.n + ', ' + r.m + ') on a clamped disc — forward render ' +
+      'of the decoded mode,
